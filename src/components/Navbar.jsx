@@ -86,9 +86,9 @@ const Navbar = () => {
               <input
                 type="text"
                 placeholder="Search products..."
-                className="w-full px-4 py-2 rounded-lg border border-purple-200 focus:outline-none focus:border-purple-500"
+                className="w-full text-gray-800 font-body px-4 py-2 rounded-lg border border-purple-400 focus:outline-none focus:border-purple-500"
               />
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-purple-400" />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-purple-600" />
             </div>
           </div>
 
@@ -107,14 +107,14 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Search Bar (Below Navbar) */}
-        <div className="lg:hidden py-3 px-2 border-t border-purple-100">
+        <div className="lg:hidden py-3 px-2 border-t border-purple-200">
           <div className="relative">
             <input
               type="text"
               placeholder="Search products..."
-              className="w-full px-4 py-2  rounded-lg border-2 border-purple-200 focus:outline-none focus:border-purple-500"
+              className="w-full px-4 py-2 text-gray-800  rounded-lg border-2 border-purple-200 focus:outline-none focus:border-purple-500"
             />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-purple-400" />
+            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-purple-700" />
           </div>
         </div>
       </nav>
