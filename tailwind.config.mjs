@@ -11,6 +11,10 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        heading: "var(--font-libre-baskerville)",
+        body: "var(--font-poppins)",
+      },
     },
   },
   plugins: [],

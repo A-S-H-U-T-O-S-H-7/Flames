@@ -35,8 +35,8 @@ const FAQ = () => {
   };
 
   return (
-    <div className="px-[10px] lg:px-10 py-[40px] mx-auto bg-gradient-to-b from-purple-50 to-white">
-      <h2 className="text-3xl font-extrabold text-[#3C0184] font-heading mb-6">
+    <div className="px-[10px] md:px-[30px] py-[40px] mx-auto bg-gradient-to-b from-purple-50 to-white">
+      <h2 className="text-3xl font-extrabold text-gray-800 text-center font-heading mb-6">
         Frequently Asked Questions
       </h2>
       {faqs.length > 0 ? (
@@ -50,10 +50,10 @@ const FAQ = () => {
                 className="flex justify-between items-center cursor-pointer"
                 onClick={() => toggleFAQ(index)}
               >
-                <h3 className="text-lg font-medium text-[#3C0184]">{faq.question}</h3>
+                <h3 className="text-lg font-medium font-body text-gray-700">{faq.question}</h3>
 
                 <span
-                  className={`text-xl text-[#3C0184] font-bold transform transition-transform duration-300 ${
+                  className={`text-xl text-gray-700 font-bold transform transition-transform duration-300 ${
                     activeIndex === index ? "rotate-180" : ""
                   }`}
                 >
@@ -67,7 +67,7 @@ const FAQ = () => {
                     : "max-h-0 opacity-0"
                 }`}
               >
-                <p className="mt-4 text-gray-600">{faq.answer}</p>
+                <p className="mt-4 font-body text-gray-600">{faq.answer}</p>
               </div>
             </div>
           ))}

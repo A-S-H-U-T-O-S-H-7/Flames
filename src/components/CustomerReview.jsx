@@ -7,35 +7,35 @@ const CustomerReviews = () => {
       age: 27,
       review:
         "Delighted with my engagement ring! It's my dream ring, fits perfectly, and is stunning to look at.",
-      image: "/review1.jpg",
+      image: "/review-image1.jpg",
     },
     {
       name: "Diksha Singh",
       age: 29,
       review:
-        "BlueStone's customer service gave me full assurance, and the delivery was super quick.",
-      image: "/review2.jpg",
+        "Flames's customer service gave me full assurance, and the delivery was super quick.",
+      image: "/review-image2.jpeg",
     },
     {
-        name: "Diksha Singh",
-        age: 29,
+        name: "Ashutosh Mohanty",
+        age: 24,
         review:
-          "BlueStone's customer service gave me full assurance, and the delivery was super quick.",
-        image: "/review2.jpg",
+          "Flames's customer service gave me full assurance, and the delivery was super quick.",
+        image: "/review-image3.webp",
       },
       {
-        name: "Diksha Singh",
-        age: 29,
+        name: "Ahraz",
+        age: 21,
         review:
-          "BlueStone's customer service gave me full assurance, and the delivery was super quick.",
-        image: "/review2.jpg",
+          "Flames's customer service gave me full assurance, and the delivery was super quick.",
+        image: "/review-image4.webp",
       },
     {
       name: "Nutan Mishra",
       age: 33,
       review:
         "I got a Nazariya for my baby boy. It gives me a sense of security knowing it's there. Lovely pieces!",
-      image: "/review3.jpg",
+      image: "/review-image1.jpg",
     },
     {
       name: "Divya Mishra",
@@ -47,8 +47,8 @@ const CustomerReviews = () => {
   ];
 
   return (
-    <div className="bg-[#fae7d7] py-12 px-[10px] lg:px-10">
-      <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
+    <div className="bg-[#fae7d7] py-12 px-[10px] md:px-[30px]">
+      <h2 className="text-3xl font-bold font-heading text-center text-gray-800 mb-8">
         What Our Customers Say
       </h2>
       <div className="overflow-x-auto flex gap-6 py-4 px-2 no-scrollbar">

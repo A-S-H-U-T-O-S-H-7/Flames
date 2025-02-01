@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const StateSection = () => {
   return (
-    <div className="px-[10px] lg:px-10 py-20 lg:py-28 bg-[#f7f2fd]">
+    <div className="px-[10px] md:px-[30px] py-20 lg:py-28 bg-[#f7f2fd]">
       {/* Main Grid Container */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3 items-center">
         {/* Block 1 */}
@@ -17,8 +17,8 @@ const StateSection = () => {
             className="rounded-lg hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute bottom-0 w-full bg-gradient-to-t from-green-500 to-transparent text-white px-4 py-2">
-            <h3 className="text-lg font-bold">Kerala</h3>
-            <p className="text-sm">Protective charm and design.</p>
+            <h3 className="text-2xl font-heading font-extrabold italic">Kerala</h3>
+            <p className="text-md font-body">Protective charm and design.</p>
           </div>
         </div>
 
@@ -47,8 +47,8 @@ const StateSection = () => {
             className="rounded-lg hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute bottom-0 w-full bg-gradient-to-t from-cyan-400 to-transparent text-white px-4 py-2">
-            <h3 className="text-lg font-bold">Gujrat</h3>
-            <p className="text-sm">Gujrat's artistic heritage.</p>
+            <h3 className="text-2xl font-heading  italic font-extrabold">Gujrat</h3>
+            <p className="text-md font-body">Gujrat's artistic heritage.</p>
           </div>
         </div>
       </div>
@@ -56,7 +56,7 @@ const StateSection = () => {
       {/* Browse Collections Button */}
       <div className="flex justify-center mt-10 md:mt-0">
         <Link href="/state-page">
-        <button className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-md hover:scale-105 transition-transform">
+        <button className="bg-gradient-to-r font-heading from-pink-500 to-purple-500 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-md hover:scale-105 transition-transform">
           Browse All Collections
         </button>
         </Link>
