@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const StateSection = () => {
   return (
-    <div className="px-[10px] md:px-[30px] py-20 lg:py-28 bg-[#f7f2fd]">
+    <div className="px-[10px] md:px-[30px] py-10 md:py-16 lg:py-28 bg-[#f7f2fd]">
       {/* Main Grid Container */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3 items-center">
         {/* Block 1 */}

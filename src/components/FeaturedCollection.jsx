@@ -41,7 +41,7 @@ function FeaturedCollection() {
     },
   ];
 
-  return <div className="bg-gray-100 px-[10px] md:px-[30px]">
+  return <div className="bg-gray-100 px-[5px] md:px-[30px]">
       <h2 className="text-3xl font-heading font-bold text-center  text-gray-800 pt-8 mb-2">
         Featured Collection
       </h2>
@@ -50,11 +50,11 @@ function FeaturedCollection() {
           View All
         </button>
       </div>
-      <div className="flex overflow-x-auto space-x-4  no-scrollbar py-10">
+      <div className="flex overflow-x-auto space-x-2 no-scrollbar py-10">
       {newArrivals.map((product, index) => (
         <div
           key={index}
-          className="flex-shrink-0 w-[175px] md:w-[220px]"
+          className="flex-shrink-0 w-[172px] md:w-[220px]"
         >
           <FeaturedCollectionCard
             image={product.image}

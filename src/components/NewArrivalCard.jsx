@@ -6,7 +6,7 @@ import Link from "next/link";
 function NewArrivalCard({ image, title, price, strikePrice }) {
   return (
     <Link href="/product-details">
-      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 shadow-xl rounded-2xl border border-gray-200 overflow-hidden hover:shadow-2xl relative">
+      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg rounded-lg border border-gray-200 overflow-hidden hover:shadow-2xl relative">
         {/* Wishlist Button */}
         <div className="absolute top-3 right-3 z-10">
           <button
@@ -24,7 +24,7 @@ function NewArrivalCard({ image, title, price, strikePrice }) {
             alt={title}
             layout="fill"
             objectFit="cover"
-            className="rounded-t-2xl"
+            className="rounded-t-lg"
           />
         </div>
 

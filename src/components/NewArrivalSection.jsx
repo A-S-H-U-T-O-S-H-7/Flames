@@ -41,7 +41,7 @@ function NewArrivalSection() {
     },
   ];
 
-  return <div className="bg-gray-100 px-[10px] md:px-[30px]">
+  return <div className="bg-gray-100 px-[5px] md:px-[30px]">
       <h2 className="text-3xl font-bold font-heading text-center  text-gray-800 pt-8 mb-2">
         New Arrivals
       </h2>

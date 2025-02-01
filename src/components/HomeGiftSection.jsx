@@ -5,14 +5,14 @@ import Link from 'next/link';
 const GiftsSection = () => {
   const giftProducts = [
     { image: '/wrapped-present.jpg', title: 'Earrings', id:1 },
-    { image: '/gift2.webp ', title: 'Rings',id:2 },
+    { image: '/gift1.jpg ', title: 'Rings',id:2 },
     { image: '/gift1.3.jpg', title: 'Bracelet',id:3 },
     { image: '/gift2.1.jpg', title: 'Pendant',id:4 },
   ];
 
   return (
     <section className="py-8 bg-gradient-to-r from-[#D0D3FF] to-[#FDE3FE]">
-      <h2 className="text-4xl font-extrabold font-heading text-center text-purple-600 mb-6">
+      <h2 className="text-3xl font-extrabold px-[5px] font-heading text-center text-purple-600 mb-6">
       Gifts That Speak to the Heart
       </h2>
       <p className="text-center font-body text-lg text-gray-600 mb-8">
