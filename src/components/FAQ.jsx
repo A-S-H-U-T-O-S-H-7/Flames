@@ -50,10 +50,10 @@ const FAQ = () => {
                 className="flex justify-between items-center cursor-pointer"
                 onClick={() => toggleFAQ(index)}
               >
-                <h3 className="text-lg font-medium font-body text-gray-700">{faq.question}</h3>
+                <h3 className="text-md md:text-lg font-medium font-body text-gray-700">{faq.question}</h3>
 
                 <span
-                  className={`text-xl text-gray-700 font-bold transform transition-transform duration-300 ${
+                  className={`text-md md:text-lg text-gray-700 font-bold transform transition-transform duration-300 ${
                     activeIndex === index ? "rotate-180" : ""
                   }`}
                 >

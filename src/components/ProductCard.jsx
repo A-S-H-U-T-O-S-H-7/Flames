@@ -5,14 +5,18 @@ import { Heart } from "lucide-react";
 import Link from "next/link";
 
 function ProductCard({ product }) {
-  const { image, name, price, originalPrice, isNew } = product;
+  const { id, image, name, price, originalPrice, isNew } = product;
 
   return (
-    <Link href="/product-details">
-      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 shadow-xl rounded-lg border border-gray-200 overflow-hidden  hover:shadow-2xl relative">
+    <Link href={`/product-details/${id}`}>
+      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 shadow-xl rounded-lg border border-gray-200 overflow-hidden hover:shadow-2xl relative">
         {/* Wishlist Button */}
         <div className="absolute top-3 right-3 z-10">
           <button
+            onClick={(e) => {
+              e.preventDefault(); // Prevent navigation when clicking wishlist
+              // Add wishlist functionality here
+            }}
             className="p-1 md:p-2 rounded-full bg-white shadow-md hover:shadow-lg text-purple-500 hover:text-red-500 transition"
             aria-label="Add to Wishlist"
           >
@@ -42,7 +46,7 @@ function ProductCard({ product }) {
 
         {/* Content Section */}
         <div className="p-2 md:p-5">
-          <h3 className=" text-sm md:text-base font-body  text-gray-800 mb-3 line-clamp-2">
+          <h3 className="text-sm md:text-base font-body text-gray-800 mb-3 line-clamp-2">
             {name}
           </h3>
 

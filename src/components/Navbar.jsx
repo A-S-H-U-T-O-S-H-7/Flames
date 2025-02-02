@@ -16,6 +16,17 @@ const Navbar = () => {
     mobileColl: false 
   });
 
+  const categories = [
+    { name: "Ring", slug: "ring" },
+    { name: "Earring", slug: "earring" },
+    { name: "Necklace", slug: "necklace" },
+    { name: "Pendant", slug: "pendant" },
+    { name: "Bracelet", slug: "bracelet" },
+    { name: "Anklet", slug: "anklet" },
+    { name: "Brooch", slug: "brooch" },
+    { name: "Handbag", slug: "handbag" }
+  ];
+
   useEffect(() => {
     let index = 0;
     const interval = setInterval(() => {
@@ -45,22 +56,27 @@ const Navbar = () => {
             <Link href="/" className="text-purple-800 font-medium font-heading px-4 py-2 rounded-md transition-colors">
               Home
             </Link>
-            <Link href="/gifts" className="text-purple-800 font-heading font-medium px-4 py-2 rounded-md transition-colors">
+            <Link href="/category/gift" className="text-purple-800 font-heading font-medium px-4 py-2 rounded-md transition-colors">
               Gifts
             </Link>
 
             <div className="relative group">
-              <button
-                className="flex items-center font-heading space-x-1 text-purple-800 font-medium px-4 py-2 rounded-md transition-colors"
-              >
-                <span>Categories</span>
-                <ChevronDown className="h-4 w-4" />
-              </button>
-              <div className="hidden group-hover:block absolute left-0 mt-0 w-48 bg-white shadow-xl rounded-md py-2 border border-purple-100">
-                <Link href="/category/jewelry" className="block px-4 py-2 text-purple-800 hover:bg-purple-50">Jewelry</Link>
-                <Link href="/category/accessories" className="block px-4 py-2 text-purple-800 hover:bg-purple-50">Accessories</Link>
-              </div>
-            </div>
+      <button className="flex items-center font-heading space-x-1 text-purple-800 font-medium px-4 py-2 rounded-md transition-colors">
+        <span>Categories</span>
+        <ChevronDown className="h-4 w-4" />
+      </button>
+      <div className="hidden group-hover:grid grid-cols-2 absolute left-0 mt-0 w-64 bg-white shadow-xl rounded-md py-2 border border-purple-100">
+        {categories.map((category, index) => (
+          <Link
+            key={index}
+            href={`/category/${category.slug}`}
+            className="block px-4 py-2 text-purple-800 hover:bg-purple-50"
+          >
+            {category.name}
+          </Link>
+        ))}
+      </div>
+    </div>
 
             <div className="relative group">
               <button
@@ -70,8 +86,8 @@ const Navbar = () => {
                 <ChevronDown className="h-4 w-4" />
               </button>
               <div className="hidden group-hover:block absolute left-0 mt-0 w-48 bg-white shadow-xl rounded-md py-2 border border-purple-100">
-                <Link href="/collection/new-arrivals" className="block px-4 py-2 text-purple-900 hover:bg-purple-50">New Arrivals</Link>
-                <Link href="/collection/best-sellers" className="block px-4 py-2 text-purple-900 hover:bg-purple-50">Best Sellers</Link>
+                <Link href="/new-arrival-collection" className="block px-4 py-2 text-purple-900 hover:bg-purple-50">New Arrivals</Link>
+                <Link href="/featured-collection" className="block px-4 py-2 text-purple-900 hover:bg-purple-50">Best Sellers</Link>
               </div>
             </div>
 
@@ -159,49 +175,53 @@ const Navbar = () => {
                 </div>
               </div>
 
-              {/* Mobile Menu Items */}
-              <div className="py-4">
-                <Link href="/" className="block px-4 py-2 text-purple-900 font-heading font-medium hover:bg-purple-50">
-                  Home
-                </Link>
-                <Link href="/gifts" className="block px-4 py-2 text-purple-900 font-heading font-medium hover:bg-purple-50">
-                  Gifts
-                </Link>
-
-                {/* Mobile Categories Dropdown */}
-                <div>
-                  <button
-                    onClick={() => setIsDropdownOpen(prev => ({ ...prev, mobileCat: !prev.mobileCat }))}
-                    className="w-full px-4 py-2 text-purple-900 font-heading font-medium hover:bg-purple-50 flex justify-between items-center"
-                  >
-                    <span>Categories</span>
-                    <ChevronDown className={`h-4 w-4 transform transition-transform ${isDropdownOpen.mobileCat ? 'rotate-180' : ''}`} />
-                  </button>
-                  {isDropdownOpen.mobileCat && (
-                    <div className="bg-purple-50">
-                      <Link href="/category/jewelry" className="block px-8 py-2 text-purple-900 font-heading">Jewelry</Link>
-                      <Link href="/category/accessories" className="block px-8 py-2 text-purple-900 font-heading">Accessories</Link>
-                    </div>
-                  )}
+                {/* Mobile Menu Items */}
+                <div className="py-4">
+                  <Link href="/" className="block px-4 py-2 text-purple-900 font-heading font-medium hover:bg-purple-50">
+                    Home
+                  </Link>
+                  <Link href="/category/gift" className="block px-4 py-2 text-purple-900 font-heading font-medium hover:bg-purple-50">
+                    Gifts
+                  </Link>
+  
+                  {/* Mobile Categories Dropdown */}
+                  <div>
+                    <button
+                      onClick={() => setIsDropdownOpen(prev => ({ ...prev, mobileCat: !prev.mobileCat }))}
+                      className="w-full px-4 py-2 text-purple-900 font-heading font-medium hover:bg-purple-50 flex justify-between items-center"
+                    >
+                      <span>Categories</span>
+                      <ChevronDown className={`h-4 w-4 transform transition-transform ${isDropdownOpen.mobileCat ? 'rotate-180' : ''}`} />
+                    </button>
+                    {isDropdownOpen.mobileCat && (
+                      <div className="bg-purple-50">
+                        {categories.map((category, index) => (
+                          <Link key={index} href={`/category/${category.slug}`} className="block px-8 py-2 text-purple-900 font-heading">
+                            {category.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+  
+                  {/* Mobile Collections Dropdown */}
+                  <div>
+                    <button
+                      onClick={() => setIsDropdownOpen(prev => ({ ...prev, mobileColl: !prev.mobileColl }))}
+                      className="w-full px-4 py-2 text-purple-900 font-heading font-medium hover:bg-purple-50 flex justify-between items-center"
+                    >
+                      <span>Collections</span>
+                      <ChevronDown className={`h-4 w-4 transform transition-transform ${isDropdownOpen.mobileColl ? 'rotate-180' : ''}`} />
+                    </button>
+                    {isDropdownOpen.mobileColl && (
+                      <div className="bg-purple-50">
+                        <Link href="/new-arrival-collection" className="block px-8 py-2 text-purple-900 font-heading">New Arrivals</Link>
+                        <Link href="/featured-collection" className="block px-8 py-2 text-purple-900 font-heading">Best Sellers</Link>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                {/* Mobile Collections Dropdown */}
-                <div>
-                  <button
-                    onClick={() => setIsDropdownOpen(prev => ({ ...prev, mobileColl: !prev.mobileColl }))}
-                    className="w-full px-4 py-2 text-purple-900 font-heading font-medium hover:bg-purple-50 flex justify-between items-center"
-                  >
-                    <span>Collections</span>
-                    <ChevronDown className={`h-4 w-4 transform transition-transform ${isDropdownOpen.mobileColl ? 'rotate-180' : ''}`} />
-                  </button>
-                  {isDropdownOpen.mobileColl && (
-                    <div className="bg-purple-50">
-                      <Link href="/collection/new-arrivals" className="block px-8 py-2 text-purple-900 font-heading">New Arrivals</Link>
-                      <Link href="/collection/best-sellers" className="block px-8 py-2 text-purple-900 font-heading">Best Sellers</Link>
-                    </div>
-                  )}
-                </div>
-              </div>
             </motion.div>
           </>
         )}

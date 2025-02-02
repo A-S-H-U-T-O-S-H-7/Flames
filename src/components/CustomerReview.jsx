@@ -67,14 +67,14 @@ const CustomerReviews = () => {
                 className="object-cover h-full w-full"
               />
             </div>
-            <h3 className="text-lg font-semibold text-gray-800">
+            <h3 className="text-lg font-body  font-semibold text-gray-800">
               {review.name}, {review.age}
             </h3>
             <p className="text-sm text-gray-600 mt-2 italic">
               "{review.review}"
             </p>
           </div>
-        ))}
+        ))}            
       </div>
     </div>
   );

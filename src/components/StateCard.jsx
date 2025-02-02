@@ -1,10 +1,11 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
-function StateCard({ title, image, description, startingPrice, quantity, bgColor, textColor }) {
+function StateCard({ id,title, image, description, startingPrice, quantity, bgColor, textColor,onClick }) {
   return (
-    <div className='px-4 py-[20px] '>
-      <div className=' border-gray-400 overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300  max-h-[330px]' style={{ backgroundColor: bgColor }}>
+    <div className=' py-[20px] '>
+      <div className=' border-gray-400 overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300  max-h-[330px]' style={{ backgroundColor: bgColor }} onClick={onClick}>
         {/* Image Container */}
         <div className='relative h-[220px] overflow-hidden'>
           <Image 

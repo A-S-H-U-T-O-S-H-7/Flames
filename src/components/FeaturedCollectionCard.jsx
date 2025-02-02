@@ -3,10 +3,10 @@ import Image from "next/image";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 
-function FeaturedCollectionCard({ image, title, price, strikePrice }) {
+function FeaturedCollectionCard({ id,image, title, price, strikePrice }) {
   return (
-    <Link href="/product-details">
-      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg rounded-lg border border-gray-200 overflow-hidden hover:shadow-2xl relative">
+<Link href={`/product-details/${id}`}>
+<div className="bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg rounded-lg border border-gray-200 overflow-hidden hover:shadow-2xl relative">
         {/* Wishlist Button */}
         <div className="absolute top-3 right-3 z-10">
           <button
@@ -17,7 +17,7 @@ function FeaturedCollectionCard({ image, title, price, strikePrice }) {
           </button>
         </div>
 
-        {/* Image Section */}
+        {/* Image Sec tion */}
         <div className="relative h-44">
           <Image
             src={image}
@@ -35,8 +35,8 @@ function FeaturedCollectionCard({ image, title, price, strikePrice }) {
 
           {/* Price Section */}
           <div className="flex items-center justify-between">
-            <span className="text-purple-700 font-body font-medium text-[15px]">₹{price}</span>
-            <span className="text-gray-500 font-body line-through text-sm">₹{strikePrice}</span>
+            <span className="text-purple-700  font-medium text-[15px]">₹{price}</span>
+            <span className="text-gray-500  line-through text-sm">₹{strikePrice}</span>
           </div>
         </div>
       </div>
