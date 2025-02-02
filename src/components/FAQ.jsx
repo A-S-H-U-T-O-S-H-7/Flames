@@ -36,7 +36,7 @@ const FAQ = () => {
 
   return (
     <div className="px-[10px] md:px-[30px] py-[40px] mx-auto bg-gradient-to-b from-purple-50 to-white">
-      <h2 className="text-3xl font-extrabold text-gray-800 text-center font-heading mb-6">
+      <h2 className="text-2xl font-medium text-gray-800 text-center font-heading mb-10">
         Frequently Asked Questions
       </h2>
       {faqs.length > 0 ? (

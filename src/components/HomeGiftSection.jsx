@@ -12,7 +12,7 @@ const GiftsSection = () => {
 
   return (
     <section className="py-8 bg-gradient-to-r from-[#D0D3FF] to-[#FDE3FE]">
-      <h2 className="text-3xl font-extrabold px-[5px] font-heading text-center text-purple-600 mb-6">
+      <h2 className="text-2xl font-bold px-[5px] font-heading text-center text-purple-600 mb-6">
       Gifts That Speak to the Heart
       </h2>
       <p className="text-center font-body text-lg text-gray-600 mb-8">

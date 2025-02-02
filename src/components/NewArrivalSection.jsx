@@ -42,7 +42,7 @@ function NewArrivalSection() {
   ];
 
   return <div className="bg-gray-100 px-[5px] md:px-[30px]">
-      <h2 className="text-3xl font-bold font-heading text-center  text-gray-800 pt-8 mb-2">
+      <h2 className="text-2xl font-medium font-heading text-center  text-gray-800 pt-8 mb-2">
         New Arrivals
       </h2>
       <div className="mt-4 text-center">
@@ -50,7 +50,7 @@ function NewArrivalSection() {
           View All
         </button>
       </div>
-      <div className="flex overflow-x-auto space-x-2 no-scrollbar py-10">
+      <div className="flex overflow-x-auto space-x-2 md:space-x-4 no-scrollbar py-10">
       {newArrivals.map((product, index) => (
         <div
           key={index}

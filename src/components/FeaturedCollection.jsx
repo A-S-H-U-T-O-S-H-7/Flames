@@ -42,7 +42,7 @@ function FeaturedCollection() {
   ];
 
   return <div className="bg-gray-100 px-[5px] md:px-[30px]">
-      <h2 className="text-3xl font-heading font-bold text-center  text-gray-800 pt-8 mb-2">
+      <h2 className="text-2xl font-heading font-medium text-center  text-gray-800 pt-8 mb-2">
         Featured Collection
       </h2>
       <div className="mt-4 text-center">

@@ -29,56 +29,50 @@ const Navbar = () => {
     <div className="sticky top-0 z-50 bg-white shadow-lg">
       {/* Main Navbar */}
       <nav className="px:[10px] md:px-[30px]">
-        <div className="flex justify-between items-center h-20">
+        <div className="flex justify-between items-center h-16">
           <div className="flex items-center ">
             <button onClick={() => setIsMenuOpen(true)} className="lg:hidden p-2 rounded-full hover:bg-purple-100">
               <Menu className="h-6 w-6 text-purple-700" />
             </button>
             <Link href="/" className="flex items-center ">
-              <Image src="/flame1.png" alt="Logo" width={45} height={45} className="object-contain" />
+              <Image src="/flame1.png" alt="Logo" width={40} height={40} className="object-contain" />
               <span className="text-2xl font-heading  text-purple-700">Flames</span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Link href="/" className="text-purple-800 font-medium font-heading  px-4 py-2 rounded-md transition-colors">
+            <Link href="/" className="text-purple-800 font-medium font-heading px-4 py-2 rounded-md transition-colors">
               Home
             </Link>
-            <Link href="/gifts" className="text-purple-800 font-heading font-medium  px-4 py-2 rounded-md transition-colors">
+            <Link href="/gifts" className="text-purple-800 font-heading font-medium px-4 py-2 rounded-md transition-colors">
               Gifts
             </Link>
 
-            <div className="relative">
+            <div className="relative group">
               <button
-                onClick={() => setIsDropdownOpen(prev => ({ ...prev, category: !prev.category }))}
-                className="flex items-center font-heading space-x-1 text-purple-800 font-medium  px-4 py-2 rounded-md transition-colors"
+                className="flex items-center font-heading space-x-1 text-purple-800 font-medium px-4 py-2 rounded-md transition-colors"
               >
                 <span>Categories</span>
                 <ChevronDown className="h-4 w-4" />
               </button>
-              {isDropdownOpen.category && (
-                <div className="absolute left-0 mt-2 w-48 bg-white shadow-xl rounded-md py-2 border border-purple-100">
-                  <Link href="/category/jewelry" className="block px-4 py-2 text-purple-800 hover:bg-purple-50">Jewelry</Link>
-                  <Link href="/category/accessories" className="block px-4 py-2 text-purple-800 hover:bg-purple-50">Accessories</Link>
-                </div>
-              )}
+              <div className="hidden group-hover:block absolute left-0 mt-0 w-48 bg-white shadow-xl rounded-md py-2 border border-purple-100">
+                <Link href="/category/jewelry" className="block px-4 py-2 text-purple-800 hover:bg-purple-50">Jewelry</Link>
+                <Link href="/category/accessories" className="block px-4 py-2 text-purple-800 hover:bg-purple-50">Accessories</Link>
+              </div>
             </div>
 
-            <div className="relative">
+            <div className="relative group">
               <button
-                onClick={() => setIsDropdownOpen(prev => ({ ...prev, collection: !prev.collection }))}
-                className="flex items-center font-heading space-x-1 text-purple-900 font-medium  px-4 py-2 rounded-md transition-colors"
+                className="flex items-center font-heading space-x-1 text-purple-900 font-medium px-4 py-2 rounded-md transition-colors"
               >
                 <span>Collections</span>
                 <ChevronDown className="h-4 w-4" />
               </button>
-              {isDropdownOpen.collection && (
-                <div className="absolute left-0 mt-2 w-48 bg-white shadow-xl rounded-md py-2 border border-purple-100">
-                  <Link href="/collection/new-arrivals" className="block px-4 py-2 text-purple-900 hover:bg-purple-50">New Arrivals</Link>
-                  <Link href="/collection/best-sellers" className="block px-4 py-2 text-purple-900 hover:bg-purple-50">Best Sellers</Link>
-                </div>
-              )}
+              <div className="hidden group-hover:block absolute left-0 mt-0 w-48 bg-white shadow-xl rounded-md py-2 border border-purple-100">
+                <Link href="/collection/new-arrivals" className="block px-4 py-2 text-purple-900 hover:bg-purple-50">New Arrivals</Link>
+                <Link href="/collection/best-sellers" className="block px-4 py-2 text-purple-900 hover:bg-purple-50">Best Sellers</Link>
+              </div>
             </div>
 
             {/* Desktop Search Bar */}
@@ -86,7 +80,7 @@ const Navbar = () => {
               <input
                 type="text"
                 placeholder="Search products..."
-                className="w-full text-gray-800 font-body px-4 py-2 rounded-lg border border-purple-400 focus:outline-none focus:border-purple-500"
+                className="w-full text-gray-800 font-body px-4 py-1.5 rounded-lg border border-purple-400 focus:outline-none focus:border-purple-500"
               />
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-purple-600" />
             </div>
@@ -107,19 +101,19 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Search Bar (Below Navbar) */}
-        <div className="lg:hidden py-3 px-2 border-t border-purple-200">
+        <div className="lg:hidden py-2 px-2 border-t border-purple-200">
           <div className="relative">
             <input
               type="text"
               placeholder="Search products..."
-              className="w-full px-4 py-2 text-gray-800  rounded-lg border-2 border-purple-200 focus:outline-none focus:border-purple-500"
+              className="w-full px-4 py-1.5 text-gray-800 rounded-lg border-2 border-purple-200 focus:outline-none focus:border-purple-500"
             />
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-purple-700" />
           </div>
         </div>
       </nav>
 
-      {/* Mobile Sidebar */}
+      {/* Mobile Sidebar - Keeping the rest of the code unchanged */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
@@ -137,30 +131,31 @@ const Navbar = () => {
               transition={{ type: "tween", duration: 0.3 }}
               className="fixed top-0 left-0 h-full w-72 bg-white shadow-xl z-50 overflow-y-auto"
             >
-              {/* Sidebar Header with Banner Image */}
-              <div className="relative h-40">
-                <Image
-                  src="/api/placeholder/400/160"
-                  alt="Banner"
-                  layout="fill"
-                  objectFit="cover"
-                  className="opacity-90"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-purple-900/30 to-purple-600/30">
-                  <div className="p-4">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center space-x-2">
-                        <Image src="/flame1.png" alt="Logo" width={35} height={35} />
-                        <span className="text-xl font-heading font-bold text-white">Flames</span>
-                      </div>
-                      <button 
-                        onClick={() => setIsMenuOpen(false)} 
-                        className="p-2 rounded-full bg-white/10 hover:bg-white/20"
-                      >
-                        <X className="h-6 w-6 text-white" />
-                      </button>
-                    </div>
-                  </div>
+              {/* Logo and Close Button */}
+              <div className="p-4 flex justify-between items-center">
+                <div className="flex items-center space-x-2">
+                  <Image src="/flame1.png" alt="Logo" width={35} height={35} />
+                  <span className="text-xl font-heading font-bold text-purple-700">Flames</span>
+                </div>
+                <button 
+                  onClick={() => setIsMenuOpen(false)} 
+                  className="p-2 rounded-full hover:bg-purple-100"
+                >
+                  <X className="h-6 w-6 text-purple-700" />
+                </button>
+              </div>
+
+              {/* Banner Image */}
+              <div className="px-4 pb-4">
+                <div className="relative h-32 w-full rounded-lg overflow-hidden">
+                  <Image
+                    src="/api/placeholder/400/160"
+                    alt="Banner"
+                    layout="fill"
+                    objectFit="cover"
+                    className="opacity-90"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-purple-900/30 to-purple-600/30" />
                 </div>
               </div>
 

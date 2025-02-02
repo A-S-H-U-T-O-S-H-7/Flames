@@ -48,7 +48,7 @@ const CustomerReviews = () => {
 
   return (
     <div className="bg-[#fae7d7] py-12 px-[10px] md:px-[30px]">
-      <h2 className="text-3xl font-bold font-heading text-center text-gray-800 mb-8">
+      <h2 className="text-2xl font-medium font-heading text-center text-gray-800 mb-8">
         What Our Customers Say
       </h2>
       <div className="overflow-x-auto flex gap-6 py-4 px-2 no-scrollbar">
