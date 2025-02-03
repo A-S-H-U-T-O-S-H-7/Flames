@@ -41,7 +41,14 @@ function FeaturedCollection() {
     },
     {
       id:25,
-      image: "/bracelet.jpg",
+      image: "/demo7.jpeg",
+      title: "Jhumka",
+      price: 499,
+      strikePrice: 499,
+    },
+    {
+      id:26,
+      image: "/demo6.jpeg",
       title: "Bracelet",
       price: 3499,
       strikePrice: 4499,
