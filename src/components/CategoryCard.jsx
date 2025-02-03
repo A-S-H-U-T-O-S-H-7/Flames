@@ -57,7 +57,6 @@ const Category = () => {
 
   return (
     <div className="flex flex-col bg-white items-center py-[30px] px-[10px] md:px-[30px]">
-      <h1 className="text-2xl font-heading font-medium mb-6 text-gray-800">Categories</h1>
       <div className="w-full overflow-x-auto no-scrollbar">
         <div className="flex gap-3 sm:gap-4 my-3 md:mx-[8px] justify-start sm:justify-around sm:px-0">
           {categories.map((category, index) => (

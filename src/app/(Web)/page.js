@@ -18,8 +18,8 @@ function Home() {
       <Category/>
      <NewArrivalSection/>
       <GiftsSection/>
-      <StateSection/>
       <InstaBanner/>
+      <StateSection/>
       <FeaturedCollection/>
       <CustomerReviews/>
       
