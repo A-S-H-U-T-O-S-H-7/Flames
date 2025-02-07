@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, Heart, ShoppingCart, User, Menu, X, ChevronDown } from "lucide-react";
+import {LogIn, Search, Heart, ShoppingCart, User, Menu, X, ChevronDown } from "lucide-react";
 
 const searchKeywords = ["jewelry", "accessories", "home decor", "rings", "earrings"];
 
@@ -110,9 +110,27 @@ const Navbar = () => {
             <button className="p-2 rounded-full hover:bg-purple-100">
               <ShoppingCart className="h-6 w-6 text-purple-700" />
             </button>
-            <button className="p-2 rounded-full hover:bg-purple-100">
+
+            <div className="relative group">
+              <button
+                className="flex items-center font-heading space-x-1 text-purple-900 font-medium px-4 py-2 rounded-md transition-colors"
+              >
               <User className="h-6 w-6 text-purple-700" />
-            </button>
+
+              </button>
+              <div className="hidden group-hover:block absolute right-0 mt-0 w-36 bg-white shadow-xl rounded-md py-2 border border-purple-100">
+                <Link href="/featured-collection" className=" px-4 py-2 font-medium flex items-center justify-center gap-2 text-purple-900 hover:bg-purple-50">
+                <LogIn className="w-4 h-4 flex" />Log In</Link>
+                <Link href="/login" className="flex items-center justify-center gap-2 px-4 py-2 text-purple-900 hover:bg-purple-50">
+                <User className="w-4 h-4 flex"/>Profile</Link>
+                <Link href="/admin/dashboard" className="flex items-center justify-center gap-2 px-4 py-2 text-purple-900 hover:bg-purple-50">
+                <User className="w-4 h-4 flex"/>Admin</Link>
+              </div>
+            </div>
+
+              {/* <button className="p-2 rounded-full hover:bg-purple-100">
+                <User className="h-6 w-6 text-purple-700" />
+              </button> */}
           </div>
         </div>
 

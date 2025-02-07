@@ -1,5 +1,6 @@
 import { Libre_Baskerville, Poppins } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 
 const libreBaskerville = Libre_Baskerville({
   variable: "--font-libre-baskerville",
@@ -21,7 +22,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${libreBaskerville.variable} ${poppins.variable}`}>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <Toaster/>
+        {children}</body>
     </html>
   );
 }
