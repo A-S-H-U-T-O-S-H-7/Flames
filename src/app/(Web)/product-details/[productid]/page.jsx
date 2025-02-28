@@ -1,3 +1,22 @@
+import { getProduct } from "@/lib/firestore/products/read_server";
+import ProductDetails from "@/components/ProductDetails";
+import AuthContextProvider from "@/context/AuthContext";
+import AddReview from "@/components/product/AddReview";
+import Reviews from "@/components/product/Review";
+import RelatedProducts from "@/components/product/RelatedProducts";
+
+// export async function generateMetadata({ params }) {
+//   const product = await getProduct({ id: params.productId });
+
+//   return {
+//     title: `${product?.title} | Product`,
+//     description: product?.shortDescription ?? "",
+//     openGraph: {
+//       images: [product?.featureImageURL],
+//     },
+//   };
+// }
+
 export default async function Page({ params }) {
   console.log("Params received:", params); // Debug params
   const { productId } = params;
@@ -26,3 +45,4 @@ export default async function Page({ params }) {
     </main>
   );
 }
+
