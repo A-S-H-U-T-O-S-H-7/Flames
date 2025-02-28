@@ -1,186 +1,99 @@
-
-"use client";
-
-import { useAuth } from "@/contexts/AuthContext";
-import { addReview } from "@/lib/firestore/reviews/write";
-import { useUser } from "@/lib/firestore/user/read";
-import { Rating } from "@mui/material";
-import { Button } from "@nextui-org/react";
-import { useState } from "react";
-import toast from "react-hot-toast";
-
-export default function AddReview({ productId }) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [rating, setRating] = useState(4);
-  const [message, setMessage] = useState("");
-  const { user } = useAuth();
-  const { data: userData } = useUser({ uid: user?.uid });
-
-  const handleSubmit = async () => {
-    setIsLoading(true);
-    try {
-      if (!user) {
-        throw new Error("Please Logged In First");
-      }
-      await addReview({
-        displayName: userData?.displayName,
-        message: message,
-        photoURL: userData?.photoURL,
-        productId: productId,
-        rating: rating,
-        uid: user?.uid,
-      });
-      setMessage("");
-      toast.success("Successfully Submitted");
-    } catch (error) {
-      toast.error(error?.message);
-    }
-    setIsLoading(false);
-  };
-
-  return (
-    <div className="flex flex-col gap-3 p-3 rounded-xl border w-full">
-      <h1 className="text-lg font-semibold">Rate This Products</h1>
-      <Rating
-        value={rating}
-        onChange={(event, newValue) => {
-          setRating(newValue);
-        }}
-      />
-      <textarea
-        value={message}
-        onChange={(e) => {
-          setMessage(e.target.value);
-        }}
-        type="text"
-        placeholder="Enter you thoughts on this products ..."
-        className="w-full border border-lg px-4 py-2 focus:outline-none"
-      />
-      <Button
-        onClick={handleSubmit}
-        isLoading={isLoading}
-        isDisabled={isLoading}
-      >
-        Submit
-      </Button>
-    </div>
-  );
-}
-
-
-//reviews
-
-"use client";
-
-import { useAuth } from "@/context/AuthContext";
-import { useReviews } from "@/lib/firestore/reviews/read";
-import { deleteReview } from "@/lib/firestore/reviews/write";
-import { useUser } from "@/lib/firestore/user/read";
-import { Rating } from "@mui/material";
-import { Avatar, Button } from "@nextui-org/react";
-import { Trash2 } from "lucide-react";
-import { useState } from "react";
-import toast from "react-hot-toast";
-
-export default function Reviews({ productId }) {
-  const { data } = useReviews({ productId: productId });
-  const [isLoading, setIsLoading] = useState(false);
-  const { user } = useAuth();
-  const { data: userData } = useUser({ uid: user?.uid });
-
-  const handleDelete = async () => {
-    if (!confirm("Are you sure?")) return;
-    setIsLoading(true);
-    try {
-      if (!user) {
-        throw new Error("Please Logged In First");
-      }
-      await deleteReview({
-        uid: user?.uid,
-        productId: productId,
-      });
-      toast.success("Successfully Deleted");
-    } catch (error) {
-      toast.error(error?.message);
-    }
-    setIsLoading(false);
-  };
-
-  return (
-    <div className="flex flex-col gap-3 p-3 rounded-xl border w-full">
-      <h1 className="text-lg font-semibold">Reviews</h1>
-      <div className="flex flex-col gap-4">
-        {data?.map((item) => {
-          return (
-            <div className="flex gap-3">
-              <div className="">
-                <Avatar src={item?.photoURL} />
-              </div>
-              <div className="flex-1 flex flex-col">
-                <div className="flex justify-between">
-                  <div>
-                    <h1 className="font-semibold">{item?.displayName}</h1>
-                    <Rating value={item?.rating} readOnly size="small" />
-                  </div>
-                  {user?.uid === item?.uid && (
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      color="danger"
-                      variant="flat"
-                      isDisabled={isLoading}
-                      isLoading={isLoading}
-                      onClick={handleDelete}
-                    >
-                      <Trash2 size={12} />
-                    </Button>
-                  )}
-                </div>
-                <p className="text-sm text-gray-700 pt-1">{item?.message}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-"use client";
-
-import React from "react";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import { admin,adminDB ,adminStorage} from "@/lib/firestore/firebase_admin";
 import Link from "next/link";
-import { motion } from "framer-motion";
 
-const CategoryCard = ({ categories }) => { 
-  return (
-        <div >
-          {categories.map((category) => (
-           <Link key={category.id} href={`/category/${category?.id}`}>
-        
-              <motion.div
-              key={category.id} 
-                className="flex flex-col items-center justify-center 
-                            w-[90px] h-[110px] 
-                            sm:w-[120px] sm:h-[120px] 
-                            rounded-xl bg-purple-100 
-                            hover:bg-purple-200 
-                            transition-colors duration-300 
-                            cursor-pointer 
-                            shadow-md hover:shadow-lg 
-                            flex-shrink-0 
-                            p-2 space-y-2"
-                whileTap={{ scale: 0.95 }}
-              >
-                
-                <p className="text-xs sm:text-sm text-gray-500 font-medium text-center">
-                  {category.name}
-                </p>
-              </motion.div>
-              </Link>
-          ))}
-        </div>
-     
-  );
+const fetchCheckout = async (checkoutId) => {
+  const list = await adminDB
+    .collectionGroup("checkout_sessions_cod")
+    .where("id", "==", checkoutId)
+    .get();
+  if (list.docs.length === 0) {
+    throw new Error("Invalid Checkout ID");
+  }
+  return list.docs[0].data();
 };
 
+const processOrder = async ({ checkout }) => {
+  const order = await adminDB.doc(`orders/${checkout?.id}`).get();
+  if (order.exists) {
+    return false;
+  }
+  const uid = checkout?.metadata?.uid;
+
+  await adminDB.doc(`orders/${checkout?.id}`).set({
+    checkout: checkout,
+    payment: {
+      amount: checkout?.line_items?.reduce((prev, curr) => {
+        return prev + curr?.price_data?.unit_amount * curr?.quantity;
+      }, 0),
+    },
+    uid: uid,
+    id: checkout?.id,
+    paymentMode: "cod",
+    timestampCreate: admin.firestore.Timestamp.now(),
+  });
+
+  const productList = checkout?.line_items?.map((item) => {
+    return {
+      productId: item?.price_data?.product_data?.metadata?.productId,
+      quantity: item?.quantity,
+    };
+  });
+
+  const user = await adminDB.doc(`users/${uid}`).get();
+
+  const productIdsList = productList?.map((item) => item?.productId);
+
+  const newCartList = (user?.data()?.carts ?? []).filter(
+    (cartItem) => !productIdsList.includes(cartItem?.id)
+  );
+
+  await adminDB.doc(`users/${uid}`).set(
+    {
+      carts: newCartList,
+    },
+    { merge: true }
+  );
+
+  const batch = adminDB.batch();
+
+  productList?.forEach((item) => {
+    batch.update(adminDB.doc(`products/${item?.productId}`), {
+      orders: admin.firestore.FieldValue.increment(item?.quantity),
+    });
+  });
+
+  await batch.commit();
+  return true;
+};
+
+export default async function Page({ searchParams }) {
+  const { checkout_id } = searchParams;
+  const checkout = await fetchCheckout(checkout_id);
+
+  const result = await processOrder({ checkout });
+
+  return (
+    <main>
+      
+      <section className="min-h-screen flex flex-col gap-3 justify-center items-center">
+        <div className="flex justify-center w-full">
+          <img src="/svgs/Mobile payments-rafiki.svg" className="h-48" alt="" />
+        </div>
+        <h1 className="text-2xl font-semibold text-green">
+          Your Order Is{" "}
+          <span className="font-bold text-green-600">Successfully</span> Placed
+        </h1>
+        <div className="flex items-center gap-4 text-sm">
+          <Link href={"/account"}>
+            <button className="text-blue-600 border border-blue-600 px-5 py-2 rounded-lg bg-white">
+              Go To Orders Page
+            </button>
+          </Link>
+        </div>
+      </section>
+      <Footer />
+    </main>
+  );
+}

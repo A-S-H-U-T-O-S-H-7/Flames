@@ -5,14 +5,15 @@ if (admin.apps.length === 0) {
   try {
     admin.initializeApp({
       credential: admin.credential.cert({
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        projectId: process.env.FIREBASE_PROJECT_ID, // ← Change this
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY
+        // Make sure newlines are properly handled
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
       })
     });
     console.log("Firebase Admin initialized successfully");
   } catch (error) {
-    console.log("Firebase admin initialization error", error.stack);
+    console.log("Firebase admin initialization error", error);
   }
 }
 
