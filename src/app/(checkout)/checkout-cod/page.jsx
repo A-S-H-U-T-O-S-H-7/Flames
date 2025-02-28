@@ -1,6 +1,6 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import { admin,adminDB } from "@/lib/firestore/firebase_admin";
+import { admin,adminDB ,adminStorage} from "@/lib/firestore/firebase_admin";
 import Link from "next/link";
 
 const fetchCheckout = async (checkoutId) => {

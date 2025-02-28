@@ -1,17 +1,21 @@
 export const admin = require("firebase-admin");
 
-if (!process.env.FIREBASE_SERVICE_ACCOUNT_KEYS) {
-  throw new Error("Missing FIREBASE_SERVICE_ACCOUNT_KEYS in environment variables.");
-}
-
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEYS);
-
-
+// Check if the app has already been initialized
 if (admin.apps.length === 0) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
+  try {
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+      })
+    });
+    console.log("Firebase Admin initialized successfully");
+  } catch (error) {
+    console.log("Firebase admin initialization error", error.stack);
+  }
 }
 
 export const adminDB = admin.firestore();
-
+export const adminAuth = admin.auth();
+export const adminStorage = admin.storage();
