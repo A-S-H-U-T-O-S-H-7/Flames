@@ -167,6 +167,7 @@ export default function BasicDetails({ data, handleData }) {
           </motion.div>
         </div>
 
+        <div className="grid md:grid-cols-2 gap-6">
         <motion.div 
           className="flex flex-col gap-2"
           whileHover={{ scale: 1.01 }}
@@ -186,6 +187,85 @@ export default function BasicDetails({ data, handleData }) {
             <option value="yes">Yes</option>
           </select>
         </motion.div>
+
+        <motion.div 
+          className="flex flex-col gap-2"
+          whileHover={{ scale: 1.01 }}
+          transition={{ duration: 0.2 }}
+        >
+          <label className={labelClasses} htmlFor="product-is-featured">
+            Is New Arrival Product <span className="text-red-500">*</span>
+          </label>
+          <select
+            id="product-is-newArrival"
+            value={data?.isNewArrival ? "yes" : "no"}
+            onChange={(e) => handleData("isNewArrival", e.target.value === "yes")}
+            className={inputClasses}
+            required
+          >
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </motion.div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+  <motion.div 
+    className="flex flex-col gap-2"
+    whileHover={{ scale: 1.01 }}
+    transition={{ duration: 0.2 }}
+  >
+    <label className={labelClasses} htmlFor="product-color">
+      Color <span className="text-red-500">*</span>
+    </label>
+    <select
+      id="product-color"
+      value={data?.color || ""}
+      onChange={(e) => handleData("color", e.target.value)}
+      className={inputClasses}
+      
+    >
+      <option value="">Select Color</option>
+      <option value="gold">Gold</option>
+      <option value="silver">Silver</option>
+      <option value="rose-gold">Rose Gold</option>
+      <option value="white">White</option>
+      <option value="pink">Pink</option>
+      <option value="purple">Purple</option>
+      <option value="red">Red</option>
+      <option value="green">Green</option>
+      <option value="blue">Blue</option>
+      <option value="black">Black</option>
+      <option value="multi">Multi-color</option>
+    </select>
+  </motion.div>
+
+  <motion.div 
+    className="flex flex-col gap-2"
+    whileHover={{ scale: 1.01 }}
+    transition={{ duration: 0.2 }}
+  >
+    <label className={labelClasses} htmlFor="product-occasion">
+      Occasion <span className="text-red-500">*</span>
+    </label>
+    <select
+      id="product-occasion"
+      value={data?.occasion || ""}
+      onChange={(e) => handleData("occasion", e.target.value)}
+      className={inputClasses}
+    >
+      <option value="">Select Occasion</option>
+      <option value="daily-wear">Daily Wear</option>
+      <option value="casual-wear">Casual Wear</option>
+      <option value="formal-wear">Formal Wear</option>
+      <option value="office-wear">Office Wear</option>
+      <option value="party-wear">Party Wear</option>
+      <option value="wedding">Wedding</option>
+      <option value="festive">Festive</option>
+      <option value="gift">Gift</option>
+    </select>
+  </motion.div>
+</div>
       </div>
     </motion.section>
   );

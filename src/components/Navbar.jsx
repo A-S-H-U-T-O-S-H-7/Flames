@@ -1,12 +1,17 @@
+"use client"
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import {LogIn, Search, Heart, ShoppingCart, User, Menu, X, ChevronDown } from "lucide-react";
+import { Search, User, Menu, X, ChevronDown } from "lucide-react";
+import LogoutButton from "./LogoutButton";
+import AuthContextProvider from "@/context/AuthContext";
+import HeaderClientButtons from "./HeaderClientButtons";
+import AdminButton from "./AdminButton";
 
 const searchKeywords = ["jewelry", "accessories", "home decor", "rings", "earrings"];
 
-const Navbar = () => {
+const Navbar = ({categories, collections}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState(searchKeywords[0]);
   const [isDropdownOpen, setIsDropdownOpen] = useState({ 
@@ -16,16 +21,6 @@ const Navbar = () => {
     mobileColl: false 
   });
 
-  const categories = [
-    { name: "Ring", slug: "ring" },
-    { name: "Earring", slug: "earring" },
-    { name: "Necklace", slug: "necklace" },
-    { name: "Pendant", slug: "pendant" },
-    { name: "Bracelet", slug: "bracelet" },
-    { name: "Anklet", slug: "anklet" },
-    { name: "Brooch", slug: "brooch" },
-    { name: "Handbag", slug: "handbag" }
-  ];
 
   useEffect(() => {
     let index = 0;
@@ -60,18 +55,14 @@ const Navbar = () => {
               Gifts
             </Link>
 
-            <div className="relative group">
-      <button className="flex items-center font-heading space-x-1 text-purple-800 font-medium px-4 py-2 rounded-md transition-colors">
-        <span>Categories</span>
-        <ChevronDown className="h-4 w-4" />
-      </button>
+      <div className="relative group">
+        <button className="flex items-center font-heading space-x-1 text-purple-800 font-medium px-4 py-2 rounded-md transition-colors">
+         <span>Categories</span>
+         <ChevronDown className="h-4 w-4" />
+        </button>
       <div className="hidden group-hover:grid grid-cols-2 absolute left-0 mt-0 w-64 bg-white shadow-xl rounded-md py-2 border border-purple-100">
-        {categories.map((category, index) => (
-          <Link
-            key={index}
-            href={`/category/${category.slug}`}
-            className="block px-4 py-2 text-purple-800 hover:bg-purple-50"
-          >
+        {categories.map((category) => (
+          <Link key={category.id} href={`/category/${category?.id}`} className="block px-4 py-2 text-purple-800 hover:bg-purple-50">
             {category.name}
           </Link>
         ))}
@@ -85,10 +76,13 @@ const Navbar = () => {
                 <span>Collections</span>
                 <ChevronDown className="h-4 w-4" />
               </button>
-              <div className="hidden group-hover:block absolute left-0 mt-0 w-48 bg-white shadow-xl rounded-md py-2 border border-purple-100">
-                <Link href="/new-arrival-collection" className="block px-4 py-2 text-purple-900 hover:bg-purple-50">New Arrivals</Link>
-                <Link href="/featured-collection" className="block px-4 py-2 text-purple-900 hover:bg-purple-50">Best Sellers</Link>
-              </div>
+              <div className="hidden group-hover:grid grid-cols-1 absolute left-0 mt-0 w-48 bg-white shadow-xl rounded-md py-2 border border-purple-100">
+        {collections.map((collection) => (
+          <Link key={collection.id} href={`/category/${collection?.id}`} className="block px-4 py-2 text-purple-800 hover:bg-purple-50">
+            {collection.title}
+          </Link>
+        ))}
+      </div>
             </div>
 
             {/* Desktop Search Bar */}
@@ -104,12 +98,9 @@ const Navbar = () => {
 
           {/* Icons */}
           <div className="flex items-center space-x-1 md:space-x-4">
-            <button className="p-2 rounded-full hover:bg-purple-100">
-              <Heart className="h-6 w-6 text-purple-700" />
-            </button>
-            <button className="p-2 rounded-full hover:bg-purple-100">
-              <ShoppingCart className="h-6 w-6 text-purple-700" />
-            </button>
+            <AuthContextProvider>
+            <HeaderClientButtons/>
+            </AuthContextProvider>
 
             <div className="relative group">
               <button
@@ -119,18 +110,20 @@ const Navbar = () => {
 
               </button>
               <div className="hidden group-hover:block absolute right-0 mt-0 w-36 bg-white shadow-xl rounded-md py-2 border border-purple-100">
-                <Link href="/featured-collection" className=" px-4 py-2 font-medium flex items-center justify-center gap-2 text-purple-900 hover:bg-purple-50">
-                <LogIn className="w-4 h-4 flex" />Log In</Link>
-                <Link href="/login" className="flex items-center justify-center gap-2 px-4 py-2 text-purple-900 hover:bg-purple-50">
+                
+                <Link href="/myaccount" className="flex items-center justify-center gap-2 px-4 py-2 text-purple-900 hover:bg-purple-50">
                 <User className="w-4 h-4 flex"/>Profile</Link>
-                <Link href="/admin/dashboard" className="flex items-center justify-center gap-2 px-4 py-2 text-purple-900 hover:bg-purple-50">
-                <User className="w-4 h-4 flex"/>Admin</Link>
+                
+                <div className="flex flex-col gap-2 mx-2 justify-center">
+                <AuthContextProvider>
+                  <AdminButton/>
+                <LogoutButton/>
+                </AuthContextProvider>
+                </div>
               </div>
             </div>
 
-              {/* <button className="p-2 rounded-full hover:bg-purple-100">
-                <User className="h-6 w-6 text-purple-700" />
-              </button> */}
+             
           </div>
         </div>
 

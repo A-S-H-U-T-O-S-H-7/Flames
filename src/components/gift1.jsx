@@ -1,137 +1,186 @@
-"use client"
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Search, ShoppingCart, Heart } from 'lucide-react';
 
-const Gift = () => {
-  const [hoveredItem, setHoveredItem] = useState(null);
+"use client";
 
-  const giftItems = [
-    {
-      id: 1,
-      name: "Luxury Watch",
-      price: "$199.99",
-      image: "/api/placeholder/300/300",
-      category: "Accessories"
-    },
-    {
-      id: 2,
-      name: "Perfume Set",
-      price: "$89.99",
-      image: "/api/placeholder/300/300",
-      category: "Beauty"
-    },
-    {
-      id: 3,
-      name: "Premium Headphones",
-      price: "$159.99",
-      image: "/api/placeholder/300/300",
-      category: "Electronics"
-    },
-    {
-      id: 4,
-      name: "Leather Wallet",
-      price: "$49.99",
-      image: "/api/placeholder/300/300",
-      category: "Accessories"
-    }
-  ];
+import { useAuth } from "@/contexts/AuthContext";
+import { addReview } from "@/lib/firestore/reviews/write";
+import { useUser } from "@/lib/firestore/user/read";
+import { Rating } from "@mui/material";
+import { Button } from "@nextui-org/react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
-  const containerAnimation = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
+export default function AddReview({ productId }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [rating, setRating] = useState(4);
+  const [message, setMessage] = useState("");
+  const { user } = useAuth();
+  const { data: userData } = useUser({ uid: user?.uid });
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    try {
+      if (!user) {
+        throw new Error("Please Logged In First");
       }
+      await addReview({
+        displayName: userData?.displayName,
+        message: message,
+        photoURL: userData?.photoURL,
+        productId: productId,
+        rating: rating,
+        uid: user?.uid,
+      });
+      setMessage("");
+      toast.success("Successfully Submitted");
+    } catch (error) {
+      toast.error(error?.message);
     }
-  };
-
-  const itemAnimation = {
-    hidden: { y: 20, opacity: 0 },
-    show: { y: 0, opacity: 1 }
+    setIsLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* Header Section */}
-      <div className="max-w-7xl mx-auto mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
-          Perfect Gifts
-        </h1>
-        <p className="text-gray-600 text-center mb-8">
-          Find the perfect gift for your loved ones
-        </p>
-        
-        {/* Search and Filter */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-          <div className="relative w-full md:w-96">
-            <input
-              type="text"
-              placeholder="Search gifts..."
-              className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <Search className="absolute right-3 top-2.5 text-gray-400" size={20} />
-          </div>
-          
-          <select className="px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="">All Categories</option>
-            <option value="accessories">Accessories</option>
-            <option value="beauty">Beauty</option>
-            <option value="electronics">Electronics</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Gift Grid */}
-      <motion.div 
-        className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-        variants={containerAnimation}
-        initial="hidden"
-        animate="show"
+    <div className="flex flex-col gap-3 p-3 rounded-xl border w-full">
+      <h1 className="text-lg font-semibold">Rate This Products</h1>
+      <Rating
+        value={rating}
+        onChange={(event, newValue) => {
+          setRating(newValue);
+        }}
+      />
+      <textarea
+        value={message}
+        onChange={(e) => {
+          setMessage(e.target.value);
+        }}
+        type="text"
+        placeholder="Enter you thoughts on this products ..."
+        className="w-full border border-lg px-4 py-2 focus:outline-none"
+      />
+      <Button
+        onClick={handleSubmit}
+        isLoading={isLoading}
+        isDisabled={isLoading}
       >
-        {giftItems.map((item) => (
-          <motion.div
-            key={item.id}
-            className="bg-white rounded-xl shadow-lg overflow-hidden"
-            variants={itemAnimation}
-            onMouseEnter={() => setHoveredItem(item.id)}
-            onMouseLeave={() => setHoveredItem(null)}
-          >
-            <div className="relative">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-full h-64 object-cover"
-              />
-              {hoveredItem === item.id && (
-                <motion.div 
-                  className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center gap-4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
-                  <button className="p-2 bg-white rounded-full hover:bg-gray-100">
-                    <ShoppingCart size={20} />
-                  </button>
-                  <button className="p-2 bg-white rounded-full hover:bg-gray-100">
-                    <Heart size={20} />
-                  </button>
-                </motion.div>
-              )}
-              <div className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 rounded-full text-sm">
-                {item.category}
+        Submit
+      </Button>
+    </div>
+  );
+}
+
+
+//reviews
+
+"use client";
+
+import { useAuth } from "@/context/AuthContext";
+import { useReviews } from "@/lib/firestore/reviews/read";
+import { deleteReview } from "@/lib/firestore/reviews/write";
+import { useUser } from "@/lib/firestore/user/read";
+import { Rating } from "@mui/material";
+import { Avatar, Button } from "@nextui-org/react";
+import { Trash2 } from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
+
+export default function Reviews({ productId }) {
+  const { data } = useReviews({ productId: productId });
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
+  const { data: userData } = useUser({ uid: user?.uid });
+
+  const handleDelete = async () => {
+    if (!confirm("Are you sure?")) return;
+    setIsLoading(true);
+    try {
+      if (!user) {
+        throw new Error("Please Logged In First");
+      }
+      await deleteReview({
+        uid: user?.uid,
+        productId: productId,
+      });
+      toast.success("Successfully Deleted");
+    } catch (error) {
+      toast.error(error?.message);
+    }
+    setIsLoading(false);
+  };
+
+  return (
+    <div className="flex flex-col gap-3 p-3 rounded-xl border w-full">
+      <h1 className="text-lg font-semibold">Reviews</h1>
+      <div className="flex flex-col gap-4">
+        {data?.map((item) => {
+          return (
+            <div className="flex gap-3">
+              <div className="">
+                <Avatar src={item?.photoURL} />
+              </div>
+              <div className="flex-1 flex flex-col">
+                <div className="flex justify-between">
+                  <div>
+                    <h1 className="font-semibold">{item?.displayName}</h1>
+                    <Rating value={item?.rating} readOnly size="small" />
+                  </div>
+                  {user?.uid === item?.uid && (
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      color="danger"
+                      variant="flat"
+                      isDisabled={isLoading}
+                      isLoading={isLoading}
+                      onClick={handleDelete}
+                    >
+                      <Trash2 size={12} />
+                    </Button>
+                  )}
+                </div>
+                <p className="text-sm text-gray-700 pt-1">{item?.message}</p>
               </div>
             </div>
-            
-            <div className="p-4">
-              <h3 className="font-semibold text-lg mb-2">{item.name}</h3>
-              <p className="text-blue-600 font-bold">{item.price}</p>
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
+          );
+        })}
+      </div>
     </div>
+  );
+}
+
+"use client";
+
+import React from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+
+const CategoryCard = ({ categories }) => { 
+  return (
+        <div >
+          {categories.map((category) => (
+           <Link key={category.id} href={`/category/${category?.id}`}>
+        
+              <motion.div
+              key={category.id} 
+                className="flex flex-col items-center justify-center 
+                            w-[90px] h-[110px] 
+                            sm:w-[120px] sm:h-[120px] 
+                            rounded-xl bg-purple-100 
+                            hover:bg-purple-200 
+                            transition-colors duration-300 
+                            cursor-pointer 
+                            shadow-md hover:shadow-lg 
+                            flex-shrink-0 
+                            p-2 space-y-2"
+                whileTap={{ scale: 0.95 }}
+              >
+                
+                <p className="text-xs sm:text-sm text-gray-500 font-medium text-center">
+                  {category.name}
+                </p>
+              </motion.div>
+              </Link>
+          ))}
+        </div>
+     
   );
 };
 
-export default Gift;

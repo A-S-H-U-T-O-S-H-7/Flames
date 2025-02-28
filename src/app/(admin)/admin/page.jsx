@@ -1,7 +1,13 @@
+import CountMeter from "./CountMeter";
+import RevenueChart from "./RevenueChart";
+
 export default function page(){
     return(
         <main>
-            <h2>Admin pannel</h2>
+            <CountMeter/>
+            <div>
+                <RevenueChart/>
+            </div>
         </main>
     )
 }

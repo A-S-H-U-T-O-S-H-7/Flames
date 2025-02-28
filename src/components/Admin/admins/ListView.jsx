@@ -23,16 +23,16 @@ export default function ListView() {
   }
 
   return (
-    <div className="flex-1 flex flex-col gap-4 p-5 bg-white dark:bg-[#1e2737] rounded-xl shadow-lg">
+    <div className="flex-1 flex flex-col gap-4 p-5 bg-white dark:bg-[#1e2737] rounded-xl shadow-lg overflow-x-auto">
       <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Admins</h1>
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse rounded-lg overflow-hidden">
+        <table className="w-full border-collapse rounded-lg overflow-hidden text-sm md:text-base">
           <thead>
-            <tr className="bg-[#22c7d5] w-full text-white">
-              <th className="px-4 py-3 text-left">SN</th>
-              <th className="px-4 py-3 text-center">Image</th>
-              <th className="px-4 py-3 text-left">Name</th>
-              <th className="px-4 py-3 text-center">Actions</th>
+            <tr className="bg-[#22c7d5] text-white">
+              <th className="px-2 md:px-4 py-3 text-left">SN</th>
+              <th className="px-2 md:px-4 py-3 text-center">Image</th>
+              <th className="px-2 md:px-4 py-3 text-left">Name</th>
+              <th className="px-2 md:px-4 py-3 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -68,28 +68,26 @@ function Row({ item, index }) {
   };
 
   return (
-    <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
-      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{index + 1}</td>
-      <td className="px-4 py-3 text-center">
+    <tr className="border-b flex-1 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-xs md:text-sm">
+      <td className="px-2 md:px-4 py-3 text-gray-700 dark:text-gray-300">{index + 1}</td>
+      <td className="px-2 md:px-4 py-3 text-center">
         <div className="flex justify-center">
-          <img className="h-12 w-12 object-cover rounded-md shadow" src={item?.imageURL} alt="Admin" />
+          <img className="h-10 w-10 md:h-12 md:w-12 object-cover rounded-md shadow" src={item?.imageURL} alt="Admin" />
         </div>
       </td>
       <td>
-        <h2 className="px-4 pt-3 text-gray-800 dark:text-gray-200">{item?.name}</h2>
-        <h3 className="px-4 pb-3 text-sm text-gray-800 dark:text-gray-200"> {item?.email}</h3>
+        <h2 className="px-2 md:px-4 pt-3 text-gray-800 dark:text-gray-200">{item?.name}</h2>
+        <h3 className="px-2 md:px-4 pb-3 text-xs md:text-sm text-gray-800 dark:text-gray-200">{item?.email}</h3>
       </td>
-      
-
-      <td className="px-4 py-3 flex justify-center gap-3">
+      <td className="px-2 md:px-4 py-3 flex justify-center gap-2 md:gap-3">
         <Button
           onClick={handleUpdate}
           isDisabled={isDeleting}
           isIconOnly
           size="sm"
-          className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg p-2 transition-all"
+          className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg p-1 md:p-2 transition-all"
         >
-          <Edit2 size={18} />
+          <Edit2 size={16} />
         </Button>
         <Button
           onClick={handleDelete}
@@ -97,9 +95,9 @@ function Row({ item, index }) {
           isDisabled={isDeleting}
           isIconOnly
           size="sm"
-          className="bg-red-500 hover:bg-red-600 text-white rounded-lg p-2 transition-all"
+          className="bg-red-500 hover:bg-red-600 text-white rounded-lg p-1 md:p-2 transition-all"
         >
-          <Trash2 size={18} />
+          <Trash2 size={16} />
         </Button>
       </td>
     </tr>

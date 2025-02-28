@@ -1,17 +1,18 @@
-import React from 'react'
-import Form from '@/components/Admin/admins/Form'
-import ListView from '@/components/Admin/admins/ListView'
+import React from 'react';
+import Form from '@/components/Admin/admins/Form';
+import ListView from '@/components/Admin/admins/ListView';
 
-export default function page() {
+export default function Page() {
   return (
-    <div >
-       <main className="p-5  flex flex-col md:flex-row gap-5">
-      <Form />
-      <ListView />
-    </main>
-      
+    <div className="p-5">
+      <main className="flex flex-1 flex-col md:flex-row gap-5 w-full">
+        <div className="w-full ">
+          <Form />
+        </div>
+        <div className="w-full ">
+          <ListView />
+        </div>
+      </main>
     </div>
-  )
+  );
 }
-
-

@@ -4,30 +4,8 @@ import { useState } from "react";
 import { FaMinus } from "react-icons/fa6";
 import { FaPlus } from "react-icons/fa";
 
-const FAQ = () => {
-  const faqs = [
-    {
-      question: "What payment methods do you accept?",
-      answer: "We accept major credit cards (Visa, MasterCard, American Express), PayPal, and Apple Pay for secure and convenient transactions."
-    },
-    {
-      question: "How long does shipping take?",
-      answer: "Standard shipping typically takes 3-5 business days. Expedited shipping options are available at checkout for faster delivery."
-    },
-    {
-      question: "What is your return policy?",
-      answer: "We offer a 30-day hassle-free return policy. Items must be unused, unworn, and in original packaging. Refunds are processed within 5-7 business days after receiving the return."
-    },
-    {
-      question: "Do you offer international shipping?",
-      answer: "Yes, we ship to most countries worldwide. Shipping costs and delivery times vary depending on the destination. International customers may be subject to customs duties and taxes."
-    },
-    {
-      question: "How can I track my order?",
-      answer: "Once your order is shipped, you'll receive a confirmation email with a tracking number. You can track your package through our website or the carrier's tracking system."
-    }
-  ];
-
+const FAQ = ({faqs}) => {
+ 
   const [activeIndex, setActiveIndex] = useState(null);
 
   const toggleFAQ = (index) => {
@@ -50,7 +28,7 @@ const FAQ = () => {
                 className="flex justify-between items-center cursor-pointer"
                 onClick={() => toggleFAQ(index)}
               >
-                <h3 className="text-md md:text-lg font-medium font-body text-gray-700">{faq.question}</h3>
+                <h3 className="text-md md:text-lg font-medium font-body text-gray-700">{faq.faq}</h3>
 
                 <span
                   className={`text-md md:text-lg text-gray-700 font-bold transform transition-transform duration-300 ${

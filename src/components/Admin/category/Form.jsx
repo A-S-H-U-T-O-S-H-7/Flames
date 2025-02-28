@@ -47,7 +47,7 @@ export default function Form() {
     try {
       await createNewCategory({ data, image });
       toast.success("Successfully Created");
-      setData(null);
+      setData(null); 
       setImage(null);
     } catch (error) {
       toast.error(error?.message);

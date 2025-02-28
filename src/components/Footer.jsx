@@ -5,6 +5,7 @@ import {
   FaFacebook, FaInstagram, FaTwitter, FaYoutube, FaPaperPlane 
 } from 'react-icons/fa';
 import Image from 'next/image';
+import Link from 'next/link'; // Added Next.js Link import
 
 const Footer = () => {
   const [suggestion, setSuggestion] = useState('');
@@ -27,7 +28,13 @@ const Footer = () => {
     { name: "Handbag", slug: "handbag" }
   ];
 
-  const quickLinks = ["About Us", "Blog", "FAQs", "Contact", "Shipping"];
+  // Updated quickLinks array with proper paths
+  const quickLinks = [
+    { name: "About Us", path: "/aboutus" },
+    { name: "FAQs", path: "/" },
+    { name: "Contact", path: "/contactus" },
+    { name: "Shipping", path: "/shipping" }
+  ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -78,7 +85,7 @@ const Footer = () => {
                     key={index}
                     className="text-gray-600 hover:text-purple-700 cursor-pointer text-left"
                   >
-                    <a href={`/category/${category.slug}`}>{category.name}</a>
+                    <Link href={`/category/${category.slug}`}>{category.name}</Link>
                   </motion.li>
                 ))}
               </ul>
@@ -93,9 +100,9 @@ const Footer = () => {
                 {quickLinks.map((link, index) => (
                   <motion.li 
                     key={index}
-                    className="text-gray-600 hover:text-purple-700  cursor-pointer text-left"
+                    className="text-gray-600 hover:text-purple-700 cursor-pointer text-left"
                   >
-                    <a href={`/${link.toLowerCase().replace(/\s+/g, '-')}`}>{link}</a>
+                    <Link href={link.path}>{link.name}</Link>
                   </motion.li>
                 ))}
               </ul>

@@ -1,11 +1,12 @@
-import React from 'react'
-
-function page() {
-  return (
-    <div>
-      <h1>hi</h1>
-    </div>
-  )
+import CountMeter from "../CountMeter";
+import RevenueChart from "../RevenueChart";
+export default function page(){
+    return(
+        <main>
+            <CountMeter/>
+            <div>
+                <RevenueChart/>
+            </div>
+        </main>
+    )
 }
-
-export default page

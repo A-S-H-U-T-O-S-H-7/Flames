@@ -4,62 +4,35 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-const statesData = [
-  {
-    name: "Kerala",
-    slug: "kerala",
-    image: "/demo3.jpeg",
-    bgColor: "bg-blue-100",
-    gradientColor: "from-green-500",
-    description: "Protective charm and design.",
-  },
-  {
-    name: "Odisha",
-    slug: "odisha",
-    image: "/demo1.jpeg",
-    bgColor: "bg-pink-200",
-    gradientColor: "from-purple-800",
-    description: "Explore the culture of Odisha.",
-  },
-  {
-    name: "Gujarat",
-    slug: "gujarat",
-    image: "/demo5.jpeg",
-    bgColor: "bg-purple-200",
-    gradientColor: "from-cyan-400",
-    description: "Gujarat's artistic heritage.",
-  },
-];
-
-const StateSection = () => {
+const StateSection = ({ collections }) => {
   const router = useRouter();
 
-  const handleStateClick = (slug) => {
-    router.push(`/state-category/${slug}`); 
+  const handleStateClick = (id) => {
+    router.push(`/state-category/${id}`); // Using ID instead of slug
   };
 
   return (
     <div className="px-[10px] md:px-[30px] pt-16 pb-10 md:pt-28 md:pb-10 bg-white">
       {/* Main Grid Container */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3 items-center">
-        {statesData.map((state, index) => (
+        {collections.slice(0, 3).map((state, index) => ( // Limiting to 3 items
           <div
-            key={state.slug}
+            key={state.id} // Using ID as key
             className={`relative ${state.bgColor} rounded-md overflow-hidden shadow-md h-[300px] md:h-[350px] cursor-pointer ${
               index === 1 ? "md:-mt-[80px]" : ""
             }`}
-            onClick={() => handleStateClick(state.slug)}
+            onClick={() => handleStateClick(state.id)} // Using ID for navigation
           >
             <Image
-              src={state.image}
-              alt={state.name}
+              src={state.imageURL} // Using imageURL instead of slug
+              alt={state.title}
               fill
               objectFit="cover"
               className="rounded-lg hover:scale-105 transition-transform duration-300"
             />
             <div className={`absolute bottom-0 w-full bg-gradient-to-t ${state.gradientColor} to-transparent text-white px-4 py-2`}>
-              <h3 className="text-2xl font-heading font-extrabold italic">{state.name}</h3>
-              <p className="text-md font-body">{state.description}</p>
+              <h3 className="text-2xl font-heading font-extrabold italic">{state.title}</h3>
+              <p className="text-md font-body">{state.subTitle}</p>
             </div>
           </div>
         ))}

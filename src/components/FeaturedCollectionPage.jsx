@@ -2,9 +2,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sliders, ArrowUpDown } from 'lucide-react';
-import ProductCard from './ProductCard';
 import FilterSidebar from './FilterSidebar';
 import SortMenu from './SortMenu';
+import ProductCard from './ProductCard';
 
 const FeaturedCollectionPage = ({ category }) => {
   const router = useRouter();

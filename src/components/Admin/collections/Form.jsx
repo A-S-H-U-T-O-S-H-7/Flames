@@ -78,7 +78,7 @@ export default function Form() {
   };
   
   return (
-    <div className="flex border border-[#22c7d5] py-4 flex-col gap-6 bg-white dark:bg-[#0e1726] dark:text-[#888ea8] rounded-xl p-5 w-full md:w-[400px] transition-all duration-200 ease-in-out">
+    <div className="flex border border-purple-500 dark:border-[#22c7d5] py-4 flex-col gap-6 bg-white dark:bg-[#0e1726] dark:text-[#888ea8] rounded-xl p-5 w-full md:w-[400px] transition-all duration-200 ease-in-out">
       <h1 className="font-semibold text-[#212529] dark:text-white text-xl">
         {id ? "Update" : "Create"} Collection
       </h1>
@@ -95,7 +95,7 @@ export default function Form() {
             Image <span className="text-red-500">*</span>
           </label>
           <div 
-            className="flex justify-center items-center border-2 border-dashed border-[#22c7d5] dark:border-[#22c7d5] p-6 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1e2737] transition-all"
+            className="flex justify-center items-center border-2 border-dashed border-purple-500 dark:border-[#22c7d5] p-6 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1e2737] transition-all"
             onClick={() => document.getElementById('collection-image').click()}
           >
             {image ? (

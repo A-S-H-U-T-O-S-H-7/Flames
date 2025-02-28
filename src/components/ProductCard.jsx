@@ -1,67 +1,55 @@
-// components/ProductCard.js
-import React from "react";
-import Image from "next/image";
-import { Heart } from "lucide-react";
+import AuthContextProvider from "@/context/AuthContext";
 import Link from "next/link";
+import FavoriteButton from "./FavoriteButton";
 
-function ProductCard({ product }) {
-  const { id, image, name, price, originalPrice, isNew } = product;
-
+const ProductCard = ({ product }) => {
   return (
-    <Link href={`/product-details/${id}`}>
-      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 shadow-xl rounded-lg border border-gray-200 overflow-hidden hover:shadow-2xl relative">
-        {/* Wishlist Button */}
-        <div className="absolute top-3 right-3 z-10">
-          <button
-            onClick={(e) => {
-              e.preventDefault(); // Prevent navigation when clicking wishlist
-              // Add wishlist functionality here
-            }}
-            className="p-1 md:p-2 rounded-full bg-white shadow-md hover:shadow-lg text-purple-500 hover:text-red-500 transition"
-            aria-label="Add to Wishlist"
-          >
-            <Heart className="w-4 md:w-5 h-4 md:h-5" />
-          </button>
-        </div>
-
-        {/* New Badge */}
-        {isNew && (
-          <div className="absolute top-3 left-3 z-10">
-            <span className="bg-purple-600 font-body text-white px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium">
-              New
-            </span>
-          </div>
-        )}
-
-        {/* Image Section */}
-        <div className="relative h-48">
-          <Image
-            src={image}
-            alt={name}
-            layout="fill"
-            objectFit="cover"
-            className="rounded-t-lg"
-          />
-        </div>
-
-        {/* Content Section */}
-        <div className="p-2 md:p-5">
-          <h3 className="text-sm md:text-base font-body text-gray-800 mb-3 line-clamp-2">
-            {name}
-          </h3>
-
-          <div className="flex items-center justify-between">
-            <span className="text-purple-700 font-body font-medium text-base md:text-xl">₹{price}</span>
-            {originalPrice && (
-              <span className="text-gray-500 font-body line-through text-base md:text-sm">
-                ₹{originalPrice}
-              </span>
-            )}
-          </div>
+    <div className="flex-shrink-0 w-[178px] sm:w-[180px] md:w-[250px] bg-white shadow-sm hover:shadow-lg hover:shadow-purple-300 shadow-purple-400 rounded-xl overflow-hidden border border-gray-200">
+      {/* Product Image with Favorite Button */}
+      <div className="relative w-full h-[160px] sm:h-[160px] md:h-[190px]">
+        <img
+          src={product?.featureImageURL}
+          alt={product?.title}
+          className="w-full h-full object-cover"
+        />
+        
+        {/* Favorite Button */}
+        <div className="absolute top-2 right-2 z-10">
+          <AuthContextProvider>
+            <FavoriteButton productId={product?.id} />
+          </AuthContextProvider>
         </div>
       </div>
-    </Link>
+
+      {/* Product Info */}
+      <div className="px-4 py-2 space-y-2">
+        {/* Title */}
+        <Link href={`/product-details/${product?.id}`} className="block">
+          <h2 className="text-lg font-body font-semibold text-gray-800 truncate">
+            {product?.title}
+          </h2>
+        </Link>
+
+        {/* Short Description */}
+        <p className="text-sm text-gray-600 font-body line-clamp-2">
+          {product?.shortDescription}
+        </p>
+        
+        {/* <p className="text-sm text-gray-600 font-body line-clamp-2">
+          {product?.color}
+        </p>
+        <p className="text-sm text-gray-600 font-body line-clamp-2">
+          {product?.occasion}
+        </p> */}
+
+        {/* Price Section */}
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-bold text-green-600">₹{product?.salePrice}</span>
+          <span className="text-sm text-gray-500 line-through">₹{product?.price}</span>
+        </div>
+      </div>
+    </div>
   );
-}
+};
 
 export default ProductCard;

@@ -22,7 +22,7 @@ export const createNewAdmin = async ({ data, image }) => {
   }
   
   const newId = data?.email;
-  const imageRef = ref(storage, `admmins/${newId}`);
+  const imageRef = ref(storage, `admins/${newId}`);
   await uploadBytes(imageRef, image);
   const imageURL = await getDownloadURL(imageRef);
 
