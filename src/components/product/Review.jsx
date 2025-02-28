@@ -16,10 +16,6 @@ export default function Reviews({ productId }) {
   const { user } = useAuth();
   const { data: userData } = useUser({ uid: user?.uid });
 
-  // Debug logs
-  console.log("Reviews Data:", data);
-  console.log("Product ID:", productId);
-  console.log("Error:", error);
 
   const handleDelete = async (reviewUid) => {
     if (!confirm("Are you sure you want to delete this review?")) return;

@@ -5,20 +5,21 @@ import AddReview from "@/components/product/AddReview";
 import Reviews from "@/components/product/Review";
 import RelatedProducts from "@/components/product/RelatedProducts";
 
-export async function generateMetadata({ params }) {
-  const product = await getProduct({ id: params.productId });
+// export async function generateMetadata({ params }) {
+//   const product = await getProduct({ id: params.productId });
 
-  return {
-    title: `${product?.title} | Product`,
-    description: product?.shortDescription ?? "",
-    openGraph: {
-      images: [product?.featureImageURL],
-    },
-  };
-}
+//   return {
+//     title: `${product?.title} | Product`,
+//     description: product?.shortDescription ?? "",
+//     openGraph: {
+//       images: [product?.featureImageURL],
+//     },
+//   };
+// }
 
 export default async function Page({ params }) {
-  const product = await getProduct({ id: params.productId });
+  const { productId } = await params;
+  const product = await getProduct({ id: productId });
 
   if (!product) return <div>Product not found</div>;
 
@@ -29,8 +30,8 @@ export default async function Page({ params }) {
         <div className="flex flex-col justify-center pt-10">
           <div className="flex flex-col md:flex-row gap-4  w-full">
           <AuthContextProvider>
-            <AddReview productId={params.productId} />
-            <Reviews productId={params.productId} />
+            <AddReview productId={productId} />
+            <Reviews productId={productId} />
             </AuthContextProvider>
             </div>
             <div>
