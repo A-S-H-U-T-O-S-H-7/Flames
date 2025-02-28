@@ -182,7 +182,7 @@ export default function Checkout({ productList }) {
                 ))}
                 
                 <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                  <span className="font-heading text-lg text-gray-900">Total</span>
+                  <span className="font-heading text-lg text-gray-900">Tota l</span>
                   <span className="font-heading text-lg text-purple-500">₹{totalPrice}</span>
                 </div>
               </div>
