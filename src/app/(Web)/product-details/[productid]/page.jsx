@@ -5,28 +5,20 @@ import AddReview from "@/components/product/AddReview";
 import Reviews from "@/components/product/Review";
 import RelatedProducts from "@/components/product/RelatedProducts";
 
-// export async function generateMetadata({ params }) {
-//   const product = await getProduct({ id: params.productId });
 
-//   return {
-//     title: `${product?.title} | Product`,
-//     description: product?.shortDescription ?? "",
-//     openGraph: {
-//       images: [product?.featureImageURL],
-//     },
-//   };
-// }
 
 export default async function Page({ params }) {
-  console.log("Params received:", params); // Debug params
-  const { productId } = params;
+  params = await params;
+  const productId = params?.productId;
 
-  console.log("Fetching product for ID:", productId); // Debug productId
+  if (!productId) {
+    return <div>Invalid Product ID</div>; // Handle missing productId case
+  }
+
+  console.log("Fetching product for ID:", productId);
   const product = await getProduct({ id: productId });
 
-  console.log("Product data:", product); // Debug product response
-
-  if (!product) return <div>Product notbj found</div>;
+  if (!product) return <div>Product not found</div>;
 
   return (
     <main className="p-[10px] bg-gray-50 md:p-[30px]">
