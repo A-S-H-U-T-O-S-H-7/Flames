@@ -8,17 +8,9 @@ import RelatedProducts from "@/components/product/RelatedProducts";
 
 
 export default async function Page({ params }) {
-  params = await params;
-  const productId = params?.productId;
-
-  if (!productId) {
-    return <div>Invalid Product ID</div>; // Handle missing productId case
-  }
-
-  console.log("Fetching product for ID:", productId);
+  
+  const { productId } = await params;
   const product = await getProduct({ id: productId });
-
-  if (!product) return <div>Product not found</div>;
 
   return (
     <main className="p-[10px] bg-gray-50 md:p-[30px]">
