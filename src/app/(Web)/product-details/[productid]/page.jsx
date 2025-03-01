@@ -26,7 +26,7 @@ export default async function Page({ params }) {
 
   console.log("Product data:", product); // Debug product response
 
-  if (!product) return <div>Product not found</div>;
+  if (!product) return <div>Product notbj found</div>;
 
   return (
     <main className="p-[10px] bg-gray-50 md:p-[30px]">
