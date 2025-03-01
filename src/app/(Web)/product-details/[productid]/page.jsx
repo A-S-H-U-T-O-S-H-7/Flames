@@ -10,9 +10,19 @@ import RelatedProducts from "@/components/product/RelatedProducts";
 export default async function Page({ params }) {
   
   const { productId } = await params;
+  console.log("Product ID being requested:", productId);
+
   const product = await getProduct({ id: productId });
+  console.log("Product returned:", product);
 
   if(!product)return <p>product not found!!</p>
+  if(!productId) return <p>No product ID found: {JSON.stringify(params)}</p>
+  if(!product) return (
+    <div>
+      <p>Product not found!!</p>
+      <p>ID attempted: {productId}</p>
+    </div>
+  );
 
   return (
     <main className="p-[10px] bg-gray-50 md:p-[30px]">
