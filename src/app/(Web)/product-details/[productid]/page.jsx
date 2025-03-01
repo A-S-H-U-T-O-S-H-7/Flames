@@ -12,6 +12,8 @@ export default async function Page({ params }) {
   const { productId } = await params;
   const product = await getProduct({ id: productId });
 
+  if(!product)return <p>product not found!!</p>
+
   return (
     <main className="p-[10px] bg-gray-50 md:p-[30px]">
       <ProductDetails product={product} />
