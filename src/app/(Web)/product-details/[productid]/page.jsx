@@ -11,12 +11,10 @@ export default async function Page({ params }) {
   
   const { productid } = await params;
   const productId = productid;
-  console.log("Product ID being requested:", productId);
 
   const product = await getProduct({ id: productId });
-  console.log("Product returned:", product);
 
-  if(!productId) return <p>No product ID found: {JSON.stringify(params)}</p>
+  
   if(!product)return <p>product not found!!</p>
 
   
