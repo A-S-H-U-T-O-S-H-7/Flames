@@ -30,7 +30,7 @@ const Footer = () => {
 
   // Updated quickLinks array with proper paths
   const quickLinks = [
-    { name: "About Us", path: "/aboutus" },
+    
     { name: "FAQs", path: "/" },
     { name: "Contact", path: "/contactus" },
     { name: "Shipping", path: "/shipping" }
