@@ -16,7 +16,6 @@ export default function Reviews({ productId }) {
   const { user } = useAuth();
   const { data: userData } = useUser({ uid: user?.uid });
 
-
   const handleDelete = async (reviewUid) => {
     if (!confirm("Are you sure you want to delete this review?")) return;
     setIsLoading(true);
@@ -36,46 +35,48 @@ export default function Reviews({ productId }) {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-6 rounded-xl border border-purple-300 w-full">
-      <h1 className="text-2xl font-heading text-gray-800 font-semibold">
+    <div className="flex flex-col gap-4 p-6 rounded-xl border border-purple-300 w-full bg-white ">
+      <h1 className="text-xl md:text-2xl font-heading text-gray-800 font-semibold">
         Reviews
       </h1>
 
       {error && (
-        <div className="text-red-500 text-sm">
-          Error loading reviews: {error.message}
-        </div>
+        <div className="text-red-500 text-sm">Error: {error.message}</div>
       )}
 
       {!data || data.length === 0 ? (
-        <div className="text-gray-500 text-center py-8">
+        <div className="text-gray-500 text-center py-6">
           No reviews yet. Be the first to review this product!
         </div>
       ) : (
-        <div className="flex flex-col py-2 border rounded-md border-dotted border-purple-500 gap-6">
+        <div className="flex flex-col py-2 border rounded-md border-dotted border-purple-500 max-h-[340px] overflow-y-auto scrollbar-thin scrollbar-thumb-purple-300">
           {data?.map((item, index) => (
-            <div key={item?.uid || index} className="flex gap-4 border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
-              <div>
-                <Avatar 
-                  src={item?.photoURL} 
-                  className="w-10 h-10"
-                  fallback={item?.displayName?.[0]}
-                />
-              </div>
+            <div
+              key={item?.uid || index}
+              className="flex items-start gap-3 p-3 border-b border-gray-100 last:border-b-0"
+            >
+              {/* Profile Image */}
+              <Avatar
+                src={item?.photoURL || "/flame1.png"}
+                className="w-10 h-10 rounded-full"
+                fallback={item?.displayName?.[0]}
+              />
+
               <div className="flex-1 flex flex-col">
-                <div className="flex justify-between items-start">
-                  <div className="flex flex-col gap-1">
-                    <h2 className="font-semibold text-gray-800">
-                      {item?.displayName || 'Anonymous'}
+                {/* User Info & Rating */}
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="font-semibold text-gray-800 text-sm md:text-base">
+                      {item?.displayName || "Anonymous"}
                     </h2>
-                    <Rating 
-                      value={item?.rating} 
-                      readOnly 
+                    <Rating
+                      value={item?.rating}
+                      readOnly
                       size="small"
-                      sx={{ 
-                        color: '#EAB308',
-                        '& .MuiRating-iconFilled': {
-                          color: '#EAB308',
+                      sx={{
+                        color: "#EAB308",
+                        "& .MuiRating-iconFilled": {
+                          color: "#EAB308",
                         },
                       }}
                     />
@@ -89,20 +90,24 @@ export default function Reviews({ productId }) {
                       isDisabled={isLoading}
                       isLoading={isLoading}
                       onPress={() => handleDelete(item?.uid)}
-                      className="min-w-unit-8 text-red-500 w-8 h-8"
+                      className="w-8 h-8 text-red-500"
                     >
                       <Trash2 size={16} />
                     </Button>
                   )}
                 </div>
+
+                {/* Review Photo (if exists) */}
                 {item?.reviewPhoto && (
-                  <img 
-                    src={item.reviewPhoto} 
-                    alt="Review photo" 
-                    className="mt-2 rounded-lg max-h-48 object-cover"
+                  <img
+                    src={item.reviewPhoto}
+                    alt="Review photo"
+                    className="mt-2 rounded-lg max-h-32 w-full object-cover"
                   />
                 )}
-                <p className="text-gray-600 mt-2 text-sm leading-relaxed">
+
+                {/* Review Message */}
+                <p className="text-gray-600 mt-1 text-xs md:text-sm leading-relaxed">
                   {item?.message}
                 </p>
               </div>

@@ -51,7 +51,7 @@ const Navbar = ({categories, collections}) => {
             <Link href="/" className="text-purple-800 font-medium font-heading px-4 py-2 rounded-md transition-colors">
               Home
             </Link>
-            <Link href="/category/gift" className="text-purple-800 font-heading font-medium px-4 py-2 rounded-md transition-colors">
+            <Link href="/category/vxxyxAdsyxMFaTAz4Lfv" className="text-purple-800 font-heading font-medium px-4 py-2 rounded-md transition-colors">
               Gifts
             </Link>
 
@@ -191,7 +191,7 @@ const Navbar = ({categories, collections}) => {
                   <Link href="/" className="block px-4 py-2 text-purple-900 font-heading font-medium hover:bg-purple-50">
                     Home
                   </Link>
-                  <Link href="/category/gift" className="block px-4 py-2 text-purple-900 font-heading font-medium hover:bg-purple-50">
+                  <Link href="/category/vxxyxAdsyxMFaTAz4Lfv" className="block px-4 py-2 text-purple-900 font-heading font-medium hover:bg-purple-50">
                     Gifts
                   </Link>
   

@@ -1,183 +1,182 @@
 "use client";
-
-import { useAllOrders } from "@/lib/firestore/orders/read";
-import { useProducts } from "@/lib/firestore/products/read";
-import { deleteProduct } from "@/lib/firestore/products/write";
-import { useUser } from "@/lib/firestore/user/read";
-import { Avatar, Button, CircularProgress } from "@nextui-org/react";
-import { Edit2, Trash2 } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { db } from "@/lib/firestore/firebase";
+import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import { toast } from "react-hot-toast";
 
-export default function ListView() {
-  const [pageLimit, setPageLimit] = useState(10);
-  const [lastSnapDocList, setLastSnapDocList] = useState([]);
+export default function AdminOrdersPage() {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [editingOrder, setEditingOrder] = useState(null);
 
   useEffect(() => {
-    setLastSnapDocList([]);
-  }, [pageLimit]);
+    const fetchOrders = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "orders"));
+        const ordersData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setOrders(ordersData);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+      setLoading(false);
+    };
 
-  const {
-    data: orders,
-    error,
-    isLoading,
-    lastSnapDoc,
-  } = useAllOrders({
-    pageLimit: pageLimit,
-    lastSnapDoc:
-      lastSnapDocList?.length === 0
-        ? null
-        : lastSnapDocList[lastSnapDocList?.length - 1],
-  });
+    fetchOrders();
+  }, []);
 
-  const handleNextPage = () => {
-    let newStack = [...lastSnapDocList];
-    newStack.push(lastSnapDoc);
-    setLastSnapDocList(newStack);
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      const orderRef = doc(db, "orders", orderId);
+      await updateDoc(orderRef, { status: newStatus });
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.id === orderId ? { ...order, status: newStatus } : order
+        )
+      );
+      toast.success("Order status updated!");
+    } catch (error) {
+      console.error("Error updating status:", error);
+      toast.error("Failed to update status.");
+    }
   };
 
-  const handlePrePage = () => {
-    let newStack = [...lastSnapDocList];
-    newStack.pop();
-    setLastSnapDocList(newStack);
+  const handleEditClick = (order) => {
+    setEditingOrder(order);
   };
 
-  if (isLoading) {
-    return (
-      <div>
-        <CircularProgress />
-      </div>
-    );
-  }
-  if (error) {
-    return <div>{error}</div>;
-  }
-  return (
-    <div className="flex-1 flex flex-col gap-3 md:pr-5 md:px-0 px-5 rounded-xl w-full overflow-x-auto">
-      <table className="border-separate border-spacing-y-3">
-        <thead>
-          <tr>
-            <th className="font-semibold border-y bg-white px-3 py-2 border-l rounded-l-lg">
-              SN
-            </th>
-            <th className="font-semibold border-y bg-white px-3 py-2 text-left">
-              Customer
-            </th>
-            <th className="font-semibold border-y bg-white px-3 py-2 text-left">
-              Total Price
-            </th>
-            <th className="font-semibold border-y bg-white px-3 py-2 text-left">
-              Total Products
-            </th>
-            <th className="font-semibold border-y bg-white px-3 py-2 text-left">
-              Payment Mode
-            </th>
-            <th className="font-semibold border-y bg-white px-3 py-2 text-left">
-              Status
-            </th>
-            <th className="font-semibold border-y bg-white px-3 py-2 border-r rounded-r-lg text-center">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders?.map((item, index) => {
-            return (
-              <Row
-                index={index + lastSnapDocList?.length * pageLimit}
-                item={item}
-                key={item?.id}
-              />
-            );
-          })}
-        </tbody>
-      </table>
-      <div className="flex justify-between text-sm py-3">
-        <Button
-          isDisabled={isLoading || lastSnapDocList?.length === 0}
-          onClick={handlePrePage}
-          size="sm"
-          variant="bordered"
-        >
-          Previous
-        </Button>
-        <select
-          value={pageLimit}
-          onChange={(e) => setPageLimit(e.target.value)}
-          className="px-5 rounded-xl"
-          name="perpage"
-          id="perpage"
-        >
-          <option value={3}>3 Items</option>
-          <option value={5}>5 Items</option>
-          <option value={10}>10 Items</option>
-          <option value={20}>20 Items</option>
-          <option value={100}>100 Items</option>
-        </select>
-        <Button
-          isDisabled={isLoading || orders?.length === 0}
-          onClick={handleNextPage}
-          size="sm"
-          variant="bordered"
-        >
-          Next
-        </Button>
-      </div>
-    </div>
-  );
-}
+  const handleSaveEdit = async () => {
+    if (!editingOrder) return;
 
-function Row({ item, index }) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const totalAmount = item?.checkout?.line_items?.reduce((prev, curr) => {
-    return prev + (curr?.price_data?.unit_amount / 100) * curr?.quantity;
-  }, 0);
-  const { data: user } = useUser({ uid: item?.uid });
+    try {
+      const orderRef = doc(db, "orders", editingOrder.id);
+      await updateDoc(orderRef, {
+        address: editingOrder.address,
+        line_items: editingOrder.line_items,
+      });
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.id === editingOrder.id ? editingOrder : order
+        )
+      );
+      setEditingOrder(null);
+      toast.success("Order details updated!");
+    } catch (error) {
+      console.error("Error updating order:", error);
+      toast.error("Failed to update order.");
+    }
+  };
+
+  if (loading) return <p className="text-center mt-10">Loading Orders...</p>;
+
   return (
-    <tr>
-      <td className="border-y bg-white px-3 py-2 border-l rounded-l-lg text-center">
-        {index + 1}
-      </td>
-      <td className="border-y bg-white px-3 py-2 whitespace-nowrap">
-        <div className="flex gap-2 items-center">
-          <Avatar size="sm" src={user?.photoURL} />
-          <div className="flex flex-col">
-            <h1> {user?.displayName}</h1>
-            <h1 className="text-xs text-gray-600"> {user?.email}</h1>
+    <div className="p-6 bg-white dark:bg-[#1e2737] rounded-xl shadow-lg">
+      
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse rounded-lg overflow-hidden">
+          <thead>
+            <tr className="bg-[#22c7d5] text-white">
+              <th className="px-4 py-3 text-left">User ID</th>
+              <th className="px-4 py-3 text-left">User Name</th>
+              <th className="px-4 py-3 text-left">Address</th>
+              <th className="px-4 py-3 text-center">Products</th>
+              <th className="px-4 py-3 text-center">Total</th>
+              <th className="px-4 py-3 text-center">Payment</th>
+              <th className="px-4 py-3 text-center">Status</th>
+              <th className="px-4 py-3 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((order) => (
+              <tr
+                key={order.id}
+                className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+              >
+                <td className="px-4 py-3">{order.uid}</td>
+                <td className="px-4 py-3">{order.userName || "N/A"}</td>
+                <td className="px-4 py-3">
+                  {order.address.fullName}, {order.address.addressLine1}
+                </td>
+                <td className="px-4 py-3">
+                  {order.line_items.map((item, index) => (
+                    <div key={index} className="mb-2">
+                      <p>{item.product_data.name}</p>
+                      <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                      <img
+                        src={item.product_data.images[0]}
+                        alt={item.product_data.name}
+                        className="w-10 h-10 rounded-md"
+                      />
+                    </div>
+                  ))}
+                </td>
+                <td className="px-4 py-3 text-center">₹{order.total}</td>
+                <td className="px-4 py-3 text-center uppercase">{order.paymentMode}</td>
+                <td className="px-4 py-3 text-center">
+                  <select
+                    className="border p-1 rounded"
+                    value={order.status}
+                    onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </td>
+                <td className="px-4 py-3 flex justify-center gap-3">
+                  <button
+                    onClick={() => handleEditClick(order)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg transition-all"
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {editingOrder && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-semibold mb-4">Edit Order</h2>
+            <label className="block mb-2">Full Name</label>
+            <input
+              className="border p-2 w-full mb-4"
+              value={editingOrder.address.fullName}
+              onChange={(e) =>
+                setEditingOrder({
+                  ...editingOrder,
+                  address: { ...editingOrder.address, fullName: e.target.value },
+                })
+              }
+            />
+            <label className="block mb-2">Address</label>
+            <input
+              className="border p-2 w-full mb-4"
+              value={editingOrder.address.addressLine1}
+              onChange={(e) =>
+                setEditingOrder({
+                  ...editingOrder,
+                  address: { ...editingOrder.address, addressLine1: e.target.value },
+                })
+              }
+            />
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setEditingOrder(null)} className="bg-gray-400 px-3 py-1 rounded-lg">
+                Cancel
+              </button>
+              <button onClick={handleSaveEdit} className="bg-green-500 px-3 py-1 rounded-lg text-white">
+                Save
+              </button>
+            </div>
           </div>
         </div>
-      </td>
-      <td className="border-y bg-white px-3 py-2  whitespace-nowrap">
-        ₹ {totalAmount}
-      </td>
-      <td className="border-y bg-white px-3 py-2">
-        {item?.checkout?.line_items?.length}
-      </td>
-      <td className="border-y bg-white px-3 py-2">
-        <div className="flex">
-          <h3 className="bg-blue-100 text-blue-500 text-xs rounded-lg px-2 py-1 uppercase">
-            {item?.paymentMode}
-          </h3>
-        </div>
-      </td>
-      <td className="border-y bg-white px-3 py-2">
-        <div className="flex">
-          <h3 className="bg-green-100 text-green-500 text-xs rounded-lg px-2 py-1 uppercase">
-            {item?.status ?? "pending"}
-          </h3>
-        </div>
-      </td>
-      <td className="border-y bg-white px-3 py-2 border-r rounded-r-lg">
-        <div className="flex">
-          <Link href={`/admin/orders/${item?.id}`}>
-            <button className="bg-black text-white px-3 py-2 rounded-lg text-xs">
-              View
-            </button>
-          </Link>
-        </div>
-      </td>
-    </tr>
+      )}
+    </div>
   );
 }

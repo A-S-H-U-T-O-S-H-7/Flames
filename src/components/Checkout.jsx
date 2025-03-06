@@ -36,33 +36,27 @@ export default function Checkout({ productList }) {
       if (!address?.fullName || !address?.mobile || !address?.addressLine1) {
         throw new Error("Please Fill All Address Details");
       }
-
       if (!productList || productList?.length === 0) {
         throw new Error("Product List Is Empty");
       }
-
-      if (paymentMode === "prepaid") {
-        const url = await createCheckoutAndGetURL({
-          uid: user?.uid,
-          products: productList,
-          address: address,
-        });
-        router.push(url);
-      } else {
-        const checkoutId = await createCheckoutCODAndGetId({
-          uid: user?.uid,
-          products: productList,
-          address: address,
-        });
-        router.push(`/checkout-cod?checkout_id=${checkoutId}`);
-        toast.success("Successfully Placed!");
-        confetti();
-      }
+  
+      // Call function to store the order in Firestore
+      const orderId = await createCheckoutCODAndGetId({
+        uid: user?.uid,
+        products: productList,
+        address: address,
+        paymentMode: "cod", // Adding payment mode
+      });
+  
+      router.push(`/checkout-cod?order_id=${orderId}`);
+      toast.success("Order Placed Successfully!");
+      confetti();
     } catch (error) {
       toast.error(error?.message);
     }
     setIsLoading(false);
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-50  px-[10px] md:px-[30px]">
@@ -156,8 +150,58 @@ export default function Checkout({ productList }) {
                 <CreditCard className="text-purple-500" size={24} />
                 <h2 className="font-heading text-xl text-gray-900">Order Summary</h2>
               </div>
-              
               <div className="flex flex-col gap-4">
+                {productList?.map((item, index) => (
+                  <div key={index} className="flex gap-4 items-center py-2 border-b border-gray-100 last:border-0">
+                    <img className="w-16 h-16 object-cover rounded-lg" src={item?.product?.featureImageURL} alt="" />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm text-gray-800 font-medium truncate">
+                        {item?.product?.title}
+                      </h3>
+                      <p className="text-sm text-gray-500">Qty: {item?.quantity}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-gray-900">₹{item?.product?.salePrice * item?.quantity}</p>
+                    </div>
+                  </div>
+                ))}
+
+                <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                  <span className="font-heading text-lg text-gray-900">Total</span>
+                  <span className="font-heading text-lg text-purple-500">₹{totalPrice}</span>
+                </div>
+              </div>
+            </section>
+
+            <section className="bg-white rounded-2xl p-6 border border-purple-300 shadow-sm">
+              <div className="flex flex-col gap-4">
+                <div className="flex gap-2 items-center">
+                  <CheckSquare2Icon className="text-purple-500 flex-shrink-0" size={18} />
+                  <p className="text-sm text-gray-600">
+                    I agree with the{" "}
+                    <button className="text-purple-500 hover:text-purple-600">terms & conditions</button>
+                  </p>
+                </div>
+
+                <Button
+                  isLoading={isLoading}
+                  isDisabled={isLoading}
+                  onClick={handlePlaceOrder}
+                  className="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-lg transition-colors"
+                >
+                  {isLoading ? "Processing..." : "Place Order"}
+                </Button>
+              </div>
+            </section>              
+              
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+{/* <div className="flex flex-col gap-4">
                 {productList?.map((item, index) => (
                   <div key={index} className="flex gap-4 items-center py-2 border-b border-gray-100 last:border-0">
                     <img
@@ -246,10 +290,4 @@ export default function Checkout({ productList }) {
                   {isLoading ? "Processing..." : "Place Order"}
                 </Button>
               </div>
-            </section>
-          </div>
-        </section>
-      </div>
-    </div>
-  );
-}
+            </section> */}
