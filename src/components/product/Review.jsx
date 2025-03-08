@@ -56,7 +56,7 @@ export default function Reviews({ productId }) {
               className="flex items-start gap-3 p-3 border-b border-gray-100 last:border-b-0"
             >
               {/* Profile Image */}
-              <Avatar
+              <img
                 src={item?.photoURL || "/flame1.png"}
                 className="w-10 h-10 rounded-full"
                 fallback={item?.displayName?.[0]}

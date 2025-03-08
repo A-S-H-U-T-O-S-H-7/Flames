@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import Favorites from "@/components/Favorites";
 import Cart from "@/components/Cart";
 import Orders from "@/components/Orders";
+import { useAuth } from "@/context/AuthContext"; 
 
 const OrdersTabs = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const { user } = useAuth();
 
   const tabs = ["My Orders", "Favorites", "Cart", "My Address"];
   const tabComponents = [<Orders/>,<Favorites />,<Cart/>];
@@ -15,16 +17,15 @@ const OrdersTabs = () => {
       <div className="bg-purple-700 text-white p-3  text-center w-full rounded-lg font-heading">
         <h2 className="text-2xl font-semibold">My Account</h2>
       </div>
-      {/* Profile Section */}
-      <div className="flex items-center bg-purple-100 p-4  rounded-md shadow-md mt-2">
+      <div className="flex items-center bg-purple-100 p-4 rounded-md shadow-md mt-2">
         <img
-          src="/path-to-profile-image.jpg"
+          src={user?.photoURL || "/flame1.png"}
           alt="Profile"
           className="w-16 h-16 rounded-full border-2 border-purple-500"
         />
         <div className="ml-4">
-          <h3 className="text-lg font-semibold text-purple-700">John Doe</h3>
-          <p className="text-sm text-gray-600">johndoe@example.com</p>
+          <h3 className="text-lg font-semibold text-purple-700">{user?.displayName || "Flamer"}</h3>
+          <p className="text-sm text-gray-600">{user?.email || "user@flamer.com"}</p>
         </div>
       </div>
 

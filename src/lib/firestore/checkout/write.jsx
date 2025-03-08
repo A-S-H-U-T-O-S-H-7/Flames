@@ -92,43 +92,110 @@
 import { db } from "../firebase";
 import { collection, doc, setDoc, addDoc, Timestamp } from "firebase/firestore";
 
-// COD
+
 export const createCheckoutCODAndGetId = async ({ uid, products, address }) => {
   // Create a unique document reference inside the user's checkout collection
   const checkoutRef = doc(collection(db, "users", uid, "checkout_sessions_cod"));
   const checkoutId = `cod_${checkoutRef.id}`;
-
-  let line_items = products.map((item) => ({
-    price: item?.product?.salePrice,
+  
+  // Format line items consistently
+  const line_items = products.map((item) => ({
+    price: item?.product?.salePrice || 0,
     product_data: {
-      name: item?.product?.title ?? "",
-      description: item?.product?.shortDescription ?? "",
+      name: item?.product?.title || "",
+      description: item?.product?.shortDescription || "",
       images: [
-        item?.product?.featureImageURL ?? `${process.env.NEXT_PUBLIC_DOMAIN}/flame1.png`,
+        item?.product?.featureImageURL || `${process.env.NEXT_PUBLIC_DOMAIN}/flame1.png`,
       ],
       metadata: {
-        productId: item?.id,
+        productId: item?.id || "",
       },
     },
-    quantity: item?.quantity ?? 1,
+    quantity: item?.quantity || 1,
   }));
+  
+  // Calculate total amount
+  const total = products.reduce(
+    (sum, item) => sum + (item?.product?.salePrice || 0) * (item?.quantity || 1), 
+    0
+  );
 
   const orderData = {
     id: checkoutId,
     uid,
     line_items,
     address,
-    total: products.reduce((sum, item) => sum + item?.product?.salePrice * (item?.quantity ?? 1), 0), // Calculate total
+    total,
     paymentMode: "cod",
+    paymentStatus: "pending",
     createdAt: Timestamp.now(),
     status: "pending",
   };
 
-  // Store in user's orders
-  await setDoc(checkoutRef, orderData);
+  try {
+    // Store in user's orders
+    await setDoc(checkoutRef, orderData);
 
-  // Store in global 'orders' collection for admin access
-  await addDoc(collection(db, "orders"), orderData);
+    // Store in global 'orders' collection for admin access
+    await addDoc(collection(db, "orders"), orderData);
 
-  return checkoutId;
+    return checkoutId;
+  } catch (error) {
+    console.error("Error creating COD order:", error);
+    throw error;
+  }
+};
+
+export const createCheckoutOnlineAndGetId = async ({ uid, products, address, transactionId }) => {
+  try {
+    // Create a unique ID for the order
+    const checkoutRef = doc(collection(db, "users", uid, "checkout_sessions_online"));
+    const checkoutId = `online_${checkoutRef.id}`;
+    
+    // Format line items consistently - using the same format as COD for consistency
+    const line_items = products.map((item) => ({
+      price: item?.product?.salePrice || 0,
+      product_data: {
+        name: item?.product?.title || "",
+        description: item?.product?.shortDescription || "",
+        images: [
+          item?.product?.featureImageURL || `${process.env.NEXT_PUBLIC_DOMAIN}/flame1.png`,
+        ],
+        metadata: {
+          productId: item?.id || "",
+        },
+      },
+      quantity: item?.quantity || 1,
+    }));
+    
+    // Calculate total amount
+    const total = products.reduce(
+      (sum, item) => sum + (item?.product?.salePrice || 0) * (item?.quantity || 1), 
+      0
+    );
+
+    const orderData = {
+      id: checkoutId,
+      uid,
+      line_items,
+      address,
+      total,
+      paymentMode: "online",
+      paymentStatus: "paid",
+      transactionId,
+      createdAt: Timestamp.now(),
+      status: "confirmed", // Online payments are confirmed immediately
+    };
+
+    // Store in user's orders - use setDoc with the document reference
+    await setDoc(checkoutRef, orderData);
+
+    // Store in global 'orders' collection for admin access
+    await addDoc(collection(db, "orders"), orderData);
+
+    return checkoutId;
+  } catch (error) {
+    console.error("Error creating online order:", error);
+    throw error;
+  }
 };

@@ -1,121 +1,124 @@
-// import Footer from "@/components/Footer";
-// import Navbar from "@/components/Navbar";
-// import { admin,adminDB } from "@/lib/firestore/firebase_admin";
-// import Link from "next/link";
-// import SuccessMessage from "@/components/SuccessMessage";
+"use client";
 
-// const fetchCheckout = async (checkoutId) => {
-//   const list = await adminDB
-//     .collectionGroup("checkout_sessions")
-//     .where("id", "==", checkoutId)
-//     .get();
-//   if (list.docs.length === 0) {
-//     throw new Error("Invalid Checkout ID");
-//   }
-//   return list.docs[0].data();
-// };
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { CheckCircle, ShoppingBag, ArrowRight } from "lucide-react";
+import { Button } from "@nextui-org/react";
+import { useAuth } from "@/context/AuthContext";
+import { getOrderById } from "@/lib/firestore/checkout/read";
 
-// const fetchPayment = async (checkoutId) => {
-//   const list = await adminDB
-//     .collectionGroup("payments")
-//     .where("metadata.checkoutId", "==", checkoutId)
-//     .where("status", "==", "succeeded")
-//     .get();
-//   if (list.docs.length === 0) {
-//     throw new Error("Invalid Checkout ID");
-//   }
-//   return list.docs[0].data();
-// };
+export default function CheckoutSuccess() {
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get("order_id");
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth() || {};
 
-// const processOrder = async ({ payment, checkout }) => {
-//   const order = await adminDB.doc(`orders/${payment?.id}`).get();
-//   if (order.exists) {
-//     return false;
-//   }
-//   const uid = payment?.metadata?.uid;
+  useEffect(() => {
+    const fetchOrder = async () => {
+      if (orderId && user) {
+        try {
+          const orderData = await getOrderById(orderId);
+          setOrder(orderData);
+        } catch (error) {
+          console.error("Error fetching order:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
 
-//   await adminDB.doc(`orders/${payment?.id}`).set({
-//     checkout: checkout,
-//     payment: payment,
-//     uid: uid,
-//     id: payment?.id,
-//     paymentMode: "prepaid",
-//     timestampCreate: admin.firestore.Timestamp.now(),
-//   });
+    fetchOrder();
+  }, [orderId, user]);
 
-//   const productList = checkout?.line_items?.map((item) => {
-//     return {
-//       productId: item?.price_data?.product_data?.metadata?.productId,
-//       quantity: item?.quantity,
-//     };
-//   });
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
 
-//   const user = await adminDB.doc(`users/${uid}`).get();
-
-//   const productIdsList = productList?.map((item) => item?.productId);
-
-//   const newCartList = (user?.data()?.carts ?? []).filter(
-//     (cartItem) => !productIdsList.includes(cartItem?.id)
-//   );
-
-//   await adminDB.doc(`users/${uid}`).set(
-//     {
-//       carts: newCartList,
-//     },
-//     { merge: true }
-//   );
-
-//   const batch = adminDB.batch();
-
-//   productList?.forEach((item) => {
-//     batch.update(adminDB.doc(`products/${item?.productId}`), {
-//       orders: admin.firestore.FieldValue.increment(item?.quantity),
-//     });
-//   });
-
-//   await batch.commit();
-//   return true;
-// };
-
-// export default async function Page({ searchParams }) {
-//   const { checkout_id } = searchParams;
-//   const checkout = await fetchCheckout(checkout_id);
-//   const payment = await fetchPayment(checkout_id);
-
-//   const result = await processOrder({ checkout, payment });
-
-//   return (
-//     <main>
-//       <Navbar />
-//       <SuccessMessage />
-//       <section className="min-h-screen flex flex-col gap-3 justify-center items-center">
-//         <div className="flex justify-center w-full">
-//           <img src="/svgs/Mobile payments-rafiki.svg" className="h-48" alt="" />
-//         </div>
-//         <h1 className="text-2xl font-semibold text-green">
-//           Your Order Is{" "}
-//           <span className="font-bold text-green-600">Successfully</span> Placed
-//         </h1>
-//         <div className="flex items-center gap-4 text-sm">
-//           <Link href={"/account"}>
-//             <button className="text-blue-600 border border-blue-600 px-5 py-2 rounded-lg bg-white">
-//               Go To Orders Page
-//             </button>
-//           </Link>
-//         </div>
-//       </section>
-//       <Footer />
-//     </main>
-//   );
-// }
-import React from 'react'
-
-function page() {
   return (
-    <div>
-      <h1>hi</h1>
-    </div>
-  )
-}
+    <div className="min-h-screen bg-gray-50 px-[10px] md:px-[30px] py-12">
+      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-purple-200 p-6 md:p-10">
+        <div className="flex flex-col items-center text-center mb-8">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+            <CheckCircle className="w-10 h-10 text-green-500" />
+          </div>
+          <h1 className="font-heading text-3xl text-gray-900 mb-2">Order Confirmed!</h1>
+          <p className="text-gray-600 max-w-md">
+            Thank you for your purchase. Your order has been successfully placed and will be processed soon.
+          </p>
+        </div>
 
-export default page
+        <div className="border-t border-b border-gray-100 py-6 mb-6">
+          <div className="flex flex-col md:flex-row justify-between mb-4">
+            <div>
+              <h2 className="text-sm text-gray-500">Order ID</h2>
+              <p className="font-medium text-gray-700">{orderId}</p>
+            </div>
+            <div className="mt-4 md:mt-0">
+              <h2 className="text-sm text-gray-500">Payment Method</h2>
+              <p className="font-medium text-gray-700">
+                {order?.paymentMode === 'cod' ? 'Cash on Delivery' : 'Online Payment'}
+              </p>
+            </div>
+          </div>
+          
+          {order?.products && (
+            <div className="mt-6">
+              <h2 className="font-heading text-lg text-gray-900 mb-4">Order Summary</h2>
+              <div className="space-y-4">
+                {order.products.map((item, index) => (
+                  <div key={index} className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
+                      {item.featureImageURL && (
+                        <img src={item.featureImageURL} alt="" className="w-full h-full object-cover" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-medium">{item.title}</h3>
+                      <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium">₹{item.price * item.quantity}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-6 pt-6 border-t border-gray-100">
+                <div className="flex justify-between items-center">
+                  <span className="font-heading text-lg text-gray-900">Total</span>
+                  <span className="font-heading text-lg text-purple-500">₹{order.totalAmount}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link href="/myaccount">
+            <Button
+              className="bg-gray-100 hover:bg-gray-200 text-gray-800 gap-2 px-6"
+              variant="flat"
+            >
+              <ShoppingBag size={18} />
+              View Orders
+            </Button>
+          </Link>
+          <Link href="/">
+            <Button
+              className="bg-purple-500 hover:bg-purple-600 text-white gap-2 px-6"
+            >
+              Continue Shopping
+              <ArrowRight size={18} />
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

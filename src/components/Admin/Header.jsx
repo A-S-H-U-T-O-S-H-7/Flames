@@ -1,6 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
 import { useAdmin } from "@/lib/firestore/admins/read";
-import { Avatar } from "@nextui-org/react";
 
 function Header() {
   const { user } = useAuth();
@@ -28,9 +27,9 @@ function Header() {
             </h1>
           </div>
         )}
-        <Avatar
-          src={user?.imageURL || "/default-avatar.png"}
-          className="w-10 h-10 border dark:border-gray-600"
+        <img
+          src={user?.photoURL || "/flames1.png"}
+          className="w-10 h-10 border rounded-full dark:border-gray-600"
         />
       </div>
     </header>
