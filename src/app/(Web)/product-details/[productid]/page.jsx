@@ -9,7 +9,6 @@ import RelatedProducts from "@/components/product/RelatedProducts";
 
 export default async function Page({ params }) {
   
-  // const { productId } = await params;
   const { productid } = await params;
   const productId = productid;
 
