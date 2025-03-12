@@ -70,8 +70,8 @@ export default function Form() {
   };
 
   return (
-    <div className="flex border border-[#22c7d5] py-6 flex-col gap-6 bg-white dark:bg-[#0e1726] dark:text-[#888ea8] rounded-xl p-5 w-full md:w-[400px] transition-all duration-200 ease-in-out">
-      <h1 className="font-semibold text-[#212529] dark:text-white">
+    <div className="flex border border-[#22c7d5] py-6 flex-col gap-6 bg-white dark:bg-[#0e1726] dark:text-[#888ea8] rounded-xl p-5 w-full  transition-all duration-200 ease-in-out">
+      <h1 className="font-semibold text-2xl text-[#212529] dark:text-white">
         {id ? "Update" : "Create"} Banner
       </h1>
       <form
@@ -86,7 +86,8 @@ export default function Form() {
           <label htmlFor="banner-image" className="text-gray-500 dark:text-[#888ea8] text-sm">
             Image <span className="text-red-500">*</span>
           </label>
-          <div className="flex justify-center items-center border-2 border-dashed border-purple-500 dark:border-[#22c7d5] p-6 rounded-lg cursor-pointer" onClick={() => document.getElementById('banner-image').click()}>
+          <div className="flex  max-w-[500px] w-full mb-5 justify-center items-center border-2 border-dashed border-purple-500 dark:border-[#22c7d5] p-6 rounded-lg cursor-pointer"
+           onClick={() => document.getElementById('banner-image').click()}>
             {image ? (
               <img className="h-20 rounded-lg shadow-md" src={URL.createObjectURL(image)} alt="Preview" />
             ) : (
@@ -105,6 +106,7 @@ export default function Form() {
           />
         </div>
 
+<div className="grid md:grid-cols-3 gap-6 grid-cols-1">
         {/* Title Input */}
         <div className="flex flex-col gap-2">
           <label htmlFor="bannner-title" className="text-gray-500 dark:text-[#888ea8] text-sm">
@@ -120,11 +122,10 @@ export default function Form() {
             className="border border-purple-500 dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
           />
         </div>
-
         {/* Subtitle Input */}
         <div className="flex flex-col gap-2">
           <label htmlFor="banner-subtitle" className="text-gray-500 dark:text-[#888ea8] text-sm">
-            Slug <span className="text-red-500">*</span>
+            Sub Title <span className="text-red-500">*</span>
           </label>
           <input
             id="banner-subtitle"
@@ -151,16 +152,54 @@ export default function Form() {
             className="border border-purple-500 dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
           />
         </div>
+        {/* Go to Page Link Input */}
+<div className="flex flex-col gap-2">
+  <label htmlFor="banner-link" className="text-gray-500 dark:text-[#888ea8] text-sm">
+    Go to Page Link <span className="text-red-500">*</span>
+  </label>
+  <input
+    id="banner-link"
+    name="banner-link"
+    type="text" //if needed make it type="url"
+    placeholder="Enter Page Link"
+    value={data?.link ?? ""}
+    onChange={(e) => handleData("link", e.target.value)}
+    className="border border-purple-500 dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
+  />
+</div>
+
+{/* Banner Type Dropdown */}
+<div className="flex flex-col gap-2">
+  <label htmlFor="banner-type" className="text-gray-500 dark:text-[#888ea8] text-sm">
+    Banner Type <span className="text-red-500">*</span>
+  </label>
+  <select
+    id="banner-type"
+    name="banner-type"
+    value={data?.bannerType ?? ""}
+    onChange={(e) => handleData("bannerType", e.target.value)}
+    className="border border-purple-500 dark:border-[#22c7d5] px-4 py-2.5 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
+  >
+    <option value="">Select Banner Type</option>
+    <option value="Hero">Hero Banners</option>
+    <option value="Body">Body Banners</option>
+    <option value="Collection">Collection Banners</option>
+    <option value="Others">Others</option>
+  </select>
+</div>
+</div>
 
         {/* Submit Button */}
+        <div className="flex justify-end">
         <Button
           isLoading={isLoading}
           isDisabled={isLoading}
           type="submit"
-          className="bg-[#22c7d5] text-white font-semibold py-2 mt-4 px-4 rounded-lg hover:bg-[#1aa5b5] "
+          className="bg-[#22c7d5]  w-[200px] text-white font-semibold py-2 mt-4 px-4 rounded-lg hover:bg-[#1aa5b5] "
         >
           {id ? "Update" : "Create"}
         </Button>
+        </div>
       </form>
     </div>
   );

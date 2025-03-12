@@ -30,6 +30,7 @@ export default function ListView() {
           <thead>
             <tr className="bg-[#22c7d5] text-white">
               <th className="px-4 py-3 text-left">SN</th>
+              <th className="px-4 py-3 text-left">Date & Time</th>
               <th className="px-4 py-3 text-center">Image</th>
               <th className="px-4 py-3 text-left">Name</th>
               <th className="px-4 py-3 text-center">Actions</th>
@@ -49,6 +50,31 @@ export default function ListView() {
 function Row({ item, index }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
+
+  // Format date and time from Firestore timestamp
+  const formatDateTime = (timestamp) => {
+    if (!timestamp || !timestamp.seconds) {
+      return "N/A";
+    }
+    
+    // Convert Firestore timestamp to JavaScript Date
+    const date = new Date(timestamp.seconds * 1000);
+    
+    // Format date in DD/MM/YY format
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2);
+    
+    // Format time in h:MMam/pm format
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Convert 0 to 12
+    
+    return `${day}/${month}/${year} ${hours}:${minutes}${ampm}`;
+  };
 
   const handleDelete = async () => {
     if (!confirm("Are you sure?")) return;
@@ -70,6 +96,9 @@ function Row({ item, index }) {
   return (
     <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
       <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{index + 1}</td>
+      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+        {formatDateTime(item?.timestampCreate)}
+      </td>
       <td className="px-4 py-3 text-center">
         <div className="flex justify-center">
           <img className="h-12 w-12 object-cover rounded-md shadow" src={item?.imageURL} alt="Brand" />

@@ -2,9 +2,9 @@ import ListView from "@/components/Admin/orders/ListView";
 
 export default function Page() {
   return (
-    <main className="flex flex-col gap-4 p-5">
-      <div className="flex justify-between items-center">
-        <h1 className="text-xl">Orders</h1>
+    <main className=" gap-4 p-5">
+      <div>
+        <h1 className="text-2xl font-medium font-heading">Orders Management</h1>
       </div>
       <ListView />
     </main>

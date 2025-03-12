@@ -78,7 +78,7 @@ export default function Form() {
   };
   
   return (
-    <div className="flex border border-purple-500 dark:border-[#22c7d5] py-4 flex-col gap-6 bg-white dark:bg-[#0e1726] dark:text-[#888ea8] rounded-xl p-5 w-full md:w-[400px] transition-all duration-200 ease-in-out">
+    <div className="flex border border-purple-500 dark:border-[#22c7d5] py-4 flex-col gap-6 bg-white dark:bg-[#0e1726] dark:text-[#888ea8] rounded-xl p-5 w-full  transition-all duration-200 ease-in-out">
       <h1 className="font-semibold text-[#212529] dark:text-white text-xl">
         {id ? "Update" : "Create"} Collection
       </h1>
@@ -120,6 +120,7 @@ export default function Form() {
           />
         </div>
 
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Title Input */}
         <div className="flex flex-col gap-2">
           <label htmlFor="collection-title" className="text-gray-500 dark:text-[#888ea8] text-sm">
@@ -151,22 +152,41 @@ export default function Form() {
             className="border border-[#22c7d5] dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
           />
         </div>
+        {/* Color Code Input */}
+<div className="flex flex-col gap-2">
+  <label htmlFor="collection-color" className="text-gray-500 dark:text-[#888ea8] text-sm">
+    Color Code <span className="text-red-500">*</span>
+  </label>
+  <input
+    id="collection-color"
+    name="collection-color"
+    type="text"
+    placeholder="Enter Color Code (e.g., #ff5733)"
+    value={data?.color ?? ""}
+    onChange={(e) => handleData("color", e.target.value)}
+    className="border border-[#22c7d5] dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
+  />
+</div>
 
-        {/* Selected Products */}
-        <div className="flex flex-col gap-2">
-          <label className="text-gray-500 dark:text-[#888ea8] text-sm">
-            Selected Products
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {data?.products?.map((productId) => (
-              <ProductCard
-                productId={productId}
-                key={productId}
-                setData={setData}
-              />
-            ))}
-          </div>
-        </div>
+{/* Is Showcased Dropdown */}
+<div className="flex flex-col gap-2">
+  <label htmlFor="collection-showcased" className="text-gray-500 dark:text-[#888ea8] text-sm">
+    Is Showcased? <span className="text-red-500">*</span>
+  </label>
+  <select
+    id="collection-showcased"
+    name="collection-showcased"
+    value={data?.isShowcased ?? ""}
+    onChange={(e) => handleData("isShowcased", e.target.value)}
+    className="border border-[#22c7d5] dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
+  >
+    <option value="">Select</option>
+    <option value="yes">Yes</option>
+    <option value="no">No</option>
+  </select>
+</div>
+
+       
 
         {/* Product Selection */}
         <div className="flex flex-col gap-2">
@@ -198,16 +218,35 @@ export default function Form() {
             ))}
           </select>
         </div>
+         {/* Selected Products */}
+         <div className="flex flex-col gap-2">
+          <label className="text-gray-500 dark:text-[#888ea8] text-sm">
+            Selected Products
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {data?.products?.map((productId) => (
+              <ProductCard
+                productId={productId}
+                key={productId}
+                setData={setData}
+              />
+            ))}
+          </div>
+        </div>
+
+        </div>
 
         {/* Submit Button */}
+        <div className="flex justify-end">
         <Button
           isLoading={isLoading}
           isDisabled={isLoading}
           type="submit"
-          className="bg-[#22c7d5] text-white font-semibold py-2 mt-4 px-4 rounded-lg hover:bg-[#1aa5b5] transition-all duration-200 ease-in-out"
+          className="bg-[#22c7d5] max-w-[200px] text-white font-semibold py-2 mt-4 px-4 rounded-lg hover:bg-[#1aa5b5] transition-all duration-200 ease-in-out"
         >
           {id ? "Update" : "Create"}
         </Button>
+        </div>
       </form>
     </div>
   );

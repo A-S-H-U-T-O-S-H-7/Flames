@@ -11,13 +11,6 @@ import toast from "react-hot-toast";
 import ShippingAddress from "./ShippingAddress";
 import Script from "next/script";
 
-// // Create a new function to handle online payments
-// const createCheckoutOnlineAndGetId = async ({ uid, products, address, paymentMode, transactionId = null }) => {
-//   // You'll need to implement this function in your firestore/checkout/write.js file
-//   // It should be similar to createCheckoutCODAndGetId but with payment details
-//   // For now, we'll just return a mock implementation
-//   return "online-order-id-123"; // Replace with actual implementation
-// };
 
 export default function Checkout({ productList }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -97,7 +90,7 @@ export default function Checkout({ productList }) {
         uid: user?.uid,
         products: productList,
         address: address,
-        paymentMode: "online",
+        paymentMode: "prepaid",
         transactionId: paymentId,
       });
       
@@ -123,7 +116,7 @@ export default function Checkout({ productList }) {
         throw new Error("Product List Is Empty");
       }
 
-      if (paymentMethod === "online") {
+      if (paymentMethod === "prepaid") {
         setIsLoading(false);
         // Open Razorpay
         handleRazorpayPayment();
@@ -138,7 +131,7 @@ export default function Checkout({ productList }) {
         paymentMode: "cod",
       });
   
-      router.push(`/checkout-cod?order_id=${orderId}`);
+      router.push(`/checkout-success?order_id=${orderId}`);
       toast.success("Order Placed Successfully!");
       confetti();
     } catch (error) {
@@ -219,7 +212,7 @@ export default function Checkout({ productList }) {
                       </Radio>
                     </div>
                     <div className="flex gap-2 border rounded-lg p-3 hover:border-purple-400 transition-colors">
-                      <Radio value="online" className="data-[selected=true]:text-purple-500">
+                      <Radio value="prepaid" className="data-[selected=true]:text-purple-500">
                         <div className="flex items-center gap-2">
                           <CreditCardIcon size={18} className="text-purple-500" />
                           <span className="font-medium text-gray-800">Pay Online</span>
@@ -246,7 +239,7 @@ export default function Checkout({ productList }) {
                   onClick={handlePlaceOrder}
                   className="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-lg transition-colors"
                 >
-                  {isLoading ? "Processing..." : `Place Order${paymentMethod === 'online' ? ' & Pay' : ''}`}
+                  {isLoading ? "Processing..." : `Place Order${paymentMethod === 'prepaid' ? ' & Pay' : ''}`}
                 </Button>
               </div>
             </section>

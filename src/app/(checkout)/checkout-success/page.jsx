@@ -41,84 +41,93 @@ export default function CheckoutSuccess() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 px-[10px] md:px-[30px] py-12">
-      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-purple-200 p-6 md:p-10">
-        <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-            <CheckCircle className="w-10 h-10 text-green-500" />
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white px-4 md:px-6 py-8">
+    <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md border border-purple-200 overflow-hidden">
+      {/* Compact Header Section with Green Icon */}
+      <div className="bg-white p-4 md:p-6 border-b border-purple-100">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center shadow-sm">
+            <CheckCircle className="w-16 h-16 text-green-500" />
           </div>
-          <h1 className="font-heading text-3xl text-gray-900 mb-2">Order Confirmed!</h1>
-          <p className="text-gray-600 max-w-md">
-            Thank you for your purchase. Your order has been successfully placed and will be processed soon.
-          </p>
+          <div className="text-left">
+            <h1 className="font-heading flex justify-center text-2xl text-gray-900 font-bold">Order Confirmed!</h1>
+            <p className="text-gray-600 flex justify-center text-sm">
+              Thank you for your purchase. Your order has been successfully placed.
+            </p>
+          </div>
         </div>
-
-        <div className="border-t border-b border-gray-100 py-6 mb-6">
-          <div className="flex flex-col md:flex-row justify-between mb-4">
-            <div>
-              <h2 className="text-sm text-gray-500">Order ID</h2>
-              <p className="font-medium text-gray-700">{orderId}</p>
+      </div>
+  
+      {/* Order Details Section - More Compact */}
+      <div className="p-4 md:p-6">
+        <div className="bg-purple-50 rounded-lg p-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+            <div className="bg-white p-3 rounded-md shadow-sm">
+              <h2 className="text-xs font-medium text-purple-600 mb-1">Order ID</h2>
+              <p className="font-bold text-gray-800 text-sm">{orderId}</p>
             </div>
-            <div className="mt-4 md:mt-0">
-              <h2 className="text-sm text-gray-500">Payment Method</h2>
-              <p className="font-medium text-gray-700">
-                {order?.paymentMode === 'cod' ? 'Cash on Delivery' : 'Online Payment'}
+            <div className="bg-white p-3 rounded-md shadow-sm">
+              <h2 className="text-xs font-medium text-purple-600 mb-1">Payment Method</h2>
+              <p className="font-bold text-gray-800 text-sm">
+                {order?.paymentMode === 'cod' ? 'Cash on Delivery' : 'Prepaid'}
               </p>
             </div>
           </div>
           
           {order?.products && (
-            <div className="mt-6">
-              <h2 className="font-heading text-lg text-gray-900 mb-4">Order Summary</h2>
-              <div className="space-y-4">
+            <div>
+              <h2 className="font-heading text-base text-gray-900 mb-2 font-bold">Order Summary</h2>
+              <div className="space-y-2">
                 {order.products.map((item, index) => (
-                  <div key={index} className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
+                  <div key={index} className="flex items-center gap-3 bg-white p-3 rounded-md shadow-sm">
+                    <div className="w-10 h-10 bg-gray-100 rounded-md flex-shrink-0 overflow-hidden">
                       {item.featureImageURL && (
                         <img src={item.featureImageURL} alt="" className="w-full h-full object-cover" />
                       )}
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-sm font-medium">{item.title}</h3>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-medium text-gray-800 truncate">{item.title}</h3>
                       <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-medium">₹{item.price * item.quantity}</p>
+                      <p className="text-sm font-bold text-gray-800">₹{item.price * item.quantity}</p>
                     </div>
                   </div>
                 ))}
               </div>
               
-              <div className="mt-6 pt-6 border-t border-gray-100">
-                <div className="flex justify-between items-center">
-                  <span className="font-heading text-lg text-gray-900">Total</span>
-                  <span className="font-heading text-lg text-purple-500">₹{order.totalAmount}</span>
+              <div className="mt-4 pt-3 border-t border-gray-200">
+                <div className="flex justify-between items-center bg-purple-100 p-3 rounded-md">
+                  <span className="font-heading text-base text-gray-900 font-bold">Total</span>
+                  <span className="font-heading text-base text-purple-600 font-bold">₹{order.totalAmount}</span>
                 </div>
               </div>
             </div>
           )}
         </div>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+  
+        {/* Buttons with MD Rounded Corners */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/myaccount">
             <Button
-              className="bg-gray-100 hover:bg-gray-200 text-gray-800 gap-2 px-6"
+              className="bg-gray-100 hover:bg-gray-200 text-gray-800 gap-2 px-4 py-2 rounded-md w-full sm:w-auto transition-all duration-200 text-sm font-medium"
               variant="flat"
             >
-              <ShoppingBag size={18} />
+              <ShoppingBag size={16} />
               View Orders
             </Button>
           </Link>
           <Link href="/">
             <Button
-              className="bg-purple-500 hover:bg-purple-600 text-white gap-2 px-6"
+              className="bg-purple-600 hover:bg-purple-700 text-white gap-2 px-4 py-2 rounded-md w-full sm:w-auto transition-all duration-200 text-sm font-medium shadow-sm"
             >
               Continue Shopping
-              <ArrowRight size={18} />
+              <ArrowRight size={16} />
             </Button>
           </Link>
         </div>
       </div>
     </div>
+  </div>
   );
 }

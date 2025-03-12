@@ -41,7 +41,7 @@ export const updateAdmin = async ({ data, image }) => {
  
   if (!data?.id) {
     throw new Error("ID is required");
-  }
+  } 
   if (!email?.id) {
     throw new Error("email is required");
   }

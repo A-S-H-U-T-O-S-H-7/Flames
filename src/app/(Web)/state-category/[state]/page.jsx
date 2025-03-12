@@ -2,7 +2,7 @@
 "use client";
 import React from 'react';
 import { useParams } from 'next/navigation';
-import StateListedProducts from '@/components/StateListedProduts';
+import StateListedProducts from '@/components/Collection/StateListedProduts';
 
 const Page = () => {
   const params = useParams();

@@ -1,5 +1,5 @@
 import { db } from "../firebase";
-import { doc, setDoc, Timestamp } from "firebase/firestore";
+import { doc, setDoc,updateDoc, Timestamp } from "firebase/firestore";
 
 export const createUser = async ({ uid, displayName, photoURL,email }) => {
   await setDoc(
@@ -13,6 +13,19 @@ export const createUser = async ({ uid, displayName, photoURL,email }) => {
     { merge: true }
   );
 };
+
+export const updateUser = async ({ uid, displayName, photoURL, email }) => {
+  await updateDoc(
+    doc(db, `users/${uid}`),
+    {
+      displayName: displayName,
+      email: email,
+      photoURL: photoURL ?? "",
+      timestampUpdate: Timestamp.now(),
+    }
+  );
+};
+
 
 export const updateFavorites = async ({ uid, list }) => {
   await setDoc(
