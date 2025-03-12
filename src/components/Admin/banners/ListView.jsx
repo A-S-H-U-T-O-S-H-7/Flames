@@ -10,7 +10,6 @@ import toast from "react-hot-toast";
 // Import our new components
 import SearchInput from "../SearchInput";
 import FilterSelect from "../FilterSelect";
-import SortButton from "../SortButton";
 import { Clock, Edit2, Trash2 } from "lucide-react";
 
 export default function ListView() {
@@ -20,7 +19,6 @@ export default function ListView() {
   const [filteredBanners, setFilteredBanners] = useState([]);
   const [sortOrder, setSortOrder] = useState("desc");
 
-  // Apply filters and sorting whenever banners, search query, selected type, or sort order changes
   useEffect(() => {
     if (!banners) return;
     
@@ -60,10 +58,7 @@ export default function ListView() {
     ["all", ...new Set(banners.map(banner => banner?.bannerType).filter(Boolean))] : 
     ["all"];
 
-  const toggleSortOrder = () => {
-    setSortOrder(sortOrder === "desc" ? "asc" : "desc");
-  };
-
+ 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-32">
@@ -104,12 +99,7 @@ export default function ListView() {
             className="w-full sm:w-48"
           />
           
-          {/* Sort order button component */}
-          <SortButton 
-            sortOrder={sortOrder}
-            onToggle={toggleSortOrder}
-            className="w-full sm:w-auto"
-          />
+         
         </div>
       </div>
       
@@ -118,12 +108,12 @@ export default function ListView() {
           <thead>
             <tr className="bg-[#22c7d5] text-white">
               <th className="px-4 py-3 text-left" style={{ width: "5%" }}>SN</th>
+              <th className="px-4 py-3 text-center" style={{ width: "15%" }}>Date & Time</th>
               <th className="px-4 py-3 text-center" style={{ width: "10%" }}>Image</th>
               <th className="px-4 py-3 text-left" style={{ width: "15%" }}>Title</th>
               <th className="px-4 py-3 text-left" style={{ width: "20%" }}>Sub Title</th>
               <th className="px-4 py-3 text-left" style={{ width: "10%" }}>Banner Type</th>
               <th className="px-4 py-3 text-left" style={{ width: "10%" }}>Button text</th>
-              <th className="px-4 py-3 text-center" style={{ width: "15%" }}>Date & Time</th>
               <th className="px-4 py-3 text-center" style={{ width: "15%" }}>Actions</th>
             </tr>
           </thead>
@@ -170,26 +160,39 @@ function Row({ item, index }) {
     router.push(`/admin/banners?id=${item?.id}`);
   };
 
-  // Format date and time
-  const formatDateTime = (timestamp) => {
-    if (!timestamp) return "N/A";
-    
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    
-    // Format: MM/DD/YY h:MMam/pm
-    return new Intl.DateTimeFormat('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      year: '2-digit',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    }).format(date);
-  };
+ // Format date and time from Firestore timestamp
+ const formatDateTime = (timestamp) => {
+  if (!timestamp || !timestamp.seconds) {
+    return "N/A";
+  }
+  
+  // Convert Firestore timestamp to JavaScript Date
+  const date = new Date(timestamp.seconds * 1000);
+  
+  // Format date in DD/MM/YY format
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear().toString().slice(-2);
+  
+  // Format time in h:MMam/pm format
+  let hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  
+  hours = hours % 12;
+  hours = hours ? hours : 12; // Convert 0 to 12
+  
+  return `${day}/${month}/${year} ${hours}:${minutes}${ampm}`;
+};
 
   return (
     <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
       <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{index + 1}</td>
+      <td className="px-4 py-3 text-center text-gray-800 dark:text-gray-200">
+        <div className="flex items-center justify-center gap-1">
+                    <span>{formatDateTime(item?.timestampCreate)}</span>
+        </div>
+      </td>
       <td className="px-4 py-3 text-center">
         <div className="flex justify-center">
           <img className="h-12 w-12 object-cover rounded-md shadow" src={item?.imageURL} alt="Banner" />
@@ -199,12 +202,7 @@ function Row({ item, index }) {
       <td className="px-4 py-3 text-gray-800 dark:text-gray-200 truncate max-w-[200px]" title={item?.subtitle}>{item?.subtitle}</td>
       <td className="px-4 py-3 text-gray-800 font-bold dark:text-green-600">{item?.bannerType}</td>
       <td className="px-4 py-3 text-gray-800 dark:text-gray-200 truncate max-w-[100px]" title={item?.buttontext}>{item?.buttontext}</td>
-      <td className="px-4 py-3 text-center text-gray-800 dark:text-gray-200">
-        <div className="flex items-center justify-center gap-1">
-          <Clock size={14} className="text-gray-400" />
-          <span>{formatDateTime(item?.createdAt)}</span>
-        </div>
-      </td>
+      
       <td className="px-4 py-3 flex justify-center gap-3">
         <Button
           onClick={handleUpdate}

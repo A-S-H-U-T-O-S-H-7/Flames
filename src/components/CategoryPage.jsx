@@ -70,6 +70,9 @@ const CategoryPage = ({ initialProducts, category }) => {
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
+
+
+          
         </div>
       </div>
 

@@ -7,6 +7,8 @@ import {
   onSnapshot,
   orderBy,
   query,
+  limit,
+  startAfter,
 } from "firebase/firestore";
 import useSWRSubscription from "swr/subscription";
 
@@ -27,22 +29,49 @@ export function useUser({ uid }) {
   return { data, error: error?.message, isLoading: data === undefined };
 }
 
-export function useUsers() {
-  const { data, error } = useSWRSubscription(["users"], ([path], { next }) => {
-    const q = query(collection(db, path), orderBy("timestampCreate", "desc"));
-    const unsub = onSnapshot(
-      q,
-      (snapshot) =>
-        next(
-          null,
-          snapshot.docs.length === 0
-            ? null
-            : snapshot.docs.map((snap) => snap.data())
-        ),
-      (err) => next(err, null)
-    );
-    return () => unsub();
-  });
+export function useUsers({ pageLimit, lastSnapDoc }) {
+  const { data, error } = useSWRSubscription(
+    ["users", pageLimit, lastSnapDoc],
+    ([path, pageLimit, lastSnapDoc], { next }) => {
+      const ref = collection(db, path);
+      let q = query(
+        ref, 
+        orderBy("timestampCreate", "desc"),
+        limit(pageLimit ?? 10)
+      );
 
-  return { data, error: error?.message, isLoading: data === undefined };
+      if (lastSnapDoc) {
+        q = query(
+          ref,
+          orderBy("timestampCreate", "desc"),
+          startAfter(lastSnapDoc),
+          limit(pageLimit ?? 10)
+        );
+      }
+
+      const unsub = onSnapshot(
+        q,
+        (snapshot) =>
+          next(null, {
+            list:
+              snapshot.docs.length === 0
+                ? null
+                : snapshot.docs.map((snap) => snap.data()),
+            lastSnapDoc:
+              snapshot.docs.length === 0
+                ? null
+                : snapshot.docs[snapshot.docs.length - 1],
+          }),
+        (err) => next(err, null)
+      );
+      return () => unsub();
+    }
+  );
+
+  return {
+    data: data?.list,
+    lastSnapDoc: data?.lastSnapDoc,
+    error: error?.message,
+    isLoading: data === undefined,
+  };
 }

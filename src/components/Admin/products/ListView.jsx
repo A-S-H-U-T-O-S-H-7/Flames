@@ -7,10 +7,14 @@ import { Edit2, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import ProductSearchFilter from "./ProductSearchFilter";
 
 export default function ListView() {
   const [pageLimit, setPageLimit] = useState(10);
   const [lastSnapDocList, setLastSnapDocList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilters, setActiveFilters] = useState({});
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
     setLastSnapDocList([]);
@@ -26,12 +30,103 @@ export default function ListView() {
     lastSnapDoc: lastSnapDocList?.length === 0 ? null : lastSnapDocList[lastSnapDocList?.length - 1],
   });
 
+  useEffect(() => {
+    if (products) {
+      let result = [...products];
+      
+      // Apply search filter
+      if (searchTerm) {
+        const lowercasedSearch = searchTerm.toLowerCase();
+        result = result.filter(item => 
+          item?.title?.toLowerCase().includes(lowercasedSearch)
+        );
+      }
+      
+      // Apply status filter
+      if (activeFilters.status) {
+        if (activeFilters.status === 'available') {
+          result = result.filter(item => (item?.stock - (item?.orders ?? 0)) > 0);
+        } else if (activeFilters.status === 'outOfStock') {
+          result = result.filter(item => (item?.stock - (item?.orders ?? 0)) <= 0);
+        }
+      }
+      
+      // Apply featured filter
+      if (activeFilters.featured) {
+        if (activeFilters.featured === 'featured') {
+          result = result.filter(item => item?.isFeatured);
+        } else if (activeFilters.featured === 'notFeatured') {
+          result = result.filter(item => !item?.isFeatured);
+        }
+      }
+      
+      // Apply new arrival filter
+      if (activeFilters.newArrival) {
+        if (activeFilters.newArrival === 'newArrival') {
+          result = result.filter(item => item?.isNewArrival);
+        } else if (activeFilters.newArrival === 'notNewArrival') {
+          result = result.filter(item => !item?.isNewArrival);
+        }
+      }
+      
+      // Apply category filter
+      if (activeFilters.categoryId) {
+        result = result.filter(item => item?.categoryId === activeFilters.categoryId);
+      }
+      
+      // Apply brand filter
+      if (activeFilters.brandId) {
+        result = result.filter(item => item?.brandId === activeFilters.brandId);
+      }
+      
+      // Apply color filter
+      if (activeFilters.color) {
+        result = result.filter(item => item?.color === activeFilters.color);
+      }
+      
+      // Apply occasion filter
+      if (activeFilters.occasion) {
+        result = result.filter(item => item?.occasion === activeFilters.occasion);
+      }
+      
+      // Apply price range filter
+      if (activeFilters.priceRange) {
+        if (activeFilters.priceRange.min) {
+          result = result.filter(item => item?.salePrice >= Number(activeFilters.priceRange.min));
+        }
+        if (activeFilters.priceRange.max) {
+          result = result.filter(item => item?.salePrice <= Number(activeFilters.priceRange.max));
+        }
+      }
+      
+      // Apply stock filter
+      if (activeFilters.stock) {
+        if (activeFilters.stock.min) {
+          result = result.filter(item => item?.stock >= Number(activeFilters.stock.min));
+        }
+        if (activeFilters.stock.max) {
+          result = result.filter(item => item?.stock <= Number(activeFilters.stock.max));
+        }
+      }
+      
+      setFilteredProducts(result);
+    }
+  }, [products, searchTerm, activeFilters]);
+
   const handleNextPage = () => {
     setLastSnapDocList([...lastSnapDocList, lastSnapDoc]);
   };
 
   const handlePrePage = () => {
     setLastSnapDocList(lastSnapDocList.slice(0, -1));
+  };
+
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+  };
+
+  const handleFilter = (filters) => {
+    setActiveFilters(filters);
   };
 
   if (isLoading) {
@@ -51,67 +146,78 @@ export default function ListView() {
   }
 
   return (
-    <div className="flex-1 flex flex-col gap-4 bg-white dark:bg-[#0e1726] rounded-xl p-4 border border-purple-500/30 dark:border-[#22c7d5] shadow-sm transition-all duration-200">
-      <div className="w-full overflow-x-auto">
-        <div className="min-w-[800px]"> {/* Set minimum width for the table container */}
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50 dark:bg-[#1e2737]">
-                <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300 rounded-l-lg">#</th>
-                <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300">Image</th>
-                <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300">Title</th>
-                <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300">Price</th>
-                <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300">Stock</th>
-                <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300">Orders</th>
-                <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300">Status</th>
-                <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300 rounded-r-lg">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-              {products?.map((item, index) => (
-                <Row
-                  key={item?.id}
-                  item={item}
-                  index={index + lastSnapDocList?.length * pageLimit}
-                />
-              ))}
-            </tbody>
-          </table>
+    <div className="flex flex-col gap-4">
+      <ProductSearchFilter onSearch={handleSearch} onFilter={handleFilter} />
+      
+      <div className="flex-1 flex flex-col gap-4 bg-white dark:bg-[#0e1726] rounded-xl p-4 border border-purple-500/30 dark:border-[#22c7d5] shadow-sm transition-all duration-200">
+        <div className="w-full overflow-x-auto">
+          <div className="min-w-[800px]"> {/* Set minimum width for the table container */}
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-50 dark:bg-[#1e2737]">
+                  <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300 rounded-l-lg">#</th>
+                  <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300">Image</th>
+                  <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300">Title</th>
+                  <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300">Price</th>
+                  <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300">Stock</th>
+                  <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300">Orders</th>
+                  <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300">Status</th>
+                  <th className="font-semibold px-4 py-3 text-center text-gray-600 dark:text-gray-300 rounded-r-lg">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                {filteredProducts?.map((item, index) => (
+                  <Row
+                    key={item?.id}
+                    item={item}
+                    index={index + lastSnapDocList?.length * pageLimit}
+                  />
+                ))}
+                {filteredProducts.length === 0 && (
+                  <tr>
+                    <td colSpan="8" className="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
+                      No products found matching your criteria
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2 pt-4 border-t border-gray-100 dark:border-gray-700">
-        <Button
-          isDisabled={isLoading || lastSnapDocList?.length === 0}
-          onClick={handlePrePage}
-          size="sm"
-          variant="bordered"
-          className="w-full sm:w-auto flex items-center gap-1 border rounded-lg border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
-        >
-          <ChevronLeft size={16} /> Previous
-        </Button>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+          <Button
+            isDisabled={isLoading || lastSnapDocList?.length === 0}
+            onClick={handlePrePage}
+            size="sm"
+            variant="bordered"
+            className="w-full sm:w-auto flex items-center gap-1 border rounded-lg border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
+          >
+            <ChevronLeft size={16} /> Previous
+          </Button>
 
-        <select
-          value={pageLimit}
-          onChange={(e) => setPageLimit(Number(e.target.value))}
-          className="w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e2737] text-gray-700 dark:text-gray-300 focus:outline-none focus:border-[#22c7d5] shadow-sm hover:shadow-md transition-shadow"
-        >
-          <option value={3}>3 per page</option>
-          <option value={5}>5 per page</option>
-          <option value={10}>10 per page</option>
-          <option value={20}>20 per page</option>
-          <option value={100}>100 per page</option>
-        </select>
+          <select
+            value={pageLimit}
+            onChange={(e) => setPageLimit(Number(e.target.value))}
+            className="w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e2737] text-gray-700 dark:text-gray-300 focus:outline-none focus:border-[#22c7d5] shadow-sm hover:shadow-md transition-shadow"
+          >
+            <option value={3}>3 per page</option>
+            <option value={5}>5 per page</option>
+            <option value={10}>10 per page</option>
+            <option value={20}>20 per page</option>
+            <option value={100}>100 per page</option>
+          </select>
 
-        <Button
-          isDisabled={isLoading || products?.length === 0}
-          onClick={handleNextPage}
-          size="sm"
-          variant="bordered"
-          className="w-full sm:w-auto flex items-center gap-1 border rounded-lg border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
-        >
-          Next <ChevronRight size={16} />
-        </Button>
+          <Button
+            isDisabled={isLoading || products?.length === 0}
+            onClick={handleNextPage}
+            size="sm"
+            variant="bordered"
+            className="w-full sm:w-auto flex items-center gap-1 border rounded-lg border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
+          >
+            Next <ChevronRight size={16} />
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -153,13 +259,20 @@ function Row({ item, index }) {
         </div>
       </td>
       <td className="px-4 py-3 text-center text-gray-700 dark:text-gray-200">
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2 flex-wrap">
           {item?.title}
-          {item?.isFeatured && (
-            <span className="px-2 py-0.5 text-xs font-medium text-white bg-gradient-to-r from-[#22c7d5] to-[#1aa5b5] rounded-full">
-              Featured
-            </span>
-          )}
+          <div className="flex gap-1 flex-wrap">
+            {item?.isFeatured && (
+              <span className="px-2 py-0.5 text-xs font-medium text-white bg-gradient-to-r from-[#22c7d5] to-[#1aa5b5] rounded-full">
+                Featured
+              </span>
+            )}
+            {item?.isNewArrival && (
+              <span className="px-2 py-0.5 text-xs font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500 rounded-full">
+                New
+              </span>
+            )}
+          </div>
         </div>
       </td>
       <td className="px-4 py-3 text-center text-gray-700 dark:text-gray-200">

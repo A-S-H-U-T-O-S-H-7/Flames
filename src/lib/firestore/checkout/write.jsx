@@ -89,7 +89,7 @@ export const createCheckoutOnlineAndGetId = async ({ uid, products, address, tra
       line_items,
       address,
       total,
-      paymentMode: "online",
+      paymentMode: "prepaid",
       paymentStatus: "paid",
       transactionId,
       createdAt: Timestamp.now(),

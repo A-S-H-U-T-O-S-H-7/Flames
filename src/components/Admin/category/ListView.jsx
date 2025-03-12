@@ -5,7 +5,7 @@ import { deleteCategory } from "@/lib/firestore/categories/write";
 import { Button, CircularProgress } from "@nextui-org/react";
 import { Edit2, Trash2, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 
 export default function ListView() {
@@ -13,10 +13,25 @@ export default function ListView() {
   const [lastSnapDocList, setLastSnapDocList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCategories, setFilteredCategories] = useState([]);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const tableRef = useRef(null);
 
   // Reset pagination when page limit changes
   useEffect(() => {
-    setLastSnapDocList([]);
+    setIsTransitioning(true);
+    // Add fade-out effect
+    if (tableRef.current) {
+      tableRef.current.style.opacity = '0';
+      tableRef.current.style.transform = 'translateY(10px)';
+    }
+    
+    // Small delay before resetting pagination to allow animation to complete
+    const timer = setTimeout(() => {
+      setLastSnapDocList([]);
+      // After data is fetched, the fade-in will happen via the useEffect below
+    }, 300);
+    
+    return () => clearTimeout(timer);
   }, [pageLimit]);
 
   // Get categories with pagination
@@ -44,15 +59,40 @@ export default function ListView() {
     }
     
     setFilteredCategories(filtered);
+    
+    // Add fade-in effect when new data is loaded
+    if (tableRef.current && isTransitioning) {
+      setTimeout(() => {
+        tableRef.current.style.opacity = '1';
+        tableRef.current.style.transform = 'translateY(0)';
+        setIsTransitioning(false);
+      }, 50);
+    }
   }, [categories, searchQuery]);
 
   // Pagination handlers
   const handleNextPage = () => {
-    setLastSnapDocList([...lastSnapDocList, lastSnapDoc]);
+    setIsTransitioning(true);
+    if (tableRef.current) {
+      tableRef.current.style.opacity = '0';
+      tableRef.current.style.transform = 'translateY(10px)';
+    }
+    
+    setTimeout(() => {
+      setLastSnapDocList([...lastSnapDocList, lastSnapDoc]);
+    }, 300);
   };
 
   const handlePrePage = () => {
-    setLastSnapDocList(lastSnapDocList.slice(0, -1));
+    setIsTransitioning(true);
+    if (tableRef.current) {
+      tableRef.current.style.opacity = '0';
+      tableRef.current.style.transform = 'translateY(10px)';
+    }
+    
+    setTimeout(() => {
+      setLastSnapDocList(lastSnapDocList.slice(0, -1));
+    }, 300);
   };
 
   // Format date and time from Firestore timestamp
@@ -143,7 +183,11 @@ export default function ListView() {
         </div>
       </div>
       
-      <div className="overflow-x-auto">
+      <div 
+        ref={tableRef} 
+        className="overflow-x-auto transition-all duration-300 ease-in-out" 
+        style={{ opacity: isTransitioning ? 0 : 1, transform: isTransitioning ? 'translateY(10px)' : 'translateY(0)' }}
+      >
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-[#22c7d5] text-white">
@@ -186,7 +230,7 @@ export default function ListView() {
       {/* Pagination controls */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2 pt-4 border-t border-gray-100 dark:border-gray-700">
         <Button
-          isDisabled={isLoading || lastSnapDocList?.length === 0}
+          isDisabled={isLoading || lastSnapDocList?.length === 0 || isTransitioning}
           onClick={handlePrePage}
           size="sm"
           variant="bordered"
@@ -199,6 +243,7 @@ export default function ListView() {
           value={pageLimit}
           onChange={(e) => setPageLimit(Number(e.target.value))}
           className="w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e2737] text-gray-700 dark:text-gray-300 focus:outline-none focus:border-[#22c7d5] shadow-sm hover:shadow-md transition-shadow"
+          disabled={isTransitioning}
         >
           <option value={3}>3 per page</option>
           <option value={5}>5 per page</option>
@@ -208,7 +253,7 @@ export default function ListView() {
         </select>
 
         <Button
-          isDisabled={isLoading || filteredCategories?.length === 0 || !lastSnapDoc}
+          isDisabled={isLoading || filteredCategories?.length === 0 || !lastSnapDoc || isTransitioning}
           onClick={handleNextPage}
           size="sm"
           variant="bordered"
