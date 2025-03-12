@@ -11,7 +11,6 @@ import toast from "react-hot-toast";
 // Import our reusable components
 import SearchInput from "../SearchInput";
 import FilterSelect from "../FilterSelect";
-import SortButton from "../SortButton";
 
 export default function ListView() {
   const [pageLimit, setPageLimit] = useState(10);
