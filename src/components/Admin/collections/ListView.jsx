@@ -3,7 +3,7 @@
 import { useCollections } from "@/lib/firestore/collections/read";
 import { deleteCollection } from "@/lib/firestore/collections/write";
 import { Button, CircularProgress } from "@nextui-org/react";
-import { Edit2, Trash2, Search, Filter, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { Edit2, Trash2, Search, Filter, ArrowDown, ArrowUp, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 // Import our reusable components
 import SearchInput from "../SearchInput";
 import FilterSelect from "../FilterSelect";
+import SortButton from "../SortButton";
 
 export default function ListView() {
   const [pageLimit, setPageLimit] = useState(10);
@@ -18,6 +19,8 @@ export default function ListView() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedShowcased, setSelectedShowcased] = useState("all");
   const [filteredCollections, setFilteredCollections] = useState([]);
+  const [sortOrder, setSortOrder] = useState("desc"); // Default sort: newest first
+  const [sortField, setSortField] = useState("createdAt"); // Default sort field
 
   // Reset pagination when page limit changes
   useEffect(() => {
@@ -35,7 +38,7 @@ export default function ListView() {
     lastSnapDoc: lastSnapDocList?.length === 0 ? null : lastSnapDocList[lastSnapDocList?.length - 1],
   });
 
-  // Apply filters whenever collections, search query, or selected type changes
+  // Apply filters and sorting whenever collections, search query, selected type, or sort order changes
   useEffect(() => {
     if (!collections) return;
     
@@ -56,8 +59,30 @@ export default function ListView() {
       );
     }
     
+    // Sort collections based on selected field and order
+    filtered.sort((a, b) => {
+      let valueA, valueB;
+      
+      if (sortField === "createdAt") {
+        valueA = a?.createdAt?.seconds ? new Date(a.createdAt.seconds * 1000) : new Date(0);
+        valueB = b?.createdAt?.seconds ? new Date(b.createdAt.seconds * 1000) : new Date(0);
+      } else if (sortField === "productsCount") {
+        valueA = a?.products?.length || 0;
+        valueB = b?.products?.length || 0;
+      } else if (sortField === "title") {
+        valueA = a?.title || "";
+        valueB = b?.title || "";
+      }
+      
+      if (sortOrder === "asc") {
+        return valueA > valueB ? 1 : -1;
+      } else {
+        return valueA < valueB ? 1 : -1;
+      }
+    });
+    
     setFilteredCollections(filtered);
-  }, [collections, searchQuery, selectedShowcased]);
+  }, [collections, searchQuery, selectedShowcased, sortOrder, sortField]);
 
   // Pagination handlers
   const handleNextPage = () => {
@@ -93,6 +118,17 @@ export default function ListView() {
     return `${day}/${month}/${year} ${hours}:${minutes}${ampm}`;
   };
 
+
+  // Sort field options
+  const handleSortFieldChange = (field) => {
+    setSortField(field);
+  };
+
+  // Toggle sort order
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === "desc" ? "asc" : "desc");
+  };
+
   if (isLoading && lastSnapDocList.length === 0) {
     return (
       <div className="flex justify-center items-center h-32">
@@ -111,7 +147,7 @@ export default function ListView() {
 
   return (
     <div className="flex-1 flex flex-col gap-6 p-5 bg-white dark:bg-[#0e1726] rounded-xl shadow-lg transition-all duration-200 ease-in-out">
-      {/* Header with title, search and filter */}
+      {/* Header with title, search, filter and sort */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
           Collections
@@ -136,6 +172,29 @@ export default function ListView() {
             options={["all", "yes", "no"]}
             defaultOptionLabel="All Showcased"
             className="w-full sm:w-48"
+          />
+          
+          {/* Sort field selector */}
+          <FilterSelect 
+            value={sortField}
+            onChange={handleSortFieldChange}
+            options={[
+              { value: "createdAt", label: "Date" },
+              { value: "title", label: "Title" },
+              { value: "productsCount", label: "Products Count" }
+            ]}
+            displayField="label"
+            valueField="value"
+            defaultOptionLabel="Sort By"
+            icon={<Filter size={18} />}
+            className="w-full sm:w-36"
+          />
+          
+          {/* Sort order button component */}
+          <SortButton 
+            sortOrder={sortOrder}
+            onToggle={toggleSortOrder}
+            className="w-full sm:w-auto"
           />
         </div>
       </div>
@@ -248,6 +307,7 @@ function Row({ item, index, formatDateTime }) {
       </td>
       <td className="px-4 py-3 text-center text-gray-800 dark:text-gray-200">
         <div className="flex items-center justify-center gap-1">
+          
           {formatDateTime(item?.timestampCreate)}
         </div>
       </td>
