@@ -47,6 +47,6 @@ export const getShowcasedCollections = async () => {
     };
   });
   
-  console.log("Showcased collections:", result);
+  
   return result;
 };

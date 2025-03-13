@@ -12,7 +12,7 @@ const collections = await getCollections()
     <div>
       <Navbar categories={categories} collections={collections}/>
       {children}
-      <Footer/>
+      <Footer categories={categories}/>
       
     </div>
   );

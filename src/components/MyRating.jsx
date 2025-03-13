@@ -3,8 +3,8 @@
 import { Rating } from "@mui/material";
 import { useEffect, useState } from "react";
 
-export default function MyRating({ value }) {
-  const [visible, setVisible] = useState(false);
+export default function MyRating({ value,size = "medium" }) {
+  const [visible, setVisible] =  useState(false);
   useEffect(() => {
     setVisible(true);
   }, []);
@@ -16,6 +16,7 @@ export default function MyRating({ value }) {
       name="product-rating"
       defaultValue={value}
       precision={0.5}
+      size={size}
       readOnly
     />
   );

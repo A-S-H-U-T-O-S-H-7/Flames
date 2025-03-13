@@ -43,3 +43,27 @@ ProseMirror {
   height: 0;
 }
 
+/* Add this to your global CSS */
+.search-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+.search-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.search-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.search-exit {
+  opacity: 1;
+}
+
+.search-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+

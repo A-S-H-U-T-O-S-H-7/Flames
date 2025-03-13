@@ -8,18 +8,30 @@ import LogoutButton from "./LogoutButton";
 import AuthContextProvider from "@/context/AuthContext";
 import HeaderClientButtons from "./HeaderClientButtons";
 import AdminButton from "./AdminButton";
+import { useRouter } from "next/navigation";
+
 
 const searchKeywords = ["jewelry", "accessories", "home decor", "rings", "earrings"];
 
 const Navbar = ({categories, collections}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState(searchKeywords[0]);
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState({ 
     category: false, 
     collection: false,
     mobileCat: false,
     mobileColl: false 
   });
+
+  const handleSearch = (e) => {
+    if (e.key === "Enter" || e.type === "click") {
+      if (searchQuery.trim()) {
+        router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+      }
+    }
+  };
 
 
   useEffect(() => {
@@ -87,13 +99,19 @@ const Navbar = ({categories, collections}) => {
 
             {/* Desktop Search Bar */}
             <div className="relative w-64">
-              <input
-                type="text"
-                placeholder="Search products..."
-                className="w-full text-gray-800 font-body px-4 py-1.5 rounded-lg border border-purple-400 focus:outline-none focus:border-purple-500"
-              />
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-purple-600" />
-            </div>
+  <input
+    type="text"
+    placeholder={`Search for ${searchKeyword}...`}
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    onKeyDown={handleSearch}
+    className="w-full text-gray-800 font-body px-4 py-1.5 rounded-lg border border-purple-400 focus:outline-none focus:border-purple-500"
+  />
+  <Search 
+    className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-purple-600 cursor-pointer" 
+    onClick={handleSearch}
+  />
+</div>
           </div>
 
           {/* Icons */}
@@ -129,15 +147,21 @@ const Navbar = ({categories, collections}) => {
 
         {/* Mobile Search Bar (Below Navbar) */}
         <div className="lg:hidden py-2 px-2 border-t border-purple-200">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search products..."
-              className="w-full px-4 py-1.5 text-gray-800 rounded-lg border-2 border-purple-200 focus:outline-none focus:border-purple-500"
-            />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-purple-700" />
-          </div>
-        </div>
+  <div className="relative">
+    <input
+      type="text"
+      placeholder={`Search for ${searchKeyword}...`}
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      onKeyDown={handleSearch}
+      className="w-full px-4 py-1.5 text-gray-800 rounded-lg border-2 border-purple-200 focus:outline-none focus:border-purple-500"
+    />
+    <Search 
+      className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-purple-700 cursor-pointer" 
+      onClick={handleSearch}
+    />
+  </div>
+</div>
       </nav>
 
       {/* Mobile Sidebar - Keeping the rest of the code unchanged */}

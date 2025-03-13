@@ -1,6 +1,9 @@
 import AuthContextProvider from "@/context/AuthContext";
 import Link from "next/link";
 import FavoriteButton from "./FavoriteButton";
+import MyRating from "./MyRating";
+import { Suspense } from "react";
+import { getProductReviewCounts } from "@/lib/firestore/products/count/read";
 
 const ProductCard = ({ product }) => {
   return (
@@ -20,7 +23,7 @@ const ProductCard = ({ product }) => {
           </AuthContextProvider>
         </div>
       </div>
-
+      
       {/* Product Info */}
       <div className="px-4 py-2 space-y-2">
         {/* Title */}
@@ -29,6 +32,9 @@ const ProductCard = ({ product }) => {
             {product?.title}
           </h2>
         </Link>
+        <Suspense>
+        <RatingReview product={product} />
+      </Suspense>
 
         {/* Short Description */}
         <p className="text-sm text-gray-600 font-body line-clamp-2">
@@ -53,3 +59,16 @@ const ProductCard = ({ product }) => {
 };
 
 export default ProductCard;
+
+async function RatingReview({ product }) {
+  const counts = await getProductReviewCounts({ productId: product?.id });
+  return (
+    <div className="flex gap-1 items-center">
+      <MyRating value={counts?.averageRating ?? 0} size="small" />
+      <h1 className="text-xs text-gray-400">
+        (<span>{counts?.averageRating?.toFixed(1)}</span>
+        )
+      </h1>
+    </div>
+  );
+}
