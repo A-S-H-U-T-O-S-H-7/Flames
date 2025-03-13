@@ -25,8 +25,12 @@ export const getCategories = async () => {
 
     return {
       ...data,
-      timestampCreate: data.timestampCreate ? data.timestampCreate.toDate().toISOString() : null, 
-      timestampUpdate: data.timestampUpdate ? data.timestampUpdate.toDate().toISOString() : null, 
+      timestampCreate: data.timestampCreate && typeof data.timestampCreate.toDate === 'function' 
+        ? data.timestampCreate.toDate().toISOString() 
+        : null, 
+      timestampUpdate: data.timestampUpdate && typeof data.timestampUpdate.toDate === 'function' 
+        ? data.timestampUpdate.toDate().toISOString() 
+        : null, 
     };
   });
 };
