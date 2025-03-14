@@ -10,7 +10,6 @@ import HeaderClientButtons from "./HeaderClientButtons";
 import AdminButton from "./AdminButton";
 import { useRouter } from "next/navigation";
 
-
 const searchKeywords = ["jewelry", "accessories", "home decor", "rings", "earrings"];
 
 const Navbar = ({categories, collections}) => {
@@ -32,7 +31,6 @@ const Navbar = ({categories, collections}) => {
       }
     }
   };
-
 
   useEffect(() => {
     let index = 0;
@@ -73,7 +71,7 @@ const Navbar = ({categories, collections}) => {
          <ChevronDown className="h-4 w-4" />
         </button>
       <div className="hidden group-hover:grid grid-cols-2 absolute left-0 mt-0 w-64 bg-white shadow-xl rounded-md py-2 border border-purple-100">
-        {categories.map((category) => (
+        {categories?.map((category) => (
           <Link key={category.id} href={`/category/${category?.id}`} className="block px-4 py-2 text-purple-800 hover:bg-purple-50">
             {category.name}
           </Link>
@@ -89,8 +87,8 @@ const Navbar = ({categories, collections}) => {
                 <ChevronDown className="h-4 w-4" />
               </button>
               <div className="hidden group-hover:grid grid-cols-1 absolute left-0 mt-0 w-48 bg-white shadow-xl rounded-md py-2 border border-purple-100">
-        {collections.map((collection) => (
-          <Link key={collection.id} href={`/category/${collection?.id}`} className="block px-4 py-2 text-purple-800 hover:bg-purple-50">
+        {collections?.map((collection) => (
+          <Link key={collection.id} href={`/collections/${collection?.id}`} className="block px-4 py-2 text-purple-800 hover:bg-purple-50">
             {collection.title}
           </Link>
         ))}
@@ -230,8 +228,8 @@ const Navbar = ({categories, collections}) => {
                     </button>
                     {isDropdownOpen.mobileCat && (
                       <div className="bg-purple-50">
-                        {categories.map((category, index) => (
-                          <Link key={index} href={`/category/${category.slug}`} className="block px-8 py-2 text-purple-900 font-heading">
+                        {categories?.map((category) => (
+                          <Link key={category.id} href={`/category/${category?.id}`} className="block px-8 py-2 text-purple-900 font-heading">
                             {category.name}
                           </Link>
                         ))}
@@ -250,8 +248,11 @@ const Navbar = ({categories, collections}) => {
                     </button>
                     {isDropdownOpen.mobileColl && (
                       <div className="bg-purple-50">
-                        <Link href="/new-arrival-collection" className="block px-8 py-2 text-purple-900 font-heading">New Arrivals</Link>
-                        <Link href="/featured-collection" className="block px-8 py-2 text-purple-900 font-heading">Best Sellers</Link>
+                        {collections?.map((collection) => (
+                          <Link key={collection.id} href={`/collections/${collection?.id}`} className="block px-8 py-2 text-purple-900 font-heading">
+                            {collection.title}
+                          </Link>
+                        ))}
                       </div>
                     )}
                   </div>

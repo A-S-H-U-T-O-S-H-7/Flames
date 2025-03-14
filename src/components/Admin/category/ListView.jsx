@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 
 export default function ListView() {
-  const [pageLimit, setPageLimit] = useState(10);
+  const [pageLimit, setPageLimit] = useState(5);
   const [lastSnapDocList, setLastSnapDocList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCategories, setFilteredCategories] = useState([]);

@@ -42,7 +42,7 @@ const CustomerReviews = () => {
       age: 26,
       review:
         "On Valentine’s Day, my husband gifted me a necklace. I just LOVE how nice it looks on me.",
-      image: "/review4.jpg",
+      image: "/demo2.jpeg",
     },
   ];
 

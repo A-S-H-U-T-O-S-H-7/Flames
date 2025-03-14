@@ -2,6 +2,7 @@
 
 import { getCategory } from "@/lib/firestore/categories/read_server";
 import { createNewCategory, updateCategory } from "@/lib/firestore/categories/write";
+import { revalidatePath } from "@/utils/revalidation";
 import { Button } from "@nextui-org/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -46,6 +47,9 @@ export default function Form() {
     setIsLoading(true);
     try {
       await createNewCategory({ data, image });
+      // Add revalidation for pages that show categories
+      await revalidatePath('/');
+      await revalidatePath('/categories');
       toast.success("Successfully Created");
       setData(null); 
       setImage(null);
@@ -59,6 +63,10 @@ export default function Form() {
     setIsLoading(true);
     try {
       await updateCategory({ data, image });
+      // Add revalidation for updated pages
+      await revalidatePath('/');
+      await revalidatePath('/categories');
+      await revalidatePath(`/category/${data.id}`);
       toast.success("Successfully Updated");
       setData(null);
       setImage(null);
@@ -89,6 +97,8 @@ export default function Form() {
           <div className="flex justify-center items-center border-2 border-dashed border-purple-500 dark:border-[#22c7d5] p-6 rounded-lg cursor-pointer" onClick={() => document.getElementById('category-image').click()}>
             {image ? (
               <img className="h-20 rounded-lg shadow-md" src={URL.createObjectURL(image)} alt="Preview" />
+            ) : data?.imageURL ? (
+              <img className="h-20 rounded-lg shadow-md" src={data.imageURL} alt="Current" />
             ) : (
               <div className="flex flex-col items-center gap-2">
                 <span className="text-4xl text-gray-400">+</span>
