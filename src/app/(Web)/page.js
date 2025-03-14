@@ -2,7 +2,6 @@
 import React from 'react'
 import NewArrivalSection from '@/components/NewArrivalSection'
 import GiftsSection from '@/components/HomeGiftSection'
-import CollectionSection from '@/components/Collection/CollectionSection'
 import InstaBanner from '@/components/InstaBanner'
 import FeaturedCollection from '@/components/FeaturedCollection'
 import CustomerReviews from '@/components/CustomerReview'
@@ -17,7 +16,6 @@ export default async function Home() {
 
 const newArrivalProducts = await getNewArrivalProducts()
 const featuredProducts = await getFeaturedProducts()
-const showcasedCollections = await getShowcasedCollections()
 
 
   return (
