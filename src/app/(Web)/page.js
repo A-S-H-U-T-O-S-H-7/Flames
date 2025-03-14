@@ -11,16 +11,15 @@ import Category from '@/components/CategoryCard'
 import CustomerReviews from '@/components/CustomerReview'
 import { getBanners } from '@/lib/firestore/banners/read_server'
 import { getCategories } from '@/lib/firestore/categories/read_server'
-import { useCategories } from '@/lib/firestore/categories/read'
 import { getFeaturedProducts, getNewArrivalProducts } from '@/lib/firestore/products/read_server'
 import { getCollections } from '@/lib/firestore/collections/read_server'
 import { getShowcasedCollections } from '@/lib/firestore/collections/read_server'
 import { getFaqs } from '@/lib/firestore/faqs/read_server'
+import CategoryClientWrapper from '@/components/CategoryClientWrapper'
 
 
 export default async function Home() {
 
-const categories = await getCategories()
 const banners = await getBanners()
 const newArrivalProducts = await getNewArrivalProducts()
 const featuredProducts = await getFeaturedProducts()
@@ -31,7 +30,7 @@ const faqs = await getFaqs()
   return (
     <div>
       <HeroBanner banners={banners} />
-      <Category categories={categories}/>
+      <CategoryClientWrapper />
       <NewArrivalSection newArrivalProducts = {newArrivalProducts} />
       <GiftsSection/>
       <InstaBanner/>
