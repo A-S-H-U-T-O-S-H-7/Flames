@@ -1,6 +1,5 @@
 
 import React from 'react'
-import BannersClientWrapper from "@/components/BannersClientWrapper";
 import NewArrivalSection from '@/components/NewArrivalSection'
 import GiftsSection from '@/components/HomeGiftSection'
 import CollectionSection from '@/components/Collection/CollectionSection'
@@ -12,6 +11,7 @@ import { getFeaturedProducts, getNewArrivalProducts } from '@/lib/firestore/prod
 import { getShowcasedCollections } from '@/lib/firestore/collections/read_server'
 import { getFaqs } from '@/lib/firestore/faqs/read_server'
 import CategoryClientWrapper from '@/components/ClientCode/CategoryClientWrapper'
+import BannersClientWrapper from '@/components/ClientCode/BannersClientWrapper'
 
 
 export default async function Home() {
