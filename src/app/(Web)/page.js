@@ -5,13 +5,12 @@ import GiftsSection from '@/components/HomeGiftSection'
 import CollectionSection from '@/components/Collection/CollectionSection'
 import InstaBanner from '@/components/InstaBanner'
 import FeaturedCollection from '@/components/FeaturedCollection'
-import FAQ from '@/components/FAQ'
 import CustomerReviews from '@/components/CustomerReview'
 import { getFeaturedProducts, getNewArrivalProducts } from '@/lib/firestore/products/read_server'
-import { getShowcasedCollections } from '@/lib/firestore/collections/read_server'
-import { getFaqs } from '@/lib/firestore/faqs/read_server'
 import CategoryClientWrapper from '@/components/ClientCode/CategoryClientWrapper'
 import BannersClientWrapper from '@/components/ClientCode/BannersClientWrapper'
+import FaqsClientWrapper from '@/components/ClientCode/FaqsClientWrapper'
+import ShowcasedCollectionsClientWrapper from '@/components/ClientCode/ShowcasedCollectionsClientWrapper'
 
 
 export default async function Home() {
@@ -19,7 +18,6 @@ export default async function Home() {
 const newArrivalProducts = await getNewArrivalProducts()
 const featuredProducts = await getFeaturedProducts()
 const showcasedCollections = await getShowcasedCollections()
-const faqs = await getFaqs()
 
 
   return (
@@ -29,10 +27,11 @@ const faqs = await getFaqs()
       <NewArrivalSection newArrivalProducts = {newArrivalProducts} />
       <GiftsSection/>
       <InstaBanner/>
-      <CollectionSection showcasedCollections={showcasedCollections || []}/>
+      <ShowcasedCollectionsClientWrapper />
       <FeaturedCollection featuredProducts={featuredProducts}/>
       <CustomerReviews />
-      <FAQ faqs={faqs}/>
+      <FaqsClientWrapper />
+
     </div>
   )
 }

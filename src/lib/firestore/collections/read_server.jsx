@@ -29,24 +29,3 @@ export const getCollections = async () => {
 })
 }
 
-export const getShowcasedCollections = async () => {
-  const q = query(
-    collection(db, "collections"),
-    where("isShowcased", "==", "yes")
-  );
-  
-  const list = await getDocs(q);
-  
-  const result = list.docs.map((snap) => {
-    const data = snap.data();
-    return {
-      ...data,
-      id: snap.id, // Make sure ID is included
-      timestampCreate: data.timestampCreate ? data.timestampCreate.toDate().toISOString() : null,
-      timestampUpdate: data.timestampUpdate ? data.timestampUpdate.toDate().toISOString() : null,
-    };
-  });
-  
-  
-  return result;
-};
