@@ -1,14 +1,8 @@
 "use client";
 import { db } from "../firebase";
-import {
-  collection,
-  doc,
-  limit,
-  onSnapshot,
-  query,
-  startAfter,
-  where,
-} from "firebase/firestore";
+
+import { collection,doc, query, where, limit, startAfter, onSnapshot } from "firebase/firestore";
+
 import useSWRSubscription from "swr/subscription";
 
 export function useProducts({ pageLimit, lastSnapDoc } = {}) {
@@ -96,6 +90,60 @@ export function useProductsByIds({ idsList }) {
 
   return {
     data: data,
+    error: error?.message,
+    isLoading: data === undefined,
+  };
+}
+
+export function useFeaturedProducts() {
+  const { data, error } = useSWRSubscription(
+    ["featuredProducts"],
+    ([path], { next }) => {
+      const q = query(collection(db, "products"), where("isFeatured", "==", true));
+
+      const unsub = onSnapshot(
+        q,
+        (snapshot) =>
+          next(
+            null,
+            snapshot.docs.length === 0 ? null : snapshot.docs.map((snap) => snap.data())
+          ),
+        (err) => next(err, null)
+      );
+
+      return () => unsub();
+    }
+  );
+
+  return {
+    data,
+    error: error?.message,
+    isLoading: data === undefined,
+  };
+}
+
+export function useNewArrivalProducts() {
+  const { data, error } = useSWRSubscription(
+    ["newArrivalProducts"],
+    ([path], { next }) => {
+      const q = query(collection(db, "products"), where("isNewArrival", "==", true));
+
+      const unsub = onSnapshot(
+        q,
+        (snapshot) =>
+          next(
+            null,
+            snapshot.docs.length === 0 ? null : snapshot.docs.map((snap) => snap.data())
+          ),
+        (err) => next(err, null)
+      );
+
+      return () => unsub();
+    }
+  );
+
+  return {
+    data,
     error: error?.message,
     isLoading: data === undefined,
   };
