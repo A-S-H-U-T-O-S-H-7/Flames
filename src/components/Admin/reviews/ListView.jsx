@@ -104,6 +104,9 @@ export default function ListView() {
                 <th className="font-semibold px-4 py-3 text-center text-gray-300 rounded-l-lg">
                   #
                 </th>
+                <th className="font-semibold px-4 py-3 text-center text-gray-300 rounded-l-lg">
+                  Date&Time
+                </th>
                 <th className="font-semibold px-4 py-3 text-center text-gray-300">
                   User
                 </th>

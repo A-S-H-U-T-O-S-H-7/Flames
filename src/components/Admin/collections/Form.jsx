@@ -12,11 +12,17 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
+
 export default function Form() {
   const [data, setData] = useState(null);
   const [image, setImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const { data: products } = useProducts({ pageLimit: 2000 });
+  const [bannerImage, setBannerImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+const [bannerImagePreview, setBannerImagePreview] = useState(null);
+
+
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -29,6 +35,13 @@ export default function Form() {
         toast.error("Collection Not Found!");
       } else {
         setData(res);
+        if (res.imageURL) {
+          setImagePreview(res.imageURL);
+        }
+        
+        if (res.bannerImageURL) {
+          setBannerImagePreview(res.bannerImageURL);
+        }
       }
     } catch (error) {
       toast.error(error?.message);
@@ -53,10 +66,11 @@ export default function Form() {
   const handleCreate = async () => {
     setIsLoading(true);
     try {
-      await createNewCollection({ data: data, image: image });
+      await createNewCollection({ data: data, image: image, bannerImage: bannerImage });
       toast.success("Successfully Created");
       setData(null);
       setImage(null);
+      setBannerImage(null);
     } catch (error) {
       toast.error(error?.message);
     }
@@ -66,10 +80,18 @@ export default function Form() {
   const handleUpdate = async () => {
     setIsLoading(true);
     try {
-      await updateCollection({ data: data, image: image });
+      // If no new images were selected, we still have the old URLs in the data object
+      await updateCollection({ 
+        data: data, 
+        image: image, 
+        bannerImage: bannerImage 
+      });
       toast.success("Successfully Updated");
       setData(null);
       setImage(null);
+      setBannerImage(null);
+      setImagePreview(null);
+      setBannerImagePreview(null);
       router.push(`/admin/collections`);
     } catch (error) {
       toast.error(error?.message);
@@ -89,36 +111,89 @@ export default function Form() {
         }}
         className="flex flex-col gap-4"
       >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* Image Upload */}
-        <div className="flex flex-col gap-2">
-          <label htmlFor="collection-image" className="text-gray-500 dark:text-[#888ea8] text-sm">
-            Image <span className="text-red-500">*</span>
-          </label>
-          <div 
-            className="flex justify-center items-center border-2 border-dashed border-purple-500 dark:border-[#22c7d5] p-6 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1e2737] transition-all"
-            onClick={() => document.getElementById('collection-image').click()}
-          >
-            {image ? (
-              <div className="flex flex-col items-center gap-2">
-                <img className="h-24 w-auto rounded-lg shadow-md" src={URL.createObjectURL(image)} alt="Preview" />
-                <span className="text-sm text-gray-500 dark:text-gray-400">Click to change image</span>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-2">
-                <Upload size={24} className="text-gray-400" />
-                <span className="text-sm text-gray-500 dark:text-gray-400">Upload Collection Image</span>
-              </div>
-            )}
-          </div>
-          <input
-            id="collection-image"
-            name="collection-image"
-            type="file"
-            onChange={(e) => e.target.files[0] && setImage(e.target.files[0])}
-            className="hidden"
-            accept="image/*"
-          />
-        </div>
+<div className="flex flex-col gap-2">
+  <label htmlFor="collection-image" className="text-gray-500 dark:text-[#888ea8] text-sm">
+    Image <span className="text-red-500">*</span>
+  </label>
+  <div 
+    className="flex justify-center items-center border-2 border-dashed border-purple-500 dark:border-[#22c7d5] p-6 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1e2737] transition-all"
+    onClick={() => document.getElementById('collection-image').click()}
+  >
+    {image ? (
+      <div className="flex flex-col items-center gap-2">
+        <img className="h-24 w-auto rounded-lg shadow-md" src={URL.createObjectURL(image)} alt="Preview" />
+        <span className="text-sm text-gray-500 dark:text-gray-400">Click to change image</span>
+      </div>
+    ) : imagePreview ? (
+      <div className="flex flex-col items-center gap-2">
+        <img className="h-24 w-auto rounded-lg shadow-md" src={imagePreview} alt="Preview" />
+        <span className="text-sm text-gray-500 dark:text-gray-400">Click to change image</span>
+      </div>
+    ) : (
+      <div className="flex flex-col items-center gap-2">
+        <Upload size={24} className="text-gray-400" />
+        <span className="text-sm text-gray-500 dark:text-gray-400">Upload Collection Image</span>
+      </div>
+    )}
+  </div>
+  <input
+    id="collection-image"
+    name="collection-image"
+    type="file"
+    onChange={(e) => {
+      if (e.target.files[0]) {
+        setImage(e.target.files[0]);
+        setImagePreview(null); // Clear the URL preview when a new file is selected
+      }
+    }}
+    className="hidden"
+    accept="image/*"
+  />
+</div>
+
+{/* Banner Image Upload */}
+<div className="flex flex-col gap-2">
+  <label htmlFor="collection-banner-image" className="text-gray-500 dark:text-[#888ea8] text-sm">
+    Banner Image <span className="text-red-500">*</span>
+  </label>
+  <div 
+    className="flex justify-center items-center border-2 border-dashed border-purple-500 dark:border-[#22c7d5] p-6 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1e2737] transition-all"
+    onClick={() => document.getElementById('collection-banner-image').click()}
+  >
+    {bannerImage ? (
+      <div className="flex flex-col items-center gap-2">
+        <img className="h-24 w-auto rounded-lg shadow-md" src={URL.createObjectURL(bannerImage)} alt="Banner Preview" />
+        <span className="text-sm text-gray-500 dark:text-gray-400">Click to change banner image</span>
+      </div>
+    ) : bannerImagePreview ? (
+      <div className="flex flex-col items-center gap-2">
+        <img className="h-24 w-auto rounded-lg shadow-md" src={bannerImagePreview} alt="Banner Preview" />
+        <span className="text-sm text-gray-500 dark:text-gray-400">Click to change banner image</span>
+      </div>
+    ) : (
+      <div className="flex flex-col items-center gap-2">
+        <Upload size={24} className="text-gray-400" />
+        <span className="text-sm text-gray-500 dark:text-gray-400">Upload Collection Banner Image</span>
+      </div>
+    )}
+  </div>
+  <input
+    id="collection-banner-image"
+    name="collection-banner-image"
+    type="file"
+    onChange={(e) => {
+      if (e.target.files[0]) {
+        setBannerImage(e.target.files[0]);
+        setBannerImagePreview(null); // Clear the URL preview when a new file is selected
+      }
+    }}
+    className="hidden"
+    accept="image/*"
+  />
+</div>
+</div>
 
 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Title Input */}
@@ -155,15 +230,48 @@ export default function Form() {
         {/* Color Code Input */}
 <div className="flex flex-col gap-2">
   <label htmlFor="collection-color" className="text-gray-500 dark:text-[#888ea8] text-sm">
-    Color Code <span className="text-red-500">*</span>
+    Bg Color Code <span className="text-red-500">*</span>
   </label>
   <input
-    id="collection-color"
-    name="collection-color"
+    id="collection-bgcolor"
+    name="collection-bgcolor"
     type="text"
     placeholder="Enter Color Code (e.g., #ff5733)"
     value={data?.color ?? ""}
     onChange={(e) => handleData("color", e.target.value)}
+    className="border border-[#22c7d5] dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
+  />
+</div>
+
+
+{/* Label Color Code Input */}
+<div className="flex flex-col gap-2">
+  <label htmlFor="collection-label-color" className="text-gray-500 dark:text-[#888ea8] text-sm">
+    Label Color Code <span className="text-red-500">*</span>
+  </label>
+  <input
+    id="collection-label-color"
+    name="collection-label-color"
+    type="text"
+    placeholder="Enter Label Color Code (e.g., #ff5733)"
+    value={data?.labelColor ?? ""}
+    onChange={(e) => handleData("labelColor", e.target.value)}
+    className="border border-[#22c7d5] dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
+  />
+</div>
+
+{/* Starting Price Color Code Input */}
+<div className="flex flex-col gap-2">
+  <label htmlFor="collection-price-color" className="text-gray-500 dark:text-[#888ea8] text-sm">
+    Starting Price Color Code <span className="text-red-500">*</span>
+  </label>
+  <input
+    id="collection-price-color"
+    name="collection-price-color"
+    type="text"
+    placeholder="Enter Starting Price Color Code (e.g., #ff5733)"
+    value={data?.priceColor ?? ""}
+    onChange={(e) => handleData("priceColor", e.target.value)}
     className="border border-[#22c7d5] dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
   />
 </div>

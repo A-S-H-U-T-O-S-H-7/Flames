@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { X, Calendar, Clock, CreditCard, Package, Phone, Mail, MapPin } from "lucide-react";
-import { formatDateTime, getStatusColor } from "./OrdersUtil";
+import { formatDateTime } from "./OrdersUtil";
 
 export function ViewOrderModal({ order, onClose, onEdit, onCancel }) {
   if (!order) return null;
@@ -53,7 +53,7 @@ export function ViewOrderModal({ order, onClose, onEdit, onCancel }) {
                   <span>{order.address?.city || "N/A"}</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="font-medium w-24 flex-shrink-0">Postal Code:</span> 
+                  <span className="font-medium w-24 flex-shrink-0">Pin Code:</span> 
                   <span>{order.address?.pincode || "N/A"}</span>
                 </div>
               </div>

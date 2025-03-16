@@ -6,7 +6,7 @@ import {
   collectionGroup,
   onSnapshot,
   orderBy,
-  query,
+  query, limit, startAfter,
 } from "firebase/firestore";
 import useSWRSubscription from "swr/subscription";
 

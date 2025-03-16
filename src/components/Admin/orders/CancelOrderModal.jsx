@@ -1,17 +1,50 @@
 "use client";
 import React from 'react';
 import { X, AlertTriangle } from 'lucide-react';
+import toast from "react-hot-toast";
+
+const CANCEL_REASONS = [
+  "Out of stock",
+  "Customer requested cancellation",
+  "Delivery address issue",
+  "Payment issue",
+  "Duplicate order",
+  "Price error",
+  "Shipping restrictions",
+  "Other"
+];
 
 export function CancelOrderModal({
   show,
   onClose,
-  onConfirm,
+  order,
   cancelReason,
   setCancelReason,
   otherReason,
-  setOtherReason
+  setOtherReason,
+  onConfirm
 }) {
   if (!show) return null;
+
+  const handleConfirmCancel = async () => {
+    const finalReason = cancelReason === "Other" ? otherReason : cancelReason;
+
+    if (!finalReason) {
+      toast.error("Please select or enter a cancellation reason");
+      return;
+    }
+
+    try {
+      if (onConfirm) {
+        await onConfirm(finalReason);  // Pass the reason to the parent component
+      }
+      onClose();
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+    }
+  
+
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -34,78 +67,32 @@ export function CancelOrderModal({
           </p>
           
           <div className="space-y-2 mb-4">
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="out-of-stock"
-                name="cancelReason"
-                value="Out of stock"
-                checked={cancelReason === "Out of stock"}
-                onChange={(e) => setCancelReason(e.target.value)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="out-of-stock" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                Out of stock
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="customer-request"
-                name="cancelReason"
-                value="Customer requested cancellation"
-                checked={cancelReason === "Customer requested cancellation"}
-                onChange={(e) => setCancelReason(e.target.value)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="customer-request" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                Customer requested cancellation
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="address-issue"
-                name="cancelReason"
-                value="Delivery address issue"
-                checked={cancelReason === "Delivery address issue"}
-                onChange={(e) => setCancelReason(e.target.value)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="address-issue" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                Delivery address issue
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="payment-issue"
-                name="cancelReason"
-                value="Payment issue"
-                checked={cancelReason === "Payment issue"}
-                onChange={(e) => setCancelReason(e.target.value)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="payment-issue" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                Payment issue
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="other"
-                name="cancelReason"
-                value="other"
-                checked={cancelReason === "other"}
-                onChange={(e) => setCancelReason(e.target.value)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="other" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                Other reason
-              </label>
-            </div>
+            {CANCEL_REASONS.map((reason) => (
+              <div key={reason} className="flex items-center">
+                <input
+                  type="radio"
+                  id={reason.toLowerCase().replace(/\s+/g, '-')}
+                  name="cancelReason"
+                  value={reason}
+                  checked={cancelReason === reason}
+                  onChange={(e) => {
+                    setCancelReason(e.target.value);
+                    if (e.target.value !== "Other") {
+                      setOtherReason("");
+                    }
+                  }}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <label 
+                  htmlFor={reason.toLowerCase().replace(/\s+/g, '-')} 
+                  className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+                >
+                  {reason}
+                </label>
+              </div>
+            ))}
             
-            {cancelReason === "other" && (
+            {cancelReason === "Other" && (
               <div className="mt-2">
                 <textarea
                   value={otherReason}
@@ -126,7 +113,7 @@ export function CancelOrderModal({
               Close
             </button>
             <button 
-              onClick={onConfirm}
+              onClick={handleConfirmCancel}
               className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
             >
               Confirm Cancellation

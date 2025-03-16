@@ -8,7 +8,9 @@ export function EditOrderModal({
   onSave,
   onChange
 }) {
-  if (!order) return null;
+  if (!order) {
+    return null;
+  }
   
   const [discount, setDiscount] = useState(order.discount || 0);
   const [discountPercent, setDiscountPercent] = useState(0);
@@ -19,11 +21,14 @@ export function EditOrderModal({
   };
   
   // Calculate and update discount percentage whenever discount or subtotal changes
-  useEffect(() => {
+  // Replace useEffect with a more stable pattern:
+useEffect(() => {
+  if (order && order.line_items) {
     const subtotal = calculateSubtotal();
     const percentage = subtotal > 0 ? ((discount / subtotal) * 100).toFixed(2) : 0;
     setDiscountPercent(percentage);
-  }, [discount, order.line_items]);
+  }
+}, [discount, order?.line_items]);
   
   // Handle discount input change
   const handleDiscountChange = (value) => {
@@ -41,13 +46,28 @@ export function EditOrderModal({
   };
   
   // Toggle payment method
-  const togglePaymentMethod = () => {
-    const newPaymentMode = order.paymentMode === "COD" ? "Prepaid" : "COD";
+const togglePaymentMethod = () => {
+  const newPaymentMode = order.paymentMode === "COD" ? "Prepaid" : "COD";
+  const newPaymentStatus = newPaymentMode === "COD" ? "Pending" : "Paid";
+  
+  onChange({
+    ...order,
+    paymentMode: newPaymentMode,
+    paymentStatus: newPaymentStatus
+  });
+};
+
+const handleRemoveItem = (index) => {
+  if (window.confirm("Are you sure you want to remove this product?")) {
+    const updatedItems = order.line_items.filter((_, i) => i !== index);
+    const newSubtotal = updatedItems.reduce((total, item) => total + (item.price * item.quantity), 0);
     onChange({
       ...order,
-      paymentMode: newPaymentMode
+      line_items: updatedItems,
+      total: newSubtotal - (order.discount || 0)
     });
-  };
+  }
+};
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -182,25 +202,7 @@ export function EditOrderModal({
                   {new Date(order.createdAt).toLocaleDateString()}
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Status
-                </label>
-                <select
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                  value={order.status || "pending"}
-                  onChange={(e) => onChange({
-                    ...order,
-                    status: e.target.value
-                  })}
-                >
-                  <option value="pending">Pending</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="shipped">Shipped</option>
-                  <option value="delivered">Delivered</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
-              </div>
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Payment Method
@@ -265,10 +267,11 @@ export function EditOrderModal({
                               ...item,
                               quantity: newQuantity
                             };
+                            const newSubtotal = updatedItems.reduce((total, item) => total + (item.price * item.quantity), 0);
                             onChange({
                               ...order,
                               line_items: updatedItems,
-                              total: calculateSubtotal() - discount
+                              total: newSubtotal - (order.discount || 0)
                             });
                           }}
                         />
@@ -277,18 +280,11 @@ export function EditOrderModal({
                         <span className="text-gray-500 dark:text-gray-400 mr-2">Total: </span>
                         <span className="font-bold text-blue-600 dark:text-blue-400">₹{(item.price * item.quantity).toFixed(2)}</span>
                         <button
-                          onClick={() => {
-                            const updatedItems = order.line_items.filter((_, i) => i !== index);
-                            onChange({
-                              ...order,
-                              line_items: updatedItems,
-                              total: calculateSubtotal() - discount
-                            });
-                          }}
-                          className="ml-3 text-red-500 hover:text-red-600 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+  onClick={() => handleRemoveItem(index)}
+  className="ml-3 text-red-500 hover:text-red-600 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30"
+>
+  <Trash2 size={16} />
+</button>
                       </div>
                     </div>
                   </div>
@@ -363,3 +359,4 @@ export function EditOrderModal({
     </div>
   );
 }
+

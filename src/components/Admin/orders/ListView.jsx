@@ -1,8 +1,9 @@
 "use client"
 import React, { useEffect, useState } from "react";
 import { db } from "@/lib/firestore/firebase";
-import { collection, getDocs, doc, updateDoc, query, orderBy } from "firebase/firestore";
+import { collection, doc, updateDoc, query, orderBy, onSnapshot,increment  } from "firebase/firestore";
 import { toast } from "react-hot-toast";
+
 
 import { OrdersTable } from "./OrdersTable";
 import { OrderFilters } from "./OrderFilters";
@@ -25,14 +26,20 @@ export default function AdminOrdersPage() {
   const [cancelReason, setCancelReason] = useState("");
   const [otherReason, setOtherReason] = useState("");
   const [orderToCancel, setOrderToCancel] = useState(null);
+  const [pageSize, setPageSize] = useState(10);
+const [currentPage, setCurrentPage] = useState(1);
 
-  // Fetch orders
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const ordersRef = collection(db, "orders");
-        const q = query(ordersRef, orderBy("createdAt", "desc"));
-        const querySnapshot = await getDocs(q);
+
+// fetch orders
+useEffect(() => {
+  const fetchOrders = () => {
+    try {
+      setLoading(true);
+      const ordersRef = collection(db, "orders");
+      const q = query(ordersRef, orderBy("createdAt", "desc"));
+      
+      // Use onSnapshot instead of getDocs for real-time updates
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const ordersData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -40,15 +47,31 @@ export default function AdminOrdersPage() {
         }));
         setOrders(ordersData);
         setFilteredOrders(ordersData);
-      } catch (error) {
+        setLoading(false);
+      }, (error) => {
         console.error("Error fetching orders:", error);
         toast.error("Failed to load orders");
-      }
+        setLoading(false);
+      });
+      
+      // Return the unsubscribe function to clean up
+      return unsubscribe;
+    } catch (error) {
+      console.error("Error setting up orders listener:", error);
+      toast.error("Failed to set up orders listener");
       setLoading(false);
-    };
+    }
+  };
 
-    fetchOrders();
-  }, []);
+  const unsubscribe = fetchOrders();
+  
+  // Clean up the subscription when component unmounts
+  return () => {
+    if (unsubscribe) {
+      unsubscribe();
+    }
+  };
+}, []);
 
   // Apply filters and search
   useEffect(() => {
@@ -133,54 +156,105 @@ export default function AdminOrdersPage() {
     setOtherReason("");
   };
 
-  // const confirmCancelOrder = async () => {
-  //   if (!orderToCancel) return;
+const updateOrderStatus = async (orderData, cancellationReason = null) => {
+  try {
+    const orderRef = doc(db, "orders", orderData.id);
+    const updateData = {
+      status: orderData.status,
+      updatedAt: new Date()
+    };
     
-  //   const finalReason = cancelReason === "other" 
-  //     ? otherReason 
-  //     : cancelReason;
-      
-  //   if (!finalReason) {
-  //     toast.error("Please select or enter a cancellation reason");
-  //     return;
-  //   }
-    
-  //   await updateOrderStatus({ id: orderToCancel.id, status: "cancelled" }, finalReason);
-  //   setShowCancelModal(false);
-  //   setOrderToCancel(null);
-    
-  //   // If viewing the same order, update view
-  //   if (viewingOrder && viewingOrder.id === orderToCancel.id) {
-  //     setViewingOrder(prev => ({
-  //       ...prev,
-  //       status: "cancelled",
-  //       cancellationReason: finalReason
-  //     }));
-  //   }
-  // };
-
-  const handleSaveEdit = async () => {
-    if (!editingOrder) return;
-
-    try {
-      const orderRef = doc(db, "orders", editingOrder.id);
-      await updateDoc(orderRef, {
-        address: editingOrder.address,
-        line_items: editingOrder.line_items,
-        updatedAt: new Date()
-      });
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order.id === editingOrder.id ? editingOrder : order
-        )
-      );
-      setEditingOrder(null);
-      toast.success("Order details updated!");
-    } catch (error) {
-      console.error("Error updating order:", error);
-      toast.error("Failed to update order.");
+    if (cancellationReason && orderData.status === "cancelled") {
+      updateData.cancellationReason = cancellationReason;
     }
-  };
+    
+    await updateDoc(orderRef, updateData);
+    
+    // With onSnapshot, we don't need to manually update the state
+    // The onSnapshot listener will automatically update the state
+    
+    toast.success(`Order status updated to ${orderData.status}`);
+    
+    // If viewing the same order, update view
+    if (viewingOrder && viewingOrder.id === orderData.id) {
+      setViewingOrder(prev => ({
+        ...prev,
+        status: orderData.status,
+        ...(cancellationReason && orderData.status === "cancelled" ? { cancellationReason } : {})
+      }));
+    }
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    toast.error("Failed to update order status.");
+  }
+};
+const confirmCancelOrder = async () => {
+  if (!orderToCancel) return;
+  
+  const finalReason = cancelReason === "Other" 
+    ? otherReason 
+    : cancelReason;
+    
+  if (!finalReason) {
+    toast.error("Please select or enter a cancellation reason");
+    return;
+  }
+  
+  await updateOrderStatus({ id: orderToCancel.id, status: "cancelled" }, finalReason);
+  handleCloseCancelModal();
+};
+
+ 
+const handleSaveEdit = async () => {
+  if (!editingOrder) return;
+
+  try {
+    // Track product quantity changes to update order counts
+    const originalOrder = orders.find(o => o.id === editingOrder.id);
+    const productUpdates = {};
+    
+    // Compare quantities between original and edited order
+    editingOrder.line_items.forEach(editedItem => {
+      const originalItem = originalOrder.line_items.find(
+        item => item.product_data.metadata.productId === editedItem.product_data.metadata.productId
+      );
+      
+      if (originalItem && editedItem.quantity !== originalItem.quantity) {
+        const productId = editedItem.product_data.metadata.productId;
+        const quantityDiff = editedItem.quantity - originalItem.quantity;
+        
+        productUpdates[productId] = quantityDiff;
+      }
+    });
+    
+    // Update the order first
+    const orderRef = doc(db, "orders", editingOrder.id);
+    await updateDoc(orderRef, {
+      address: editingOrder.address,
+      line_items: editingOrder.line_items,
+      paymentMode: editingOrder.paymentMode,
+      paymentStatus: editingOrder.paymentMode === "COD" ? "Pending" : "Paid",
+      discount: editingOrder.discount || 0,
+      total: editingOrder.total,
+      updatedAt: new Date()
+    });
+    
+    // Then update product order counts if there were changes
+    for (const [productId, quantityDiff] of Object.entries(productUpdates)) {
+      const productRef = doc(db, "products", productId);
+      // Use a transaction or increment to safely update the order count
+      await updateDoc(productRef, {
+        orders: increment(quantityDiff)
+      });
+    }
+    
+    setEditingOrder(null);
+    toast.success("Order details updated!");
+  } catch (error) {
+    console.error("Error updating order:", error);
+    toast.error("Failed to update order.");
+  }
+};
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -231,7 +305,7 @@ export default function AdminOrdersPage() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revoObjectURL(url);
+    URL.revokeObjectURL(url);
     
     toast.success("Orders exported successfully!");
   };
@@ -245,8 +319,28 @@ export default function AdminOrdersPage() {
     );
   }
 
+  // Add this to calculate paginated orders - place it right before the return statement
+const paginatedOrders = filteredOrders.slice(
+  (currentPage - 1) * pageSize,
+  currentPage * pageSize
+);
+
+const totalPages = Math.ceil(filteredOrders.length / pageSize);
+
+const handleNextPage = () => {
+  if (currentPage < totalPages) {
+    setCurrentPage(currentPage + 1);
+  }
+};
+
+const handlePrevPage = () => {
+  if (currentPage > 1) {
+    setCurrentPage(currentPage - 1);
+  }
+};
+
   return (
-    <div className=" mx-auto px-2 py-6">
+    <div className=" px-[30px] py-6">
             
       <OrderFilters
         searchTerm={searchTerm}
@@ -261,16 +355,23 @@ export default function AdminOrdersPage() {
       
       <OrderSummary orders={orders} />
       
-      <OrdersTable
-        filteredOrders={filteredOrders}
-        orders={orders}
-        sortConfig={sortConfig}
-        handleSort={handleSort}
-        handleViewClick={handleViewOrder}
-        handleEditClick={handleEditOrder}
-        handleCancelOrder={handleCancelOrder}
-        // updateOrderStatus={updateOrderStatus}
-      />
+      
+<OrdersTable
+  filteredOrders={paginatedOrders}
+  orders={orders}
+  sortConfig={sortConfig}
+  handleSort={handleSort}
+  handleViewClick={handleViewOrder}
+  handleEditClick={handleEditOrder}
+  handleCancelOrder={handleCancelOrder}
+  updateOrderStatus={updateOrderStatus}
+  currentPage={currentPage}
+  pageSize={pageSize}
+  totalOrders={filteredOrders.length}
+  onNextPage={handleNextPage}
+  onPrevPage={handlePrevPage}
+  onPageSizeChange={setPageSize}
+/>
       
       <ViewOrderModal
         order={viewingOrder}
@@ -293,14 +394,15 @@ export default function AdminOrdersPage() {
       />
       
       <CancelOrderModal
-        show={showCancelModal}
-        onClose={handleCloseCancelModal}
-        // onConfirm={confirmCancelOrder}
-        cancelReason={cancelReason}
-        setCancelReason={setCancelReason}
-        otherReason={otherReason}
-        setOtherReason={setOtherReason}
-      />
+  show={showCancelModal}
+  onClose={handleCloseCancelModal}
+  onConfirm={confirmCancelOrder}
+  cancelReason={cancelReason}
+  order={orderToCancel}
+  setCancelReason={setCancelReason}
+  otherReason={otherReason}
+  setOtherReason={setOtherReason}
+/>
     </div>
   );
 }

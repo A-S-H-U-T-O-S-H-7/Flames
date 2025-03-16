@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import { Eye, Edit } from 'lucide-react';
+import { Eye, Edit, ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatDateTime, getStatusColor } from './OrdersUtil';
 import ChangeOrderStatus from './ChangeOrderStatus';
 
@@ -12,7 +12,13 @@ export function OrdersTable({
   handleViewClick,
   handleEditClick,
   handleCancelOrder,
-  updateOrderStatus
+  updateOrderStatus,
+  currentPage,
+  pageSize,
+  totalOrders,
+  onNextPage,
+  onPrevPage,
+  onPageSizeChange
 }) {
   return (
     <div className="bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-800">
@@ -32,15 +38,6 @@ export function OrdersTable({
                   )}
                 </div>
               </th>
-              {/* <th className="px-4 py-4 text-left text-xs font-medium text-indigo-300 uppercase tracking-wider cursor-pointer group" 
-                  onClick={() => handleSort('id')}>
-                <div className="flex items-center space-x-1">
-                  <span>Order ID</span>
-                  {sortConfig.key === 'id' && (
-                    <span className="text-indigo-400">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
-                  )}
-                </div>
-              </th> */}
               <th className="px-4 py-4 text-left text-xs font-medium text-indigo-300 uppercase tracking-wider cursor-pointer group" 
                   onClick={() => handleSort('userName')}>
                 <div className="flex items-center space-x-1">
@@ -56,15 +53,6 @@ export function OrdersTable({
               <th className="px-4 py-4 text-left text-xs font-medium text-indigo-300 uppercase tracking-wider">
                 Products
               </th>
-              {/* <th className="px-4 py-4 text-left text-xs font-medium text-indigo-300 uppercase tracking-wider cursor-pointer group" 
-                  onClick={() => handleSort('total')}>
-                <div className="flex items-center space-x-1">
-                  <span>Total</span>
-                  {sortConfig.key === 'total' && (
-                    <span className="text-indigo-400">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
-                  )}
-                </div>
-              </th> */}
               <th className="px-4 py-4 text-left text-xs font-medium text-indigo-300 uppercase tracking-wider">
                 Payment
               </th>
@@ -97,10 +85,13 @@ export function OrdersTable({
             ) : (
               filteredOrders.map((order, index) => {
                 const { date, time } = formatDateTime(order.createdAt);
+                // Calculate the real index based on the current page and page size
+                const orderIndex = (currentPage - 1) * pageSize + index + 1;
+                
                 return (
                   <tr key={order.id} className="transition-colors duration-200 bg-gray-900 hover:bg-gray-800">
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-400">
-                      {index + 1}
+                      {orderIndex}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">
                       <div className="flex flex-col">
@@ -108,9 +99,6 @@ export function OrdersTable({
                         <span className="text-xs text-gray-500">{time}</span>
                       </div>
                     </td>
-                    {/* <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">
-                      {order.id.slice(0, 8)}...
-                    </td> */}
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-indigo-200 font-medium">
                       {order.address?.fullName|| "N/A"}
                     </td>
@@ -143,18 +131,15 @@ export function OrdersTable({
                         )}
                       </div>
                     </td>
-                    {/* <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-indigo-100">
-                      ₹{order.total}
-                    </td> */}
                     <td className="px-4 py-4 whitespace-nowrap text-sm">
-  <span className={`px-2 py-1 text-xs rounded-full ${
-    order.paymentMode === 'cod' 
-      ? 'bg-purple-700 text-white border border-purple-800/30' 
-      : 'bg-green-800 text-green-300 border border-green-500/30'
-  }`}>
-    {order.paymentMode}
-  </span>
-</td>
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        order.paymentMode === 'cod' 
+                          ? 'bg-purple-700 text-white border border-purple-800/30' 
+                          : 'bg-green-800 text-green-300 border border-green-500/30'
+                      }`}>
+                        {order.paymentMode}
+                      </span>
+                    </td>
                     <td className="px-4 py-4 whitespace-nowrap text-xs">
                       <span className={`px-2 py-1 rounded-full ${getStatusColor(order.status)}`}>
                         {order.status}
@@ -177,7 +162,6 @@ export function OrdersTable({
                           <Edit size={16} />
                         </button>
                         <ChangeOrderStatus order={order} />
-                        
                       </div>
                     </td>
                   </tr>
@@ -188,19 +172,41 @@ export function OrdersTable({
         </table>
       </div>
       
-      <div className="px-6 py-4 flex items-center justify-between border-t border-gray-800 bg-gray-900">
+      <div className="px-6 py-4 flex flex-col sm:flex-row items-center justify-between border-t border-gray-800 bg-gray-900 gap-4">
         <div>
           <p className="text-sm text-gray-400">
-            Showing <span className="font-medium text-indigo-300">{filteredOrders.length}</span> of <span className="font-medium text-indigo-300">{orders.length}</span> orders
+            Showing <span className="font-medium text-indigo-300">{filteredOrders.length}</span> of <span className="font-medium text-indigo-300">{totalOrders}</span> orders
           </p>
         </div>
-        <div>
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <select
+            value={pageSize}
+            onChange={(e) => onPageSizeChange(Number(e.target.value))}
+            className="px-3 py-2 rounded-lg border border-gray-700 bg-gray-800 text-gray-300 focus:outline-none focus:border-indigo-500 shadow-sm hover:shadow-md transition-shadow"
+          >
+            <option value={5}>5 per page</option>
+            <option value={10}>10 per page</option>
+            <option value={20}>20 per page</option>
+            <option value={50}>50 per page</option>
+          </select>
+
           <nav className="relative z-0 inline-flex rounded-lg shadow-lg overflow-hidden" aria-label="Pagination">
-            <button className="relative inline-flex items-center px-3 py-2 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700 transition-colors duration-200 border-r border-gray-700">
-              Previous
+            <button 
+              onClick={onPrevPage}
+              disabled={currentPage === 1}
+              className="relative inline-flex items-center px-3 py-2 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700 transition-colors duration-200 border-r border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft size={16} className="mr-1" /> Previous
             </button>
-            <button className="relative inline-flex items-center px-3 py-2 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700 transition-colors duration-200">
-              Next
+            <div className="relative inline-flex items-center px-3 py-2 bg-gray-800 text-sm font-medium text-indigo-300 border-r border-gray-700">
+              Page {currentPage} of {Math.ceil(totalOrders / pageSize)}
+            </div>
+            <button 
+              onClick={onNextPage}
+              disabled={currentPage >= Math.ceil(totalOrders / pageSize)}
+              className="relative inline-flex items-center px-3 py-2 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next <ChevronRight size={16} className="ml-1" />
             </button>
           </nav>
         </div>

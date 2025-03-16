@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firestore/firebase';
 import { collection, query, getDocs, where, Timestamp } from "firebase/firestore";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Calendar, ChevronDown, DollarSign, Package, ShoppingCart, Users, LayoutDashboard } from 'lucide-react';
+import { DollarSign, Package, ShoppingCart, Users, LayoutDashboard } from 'lucide-react';
 import { useProductCount } from "@/lib/firestore/products/count/read_client";
 import { useUsersCount } from "@/lib/firestore/user/read_count";
 
@@ -15,7 +14,6 @@ import RecentOrdersTable from '@/components/Admin/dashboard/RecentOrdersTable';
 import TimeRangeSelector from '@/components/Admin/dashboard/TimeRangeSelector';
 import LoadingSpinner from '@/components/Admin/dashboard/LoadingSpinner';
 
-// Dashboard component
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -28,6 +26,8 @@ const Dashboard = () => {
     dailyOrders: []
   });
   const [timeRange, setTimeRange] = useState('7d');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   
   // Fetch product and customer counts
   const { data: totalProduct } = useProductCount();
@@ -35,34 +35,44 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData();
-  }, [timeRange]);
+  }, [timeRange, startDate, endDate]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      // Calculate date range based on selected timeRange
-      const now = new Date();
-      let startDate = new Date();
+      // Calculate date range based on selected timeRange or custom dates
+      let queryStartDate = new Date();
+      let queryEndDate = new Date();
       
-      switch(timeRange) {
-        case '7d':
-          startDate.setDate(now.getDate() - 7);
-          break;
-        case '30d':
-          startDate.setDate(now.getDate() - 30);
-          break;
-        case '90d':
-          startDate.setDate(now.getDate() - 90);
-          break;
-        default:
-          startDate.setDate(now.getDate() - 7);
+      if (timeRange === 'custom' && startDate && endDate) {
+        queryStartDate = startDate;
+        queryEndDate = endDate;
+      } else {
+        switch(timeRange) {
+          case '7d':
+            queryStartDate.setDate(queryEndDate.getDate() - 7);
+            break;
+          case '30d':
+            queryStartDate.setDate(queryEndDate.getDate() - 30);
+            break;
+          case '90d':
+            queryStartDate.setDate(queryEndDate.getDate() - 90);
+            break;
+          default:
+            queryStartDate.setDate(queryEndDate.getDate() - 7);
+        }
       }
       
-      const startTimestamp = Timestamp.fromDate(startDate);
+      const startTimestamp = Timestamp.fromDate(queryStartDate);
+      const endTimestamp = Timestamp.fromDate(queryEndDate);
       
-      // Query orders collection
+      // Query orders collection with date range
       const ordersRef = collection(db, "orders");
-      const q = query(ordersRef, where("createdAt", ">=", startTimestamp));
+      const q = query(
+        ordersRef,
+        where("createdAt", ">=", startTimestamp),
+        where("createdAt", "<=", endTimestamp)
+      );
       const querySnapshot = await getDocs(q);
       
       let orders = [];
@@ -76,21 +86,17 @@ const Dashboard = () => {
         const order = doc.data();
         orders.push(order);
         
-        // Add to total revenue
         totalRevenue += order.total || 0;
         
-        // Count products
         const productCount = order.line_items?.reduce((sum, item) => sum + (item.quantity || 1), 0) || 0;
         totalProductCount += productCount;
         
-        // Count payment methods
         if (order.paymentMode === 'cod') {
           codCount++;
         } else if (order.paymentMode === 'online') {
           onlineCount++;
         }
         
-        // Group by date for the chart
         const orderDate = order.createdAt?.toDate();
         if (orderDate) {
           const dateString = orderDate.toISOString().split('T')[0];
@@ -106,15 +112,12 @@ const Dashboard = () => {
         }
       });
       
-      // Convert daily orders map to array and sort by date
       const dailyOrders = Object.values(dailyOrdersMap).sort((a, b) => 
         new Date(a.date) - new Date(b.date)
       );
       
-      // Calculate average order value
       const averageOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
       
-      // Set all the stats
       setStats({
         totalOrders: orders.length,
         totalRevenue,
@@ -132,13 +135,17 @@ const Dashboard = () => {
     }
   };
 
-  // Format currency
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       maximumFractionDigits: 0
     }).format(amount);
+  };
+
+  const handleDateRangeChange = (start, end) => {
+    setStartDate(start);
+    setEndDate(end);
   };
 
   if (loading) {
@@ -153,10 +160,15 @@ const Dashboard = () => {
           <h1 className="text-2xl font-bold mb-4 md:mb-0">Dashboard</h1>
         </div>
         
-        <TimeRangeSelector timeRange={timeRange} setTimeRange={setTimeRange} />
+        <TimeRangeSelector 
+          timeRange={timeRange} 
+          setTimeRange={setTimeRange}
+          startDate={startDate}
+          endDate={endDate}
+          onDateRangeChange={handleDateRangeChange}
+        />
       </div>
       
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatsCard 
           title="Total Orders" 
@@ -201,7 +213,6 @@ const Dashboard = () => {
         />
       </div>
       
-      {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-6">
         <div className="md:col-span-8">
           <OrdersRevenueChart 
@@ -215,7 +226,6 @@ const Dashboard = () => {
         </div>
       </div>
       
-      {/* Recent Orders */}
       <RecentOrdersTable 
         recentOrders={stats.recentOrders} 
         formatCurrency={formatCurrency} 

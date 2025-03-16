@@ -36,6 +36,7 @@ export const createNewProduct = async ({ data, featureImage, imageList }) => {
     featureImageURL: featureImageURL,
     imageList: imageURLList,
     id: newId,
+    orders: 0,
     timestampCreate: Timestamp.now(),
   });
 };

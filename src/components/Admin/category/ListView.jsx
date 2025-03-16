@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 
 export default function ListView() {
-  const [pageLimit, setPageLimit] = useState(5);
+  const [pageLimit, setPageLimit] = useState(5); // Changed default to 5
   const [lastSnapDocList, setLastSnapDocList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCategories, setFilteredCategories] = useState([]);
@@ -19,16 +19,13 @@ export default function ListView() {
   // Reset pagination when page limit changes
   useEffect(() => {
     setIsTransitioning(true);
-    // Add fade-out effect
     if (tableRef.current) {
       tableRef.current.style.opacity = '0';
       tableRef.current.style.transform = 'translateY(10px)';
     }
     
-    // Small delay before resetting pagination to allow animation to complete
     const timer = setTimeout(() => {
       setLastSnapDocList([]);
-      // After data is fetched, the fade-in will happen via the useEffect below
     }, 300);
     
     return () => clearTimeout(timer);
@@ -51,7 +48,6 @@ export default function ListView() {
     
     let filtered = [...categories];
     
-    // Apply search filter
     if (searchQuery) {
       filtered = filtered.filter(category => 
         category?.name?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -60,7 +56,6 @@ export default function ListView() {
     
     setFilteredCategories(filtered);
     
-    // Add fade-in effect when new data is loaded
     if (tableRef.current && isTransitioning) {
       setTimeout(() => {
         tableRef.current.style.opacity = '1';
@@ -70,8 +65,9 @@ export default function ListView() {
     }
   }, [categories, searchQuery]);
 
-  // Pagination handlers
   const handleNextPage = () => {
+    if (!lastSnapDoc) return;
+    
     setIsTransitioning(true);
     if (tableRef.current) {
       tableRef.current.style.opacity = '0';
@@ -79,11 +75,13 @@ export default function ListView() {
     }
     
     setTimeout(() => {
-      setLastSnapDocList([...lastSnapDocList, lastSnapDoc]);
+      setLastSnapDocList(prev => [...prev, lastSnapDoc]);
     }, 300);
   };
 
   const handlePrePage = () => {
+    if (lastSnapDocList.length === 0) return;
+    
     setIsTransitioning(true);
     if (tableRef.current) {
       tableRef.current.style.opacity = '0';
@@ -91,33 +89,8 @@ export default function ListView() {
     }
     
     setTimeout(() => {
-      setLastSnapDocList(lastSnapDocList.slice(0, -1));
+      setLastSnapDocList(prev => prev.slice(0, -1));
     }, 300);
-  };
-
-  // Format date and time from Firestore timestamp
-  const formatDateTime = (timestamp) => {
-    if (!timestamp || !timestamp.seconds) {
-      return "N/A";
-    }
-    
-    // Convert Firestore timestamp to JavaScript Date
-    const date = new Date(timestamp.seconds * 1000);
-    
-    // Format date in DD/MM/YY format
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear().toString().slice(-2);
-    
-    // Format time in h:MMam/pm format
-    let hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'pm' : 'am';
-    
-    hours = hours % 12;
-    hours = hours ? hours : 12; // Convert 0 to 12
-    
-    return `${day}/${month}/${year} ${hours}:${minutes}${ampm}`;
   };
 
   if (isLoading && lastSnapDocList.length === 0) {
@@ -138,7 +111,6 @@ export default function ListView() {
 
   return (
     <div className="flex-1 flex flex-col gap-6 p-5 bg-white dark:bg-[#1e2737] rounded-xl shadow-lg transition-all duration-200 ease-in-out">
-      {/* Header with title and search */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
           Categories
@@ -147,7 +119,6 @@ export default function ListView() {
           </span>
         </h1>
         
-        {/* Simple search input */}
         <div className="relative w-full sm:w-64">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <Search size={18} className="text-gray-400" />
@@ -192,7 +163,6 @@ export default function ListView() {
           <thead>
             <tr className="bg-[#22c7d5] text-white">
               <th className="px-4 py-3 text-left rounded-l-lg">SN</th>
-              <th className="px-4 py-3 text-center">Created At</th>
               <th className="px-4 py-3 text-center">Image</th>
               <th className="px-4 py-3 text-left">Name</th>
               <th className="px-4 py-3 text-center rounded-r-lg">Actions</th>
@@ -211,7 +181,6 @@ export default function ListView() {
                   key={item?.id} 
                   item={item} 
                   index={index} 
-                  formatDateTime={formatDateTime} 
                 />
               ))
             ) : (
@@ -227,7 +196,6 @@ export default function ListView() {
         </table>
       </div>
       
-      {/* Pagination controls */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2 pt-4 border-t border-gray-100 dark:border-gray-700">
         <Button
           isDisabled={isLoading || lastSnapDocList?.length === 0 || isTransitioning}
@@ -253,7 +221,7 @@ export default function ListView() {
         </select>
 
         <Button
-          isDisabled={isLoading || filteredCategories?.length === 0 || !lastSnapDoc || isTransitioning}
+          isDisabled={isLoading || filteredCategories?.length < pageLimit || !lastSnapDoc || isTransitioning}
           onClick={handleNextPage}
           size="sm"
           variant="bordered"
@@ -266,7 +234,7 @@ export default function ListView() {
   );
 }
 
-function Row({ item, index, formatDateTime }) {
+function Row({ item, index}) {
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
@@ -287,16 +255,13 @@ function Row({ item, index, formatDateTime }) {
     router.push(`/admin/categories?id=${item?.id}`);
   };
 
+
   return (
     <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
       <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
         {index + 1}
       </td>
-      <td className="px-4 py-3 text-center text-gray-800 dark:text-gray-200">
-        <div className="flex items-center justify-center gap-1">
-          {formatDateTime(item?.timestampCreate)}
-        </div>
-      </td>
+      
       <td className="px-4 py-3">
         <div className="flex justify-center">
           <img 
@@ -309,6 +274,8 @@ function Row({ item, index, formatDateTime }) {
       <td className="px-4 py-3 text-gray-800 dark:text-gray-200">
         {item?.name}
       </td>
+
+      
       <td className="px-4 py-3">
         <div className="flex justify-center gap-3">
           <Button

@@ -87,14 +87,16 @@ export default function Form() {
             Image <span className="text-red-500">*</span>
           </label>
           <div className="flex justify-center items-center border-2 border-dashed border-purple-500 dark:border-[#22c7d5] p-6 rounded-lg cursor-pointer w-full" onClick={() => document.getElementById('admin-image').click()}>
-            {image ? (
-              <img className="h-20 rounded-lg shadow-md" src={URL.createObjectURL(image)} alt="Preview" />
-            ) : (
-              <div className="flex flex-col items-center gap-2">
-                <span className="text-4xl text-gray-400">+</span>
-                <span className="text-sm text-gray-500 dark:text-gray-400 text-center">Upload Admin Image</span>
-              </div>
-            )}
+          {image ? (
+  <img className="h-20 rounded-lg shadow-md" src={URL.createObjectURL(image)} alt="Preview" />
+) : data?.imageURL ? (
+  <img className="h-20 rounded-lg shadow-md" src={data.imageURL} alt="Preview" />
+) : (
+  <div className="flex flex-col items-center gap-2">
+    <span className="text-4xl text-gray-400">+</span>
+    <span className="text-sm text-gray-500 dark:text-gray-400 text-center">Upload Admin Image</span>
+  </div>
+)}
           </div>
           <input
             id="admin-image"

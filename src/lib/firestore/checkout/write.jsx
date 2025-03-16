@@ -1,5 +1,5 @@
 import { db } from "../firebase";
-import { collection, doc, setDoc, addDoc, Timestamp } from "firebase/firestore";
+import { collection, doc, setDoc, addDoc, Timestamp,updateDoc, increment  } from "firebase/firestore";
 
 
 export const createCheckoutCODAndGetId = async ({ uid, products, address }) => {
@@ -46,7 +46,20 @@ export const createCheckoutCODAndGetId = async ({ uid, products, address }) => {
     await setDoc(checkoutRef, orderData);
 
     // Store in global 'orders' collection for admin access
-    await addDoc(collection(db, "orders"), orderData);
+    await setDoc(doc(db, "orders", checkoutId), orderData);
+
+    // Update order counts for each product
+    for (const item of products) {
+      const productId = item?.id;
+      const quantity = item?.quantity || 1;
+      
+      if (productId) {
+        const productRef = doc(db, "products", productId);
+        await updateDoc(productRef, {
+          orders: increment(quantity)
+        });
+      }
+    }
 
     return checkoutId;
   } catch (error) {
@@ -100,7 +113,20 @@ export const createCheckoutOnlineAndGetId = async ({ uid, products, address, tra
     await setDoc(checkoutRef, orderData);
 
     // Store in global 'orders' collection for admin access
-    await addDoc(collection(db, "orders"), orderData);
+    await setDoc(doc(db, "orders", checkoutId), orderData);
+
+    // Update order counts for each product
+    for (const item of products) {
+      const productId = item?.id;
+      const quantity = item?.quantity || 1;
+      
+      if (productId) {
+        const productRef = doc(db, "products", productId);
+        await updateDoc(productRef, {
+          orders: increment(quantity)
+        });
+      }
+    }
 
     return checkoutId;
   } catch (error) {

@@ -67,3 +67,38 @@ ProseMirror {
   transform: translateY(-10px);
 }
 
+/* Add these styles to your globals.css */
+.react-datepicker {
+  @apply bg-gray-800 border-gray-700 !important;
+}
+
+.react-datepicker__header {
+  @apply bg-gray-800 border-gray-700 !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name,
+.react-datepicker__day {
+  @apply text-white !important;
+}
+
+.react-datepicker__day:hover {
+  @apply bg-blue-600 !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--in-range {
+  @apply bg-blue-500 !important;
+}
+
+.react-datepicker__day--keyboard-selected {
+  @apply bg-blue-500 !important;
+}
+
+.react-datepicker__navigation-icon::before {
+  @apply border-white !important;
+}
+
+.react-datepicker__day--outside-month {
+  @apply text-gray-500 !important;
+}

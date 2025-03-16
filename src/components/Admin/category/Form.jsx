@@ -2,11 +2,11 @@
 
 import { getCategory } from "@/lib/firestore/categories/read_server";
 import { createNewCategory, updateCategory } from "@/lib/firestore/categories/write";
-import { revalidatePath } from "@/utils/revalidation";
 import { Button } from "@nextui-org/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Timestamp } from "firebase/firestore";
 
 export default function Form() {
   const [data, setData] = useState(null);
@@ -46,10 +46,11 @@ export default function Form() {
   const handleCreate = async () => {
     setIsLoading(true);
     try {
-      await createNewCategory({ data, image });
-      // Add revalidation for pages that show categories
-      await revalidatePath('/');
-      await revalidatePath('/categories');
+      const categoryData = {
+        ...data,
+        createdAt: Timestamp.now(),
+      };
+      await createNewCategory({ data: categoryData, image });
       toast.success("Successfully Created");
       setData(null); 
       setImage(null);
@@ -62,11 +63,11 @@ export default function Form() {
   const handleUpdate = async () => {
     setIsLoading(true);
     try {
-      await updateCategory({ data, image });
-      // Add revalidation for updated pages
-      await revalidatePath('/');
-      await revalidatePath('/categories');
-      await revalidatePath(`/category/${data.id}`);
+      const categoryData = {
+        ...data,
+        updatedAt: Timestamp.now(),
+      };
+      await updateCategory({ data: categoryData, image });
       toast.success("Successfully Updated");
       setData(null);
       setImage(null);
@@ -112,6 +113,7 @@ export default function Form() {
             type="file"
             onChange={(e) => setImage(e.target.files[0])}
             className="hidden"
+            accept="image/*"
           />
         </div>
 
@@ -128,6 +130,7 @@ export default function Form() {
             value={data?.name ?? ""}
             onChange={(e) => handleData("name", e.target.value)}
             className="border border-purple-500 dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
+            required
           />
         </div>
 
@@ -144,6 +147,7 @@ export default function Form() {
             value={data?.slug ?? ""}
             onChange={(e) => handleData("slug", e.target.value)}
             className="border border-purple-500 dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
+            required
           />
         </div>
 

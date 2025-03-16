@@ -42,8 +42,8 @@ export const updateAdmin = async ({ data, image }) => {
   if (!data?.id) {
     throw new Error("ID is required");
   } 
-  if (!email?.id) {
-    throw new Error("email is required");
+  if (!data?.email) {
+    throw new Error("Email is required");
   }
   const id = data?.id;
 
@@ -62,8 +62,7 @@ if(id===data?.email){
   });
   }else{
     const newId = data?.email
-    await deleteDoc(db, `admins/${id}`)
-
+    await deleteDoc(doc(db, `admins/${id}`));
 
     await setDoc(doc(db, `admins/${newId}`), {
       ...data,

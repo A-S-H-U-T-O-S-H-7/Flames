@@ -3,15 +3,93 @@
 import { useCollections } from "@/lib/firestore/collections/read";
 import { deleteCollection } from "@/lib/firestore/collections/write";
 import { Button, CircularProgress } from "@nextui-org/react";
-import { Edit2, Trash2 } from "lucide-react";
+import { Edit2, Trash2, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 export default function ListView() {
-  const { data: collections, error, isLoading } = useCollections();
+  const [pageLimit, setPageLimit] = useState(10);
+  const [lastSnapDocList, setLastSnapDocList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedShowcased, setSelectedShowcased] = useState("all");
+  const [filteredCollections, setFilteredCollections] = useState([]);
 
-  if (isLoading) {
+  // Reset pagination when filters change
+  useEffect(() => {
+    setLastSnapDocList([]);
+  }, [pageLimit, searchQuery, selectedShowcased]);
+
+  // Get collections with pagination
+  const {
+    data: collections,
+    error,
+    isLoading,
+    lastSnapDoc,
+  } = useCollections({
+    pageLimit,
+    lastSnapDoc: lastSnapDocList?.length === 0 ? null : lastSnapDocList[lastSnapDocList?.length - 1],
+  });
+
+  // Apply filters whenever collections or search query changes
+  useEffect(() => {
+    if (!collections) return;
+    
+    let filtered = [...collections];
+    
+    // Apply search filter
+    if (searchQuery) {
+      filtered = filtered.filter(collection => 
+        collection?.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        collection?.subTitle?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    // Apply showcased filter
+    if (selectedShowcased !== "all") {
+      filtered = filtered.filter(collection => 
+        collection?.isShowcased === selectedShowcased
+      );
+    }
+    
+    setFilteredCollections(filtered);
+  }, [collections, searchQuery, selectedShowcased]);
+
+  // Pagination handlers
+  const handleNextPage = () => {
+    setLastSnapDocList([...lastSnapDocList, lastSnapDoc]);
+  };
+
+  const handlePrevPage = () => {
+    setLastSnapDocList(lastSnapDocList.slice(0, -1));
+  };
+
+  // Format date and time from Firestore timestamp
+  const formatDateTime = (timestamp) => {
+    if (!timestamp || !timestamp.seconds) {
+      return "N/A";
+    }
+    
+    // Convert Firestore timestamp to JavaScript Date
+    const date = new Date(timestamp.seconds * 1000);
+    
+    // Format date in DD/MM/YY format
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2);
+    
+    // Format time in h:MMam/pm format
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Convert 0 to 12
+    
+    return `${day}/${month}/${year} ${hours}:${minutes}${ampm}`;
+  };
+
+  if (isLoading && lastSnapDocList.length === 0) {
     return (
       <div className="flex justify-center items-center h-32">
         <CircularProgress size="lg" className="text-[#22c7d5]" />
@@ -29,10 +107,41 @@ export default function ListView() {
 
   return (
     <div className="flex-1 flex flex-col gap-6 p-5 bg-white dark:bg-[#0e1726] rounded-xl shadow-lg transition-all duration-200 ease-in-out">
-      <div className="flex justify-between items-center">
+      {/* Header with title, search, and filter */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
           Collections
+          <span className="ml-2 px-2 py-1 rounded-md text-xs border font-normal text-gray-500 dark:text-gray-400">
+            {filteredCollections?.length ?? 0} items
+          </span>
         </h1>
+        
+        <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
+          {/* Search input */}
+          <div className="relative w-full sm:w-64">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search collections..."
+              className="w-full px-4 py-2 pl-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e2737] text-gray-700 dark:text-gray-300 focus:outline-none focus:border-[#22c7d5] shadow-sm hover:shadow-md transition-shadow"
+            />
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <Search size={18} className="text-gray-400" />
+            </div>
+          </div>
+          
+          {/* Showcased filter */}
+          <select
+            value={selectedShowcased}
+            onChange={(e) => setSelectedShowcased(e.target.value)}
+            className="w-full sm:w-48 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e2737] text-gray-700 dark:text-gray-300 focus:outline-none focus:border-[#22c7d5] shadow-sm hover:shadow-md transition-shadow"
+          >
+            <option value="all">All Showcased</option>
+            <option value="yes">Showcased: Yes</option>
+            <option value="no">Showcased: No</option>
+          </select>
+        </div>
       </div>
       
       <div className="overflow-x-auto">
@@ -40,24 +149,81 @@ export default function ListView() {
           <thead>
             <tr className="bg-[#22c7d5] text-white">
               <th className="px-4 py-3 text-left rounded-l-lg">SN</th>
+              <th className="px-4 py-3 text-center">Created At</th>
               <th className="px-4 py-3 text-center">Image</th>
               <th className="px-4 py-3 text-left">Title</th>
               <th className="px-4 py-3 text-center">Products</th>
+              <th className="px-4 py-3 text-center">Showcased</th>
               <th className="px-4 py-3 text-center rounded-r-lg">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-            {collections?.map((item, index) => (
-              <Row index={index} item={item} key={item?.id} />
-            ))}
+            {isLoading && lastSnapDocList.length > 0 ? (
+              <tr>
+                <td colSpan="7" className="px-4 py-8 text-center">
+                  <CircularProgress size="sm" className="text-[#22c7d5]" />
+                </td>
+              </tr>
+            ) : filteredCollections?.length > 0 ? (
+              filteredCollections.map((item, index) => (
+                <Row 
+                  key={item?.id} 
+                  item={item} 
+                  index={index} 
+                  formatDateTime={formatDateTime} 
+                />
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                  {searchQuery || selectedShowcased !== "all" ? 
+                    "No collections match your search criteria" : 
+                    "No collections found"}
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
+      </div>
+      
+      {/* Pagination controls */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+        <Button
+          isDisabled={isLoading || lastSnapDocList?.length === 0}
+          onClick={handlePrevPage}
+          size="sm"
+          variant="bordered"
+          className="w-full sm:w-auto flex items-center gap-1 border rounded-lg border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
+        >
+          <ChevronLeft size={16} /> Previous
+        </Button>
+
+        <select
+          value={pageLimit}
+          onChange={(e) => setPageLimit(Number(e.target.value))}
+          className="w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e2737] text-gray-700 dark:text-gray-300 focus:outline-none focus:border-[#22c7d5] shadow-sm hover:shadow-md transition-shadow"
+        >
+          <option value={5}>5 per page</option>
+          <option value={10}>10 per page</option>
+          <option value={20}>20 per page</option>
+          <option value={50}>50 per page</option>
+        </select>
+
+        <Button
+          isDisabled={isLoading || filteredCollections?.length < pageLimit}
+          onClick={handleNextPage}
+          size="sm"
+          variant="bordered"
+          className="w-full sm:w-auto flex items-center gap-1 border rounded-lg border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
+        >
+          Next <ChevronRight size={16} />
+        </Button>
       </div>
     </div>
   );
 }
 
-function Row({ item, index }) {
+function Row({ item, index, formatDateTime }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
@@ -83,6 +249,11 @@ function Row({ item, index }) {
       <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
         {index + 1}
       </td>
+      <td className="px-4 py-3 text-center text-gray-800 dark:text-gray-200">
+        <div className="flex items-center justify-center text-sm">
+        {formatDateTime(item?.timestampCreate)}
+        </div>
+      </td>
       <td className="px-4 py-3">
         <div className="flex justify-center">
           <img 
@@ -100,7 +271,16 @@ function Row({ item, index }) {
       </td>
       <td className="px-4 py-3 text-center">
         <span className="bg-[#22c7d5]/10 text-[#22c7d5] px-3 py-1 rounded-full text-sm font-medium">
-          {item?.products?.length}
+          {item?.products?.length || 0}
+        </span>
+      </td>
+      <td className="px-4 py-3 text-center">
+        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+          item?.isShowcased === "yes" 
+            ? "bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400" 
+            : "bg-gray-100 text-gray-600 dark:bg-gray-700/30 dark:text-gray-400"
+        }`}>
+          {item?.isShowcased === "yes" ? "Yes" : "No"}
         </span>
       </td>
       <td className="px-4 py-3">

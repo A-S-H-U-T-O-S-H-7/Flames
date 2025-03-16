@@ -9,6 +9,7 @@ import FaqsClientWrapper from '@/components/ClientCode/FaqsClientWrapper'
 import ShowcasedCollectionsClientWrapper from '@/components/ClientCode/ShowcasedCollectionsClientWrapper'
 import FeaturedClientWrapper from '@/components/ClientCode/FeaturedClientWrapper'
 import NewArrivalClientWrapper from '@/components/ClientCode/NewArrivalClientWrapper'
+import ShortService from '@/components/ShortService'
 
 export default async function Home() {
 
@@ -27,6 +28,7 @@ export default async function Home() {
       <CustomerReviews />
 
       <FaqsClientWrapper />
+      <ShortService/>
 
     </div>
   )
