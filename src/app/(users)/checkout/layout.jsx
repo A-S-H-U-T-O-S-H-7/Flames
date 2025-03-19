@@ -15,7 +15,7 @@ export default function Layout({ children }) {
 
   if (isLoading) {
     return (
-      <div>
+      <div className="min-h-screen bg-gray-50">
         <CircularProgress />
       </div>
     );

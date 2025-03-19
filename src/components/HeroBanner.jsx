@@ -192,14 +192,7 @@ const HeroBanner = ({ banners }) => {
         }}
       />
 
-      {/* Add global styles for animations
-      <style jsx global>{`
-        @keyframes pulse {
-          0% { opacity: 0.7; }
-          50% { opacity: 1; }
-          100% { opacity: 0.7; }
-        }
-      `}</style> */}
+     
     </div>
   );
 };

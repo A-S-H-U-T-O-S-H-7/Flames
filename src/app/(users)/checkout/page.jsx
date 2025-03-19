@@ -66,7 +66,7 @@ export default function CheckoutPage() {
 
   return (
     <Suspense fallback={<CircularProgress />}>
-      <main className="py-[20px] flex flex-col bg-gray-50 gap-4">
+      <main className="py-[20px] min-h-screen flex flex-col bg-gray-50 gap-4">
         <Checkout productList={productList ?? []} />
       </main>
     </Suspense>

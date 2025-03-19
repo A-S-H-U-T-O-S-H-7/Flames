@@ -36,10 +36,12 @@ export default function Sidebar() {
       onMouseLeave={() => setIsExpanded(false)}
     >
       {/* Brand Logo */}
+      <Link href="/">
       <div className="flex items-center px-4 py-4 border-b border-gray-400 dark:border-[#888ea8]">
         <img src="/flame1.png" alt="Logo" className="w-10 h-10" />
         {isExpanded && <h1 className="ml-3 text-lg font-bold text-[#3C0184] dark:text-white">Flames</h1>}
       </div>
+      </Link>
 
       {/* Scrollable Menu Items */}
       <div className="flex-1 overflow-y-auto no-scrollbar">
