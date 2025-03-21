@@ -29,25 +29,23 @@ const RelatedProducts = ({ categoryId }) => {
   }
 
   return (
-    <section className="py-10  max-w-[1200px] mx-auto">
+    <section className="py-10 mx-auto">
       <h2 className="font-heading text-2xl md:text-3xl text-purple-500 font-bold text-center mb-8">
         Related Products
       </h2>
       
-      <div className="flex py-5 overflow-x-auto space-x-2 md:space-x-6 no-scrollbar">
-      {products.length > 0 ? (
-          products.slice(0, 10).map((product) => (
-            <div 
-              key={product.id} 
-              className="flex-none transition-shadow hover:shadow-lg"
-            >
+      {/* Fixed grid layout instead of flex overflow */}
+      <div className="grid grid-flow-col auto-cols-[180px] md:auto-cols-[240px] gap-3 overflow-x-auto no-scrollbar py-10 px-1">
+              {products.length > 0 ? (
+                products.map((product) => (
+                  <div key={product.id} className="h-full">
               <ProductCard product={product} />
             </div>
-          ))
-        ) : (
-          <p className="text-center text-gray-600 w-full">No related products available.</p>
-        )}
-      </div>
+                ))
+              ) : (
+                <p className="text-center text-gray-600 col-span-full">No Related products available.</p>
+              )}
+            </div>
       
     </section>
   );

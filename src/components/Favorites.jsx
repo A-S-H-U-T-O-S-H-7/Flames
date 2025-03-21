@@ -17,20 +17,22 @@ export default function Favorites() {
     );
   }
   return (
-    <main className="flex flex-col bg-gray-100 gap-3 justify-center items-center md:px-[30px] pb-10 ">
-      <h1 className="text-2xl py-[20px] text-gray-800 font-heading font-semibold">Favorites</h1>
+    <main className="flex flex-col bg-gray-100 gap-3 md:px-[30px] pb-10 ">
+      
+      <h1 className="text-2xl flex items-center justify-center  py-[20px] text-gray-800 font-heading font-semibold">Favorites</h1>
+      
       {(!data?.favorites || data?.favorites?.length === 0) && (
         <div className="flex flex-col gap-5 justify-center items-center h-full w-full py-20">
           <div className="flex justify-center">
-            <img className="h-[200px]" src="/svgs/Empty-pana.svg" alt="" />
+            <img className="h-[200px]" src="/emptycart.webp" alt="fav" />
           </div>
           <h1 className="text-gray-600 font-semibold">
             Please Add Products To Favorites
           </h1>
         </div>
       )}
-      <div className="p-2 w-full gap-2 md:gap-4 grid grid-cols-2 md:grid-cols-3 ">
-        {data?.favorites?.map((productId) => {
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
+          {data?.favorites?.map((productId) => {
           return <ProductItem productId={productId} key={productId} />;
         })}
       </div>

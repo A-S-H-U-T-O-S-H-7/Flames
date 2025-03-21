@@ -91,7 +91,7 @@ const CollectionPage = ({ initialProducts, collection }) => {
   return (
     <div className="w-full ">
   <div className="relative  mb-8">
-    <div className="w-full h-64 md:h-80 rounded-md overflow-hidden relative">
+    <div className="w-full h-56 md:h-80 rounded-md overflow-hidden relative">
       {serializedCollection?.imageURL ? (
         <img 
           src={serializedCollection.imageURL} 
@@ -156,7 +156,7 @@ const CollectionPage = ({ initialProducts, collection }) => {
               {filteredProducts.length === 0 ? (
                 <div className="text-center py-10">No products match your filters</div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 lg:gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 lg:gap-4">
                   {filteredProducts.map(product => (
                     <ProductCard product={product} key={product.id} />
                   ))}

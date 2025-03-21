@@ -1,4 +1,4 @@
-import AddToCart from "../AddToCart";
+import AddToCart from "./AddToCart";
 import FavoriteButton from "../FavoriteButton";
 import MyRating from "../MyRating";
 import AuthContextProvider from "@/context/AuthContext";
@@ -8,6 +8,8 @@ import { getProductReviewCounts } from "@/lib/firestore/products/count/read";
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import { Suspense } from "react";
+import { FaIndianRupeeSign } from "react-icons/fa6";
+
 
 
 export default function Details({ product }) {
@@ -32,30 +34,37 @@ export default function Details({ product }) {
       </p>
 
       <div className="flex items-baseline gap-3">
-        <span className="text-purple-500 font-bold text-2xl">₹ {product?.salePrice}</span>
-        <span className="line-through text-gray-400 text-sm">₹ {product?.price}</span>
-      </div>
+  <span className="text-purple-500 py-2 font-bold text-2xl flex items-center">
+    <FaIndianRupeeSign className="inline mr-1" /> {product?.salePrice}
+  </span>
+  <span className="line-through text-gray-400 text-sm flex items-center">
+    <FaIndianRupeeSign className="inline text-base" /> {product?.price}
+  </span>
+</div>
 
       <div className="prose prose-gray max-w-none text-gray-700 leading-relaxed">
         <div dangerouslySetInnerHTML={{ __html: product?.description ?? "" }}></div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 mt-4">
-        <Link href={`/checkout?type=buynow&productId=${product?.id}`}>
-          <button className="bg-purple-500 text-white px-8 w-full md:w-auto py-2 font-semibold rounded-lg shadow-md">
-            <span className="flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5" /> Buy Now
-            </span>
-          </button>
-        </Link>
-        <AuthContextProvider>
-          <AddToCart type={"cute"} productId={product?.id} />
-        </AuthContextProvider>
+     <div className="flex md:flex-1 flex-col md:flex-row w-full gap-4 mt-4">
+  <Link href={`/checkout?type=buynow&productId=${product?.id}`} className="w-full">
+    <button className="bg-purple-600 hover:bg-purple-700 transition-colors text-white px-8 w-full py-3 font-semibold rounded-lg shadow-md">
+      <span className="flex items-center justify-center gap-2">
+        <ShoppingBag className="w-5 h-5" /> Buy Now
+      </span>
+    </button>
+  </Link>
+  
+  <div className="flex flex-1 md:flex-row w-full gap-4">
+    <AuthContextProvider className="w-full">
+      <AddToCart type={"cute"} productId={product?.id} className="w-full py-3" />
+    </AuthContextProvider>
 
-        <AuthContextProvider>
-          <FavoriteButton productId={product?.id} />
-        </AuthContextProvider>
-        </div>
+    <AuthContextProvider>
+      <FavoriteButton productId={product?.id} />
+    </AuthContextProvider>
+  </div>
+</div>
 
       {product?.stock <= (product?.orders ?? 0) && (
         <div className="mt-4">

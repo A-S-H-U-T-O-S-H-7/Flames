@@ -2,14 +2,13 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { createCheckoutCODAndGetId, createCheckoutOnlineAndGetId } from "@/lib/firestore/checkout/write";
-import { Button, Radio, RadioGroup } from "@nextui-org/react";
+import { Radio, RadioGroup } from "@nextui-org/react";
 import confetti from "canvas-confetti";
-import { CheckSquare2Icon, CreditCard, Lock, Banknote, CreditCardIcon, Loader2 } from "lucide-react";
+import { CheckSquare2Icon, CreditCard, Lock, Banknote, CreditCardIcon, Loader2, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import ShippingAddress from "./ShippingAddress";
-
 
 export default function Checkout({ productList }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -32,10 +31,18 @@ export default function Checkout({ productList }) {
   const handleAddress = (key, value) => {
     setAddress({ ...(address ?? {}), [key]: value });
   };
-
-  const totalPrice = productList?.reduce((prev, curr) => {
+  
+  // Calculate total price, total discount, and check if delivery is free
+  const totalMRP = productList?.reduce((prev, curr) => {
+    return prev + curr?.quantity * (curr?.product?.price || curr?.product?.salePrice);
+  }, 0);
+  
+  const totalSalePrice = productList?.reduce((prev, curr) => {
     return prev + curr?.quantity * curr?.product?.salePrice;
   }, 0);
+  
+  const totalDiscount = totalMRP - totalSalePrice;
+  const isDeliveryFree = totalSalePrice >= 499; // Free delivery for orders above ₹499
 
   const initializeRazorpay = () => {
     return new Promise((resolve) => {
@@ -73,7 +80,7 @@ export default function Checkout({ productList }) {
     
     const options = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, 
-      amount: totalPrice * 100,
+      amount: totalSalePrice * 100,
       currency: "INR",
       name: "Flames",
       description: "Transaction",
@@ -113,7 +120,7 @@ export default function Checkout({ productList }) {
   };
 
   const handleSuccessfulPayment = async (paymentId) => {
-    setIsLoading(true);
+    setProcessingOrder(true); // Show processing overlay instead of button loader
     try {
       // Here you would save the order with payment details in your database
       const orderId = await createCheckoutOnlineAndGetId({
@@ -129,34 +136,61 @@ export default function Checkout({ productList }) {
       confetti();
     } catch (error) {
       toast.error(error?.message || "Failed to process order");
+      setProcessingOrder(false);
     }
-    setIsLoading(false);
+  };
+
+  // Validate all mandatory fields
+  const validateAddress = () => {
+    const requiredFields = [
+      { field: 'fullName', label: 'Full Name' },
+      { field: 'mobile', label: 'Mobile Number' },
+      { field: 'email', label: 'Email' },
+      { field: 'addressLine1', label: 'Address Line 1' },
+      { field: 'landmark', label: 'Nearby Location/Landmark' },
+      { field: 'pincode', label: 'Pincode' },
+      { field: 'city', label: 'City' },
+      { field: 'state', label: 'State' }
+    ];
+    
+    for (const { field, label } of requiredFields) {
+      if (!address || !address[field]) {
+        toast.error(`${label} is required`);
+        return false;
+      }
+    }
+    
+    return true;
   };
 
   const handlePlaceOrder = async () => {
-    setIsLoading(true);
-    try {
-      if (totalPrice <= 0) {
-        throw new Error("Price should be greater than 0");
-      }
-      if (!address?.fullName || !address?.mobile || !address?.addressLine1) {
-        throw new Error("Please Fill All Address Details");
-      }
-      if (!productList || productList?.length === 0) {
-        throw new Error("Product List Is Empty");
-      }
+    // First validate all required fields
+    if (!validateAddress()) {
+      return;
+    }
+    
+    if (totalSalePrice <= 0) {
+      toast.error("Price should be greater than 0");
+      return;
+    }
+    
+    if (!productList || productList?.length === 0) {
+      toast.error("Product List Is Empty");
+      return;
+    }
 
+    // Now proceed with order placement
+    setProcessingOrder(true); // Show overlay loader instead of button loader
+    
+    try {
       if (paymentMethod === "prepaid") {
-        setIsLoading(false);
         // Open Razorpay
         handleRazorpayPayment();
         return;
       }
       
-      // For COD, first trigger confetti, then show processing loader
+      // For COD, first trigger confetti, then continue processing
       confetti();
-      setIsLoading(false);
-      setProcessingOrder(true);
       
       // Handle COD order with additional delay
       const orderId = await createCheckoutCODAndGetId({
@@ -219,37 +253,71 @@ export default function Checkout({ productList }) {
 
           {/* Right Section - Order Summary */}
           <div className="lg:w-[500px] flex flex-col gap-2">
-            <section className="bg-white border border-purple-300 rounded-2xl p-6 shadow-sm">
-              <div className="flex items-center gap-3 border-b pb-4 mb-4">
-                <CreditCard className="text-purple-500" size={24} />
-                <h2 className="font-heading text-xl text-gray-900">Order Summary</h2>
-              </div>
-              <div className="flex flex-col gap-4">
-                {productList?.map((item, index) => (
-                  <div key={index} className="flex gap-4 items-center py-2 border-b border-gray-100 last:border-0">
-                    <img 
-                      className="w-16 h-16 object-cover rounded-lg" 
-                      src={item?.product?.featureImageURL} 
-                      alt="" 
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm text-gray-800 font-medium truncate">
-                        {item?.product?.title}
-                      </h3>
-                      <p className="text-sm text-gray-500">Qty: {item?.quantity}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">₹{item?.product?.salePrice * item?.quantity}</p>
-                    </div>
-                  </div>
-                ))}
-
-                <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                  <span className="font-heading text-lg text-gray-900">Total</span>
-                  <span className="font-heading text-lg text-purple-500">₹{totalPrice}</span>
-                </div>
-              </div>
-            </section>
+          <section className="bg-white border border-purple-300 rounded-2xl p-6 shadow-sm">
+  <div className="flex items-center gap-3 border-b pb-4 mb-4">
+    <CreditCard className="text-purple-500" size={24} />
+    <h2 className="font-heading text-xl text-gray-900">Order Summary</h2>
+  </div>
+  <div className="flex flex-col gap-4">
+    {productList?.map((item, index) => (
+      <div key={index} className="flex gap-4 items-center py-2 border-b border-gray-100 last:border-0">
+        <img
+          className="w-16 h-16 object-cover rounded-lg"
+          src={item?.product?.featureImageURL}
+          alt=""
+        />
+        <div className="flex-1 min-w-0">
+          <h3 className="text-sm text-gray-800 font-medium truncate">
+            {item?.product?.title}
+          </h3>
+          <p className="text-sm text-gray-500">Qty: {item?.quantity}</p>
+          {/* {item?.product?.price && item?.product?.price > item?.product?.salePrice && (
+            <div className="flex gap-2 items-center">
+              <span className="text-xs text-gray-500 line-through">₹{item?.product?.price}</span>
+              <span className="text-xs text-green-600">
+                Save ₹{(item?.product?.price - item?.product?.salePrice) * item?.quantity}
+              </span>
+            </div>
+          )} */}
+        </div>
+        <div className="text-right">
+          <p className="text-sm font-medium text-gray-900">₹{item?.product?.price * item?.quantity}</p>
+        </div>
+      </div>
+    ))}
+     
+    {/* Price Breakdown */}
+    <div className="pt-4 border-t border-gray-200">
+      {/* <div className="flex justify-between items-center text-sm mb-2">
+        <span className="text-gray-700">Subtotal</span>
+        <span className="text-gray-900">₹{totalMRP}</span>
+      </div>
+                  */}
+      {totalDiscount > 0 && (
+        <div className="flex justify-between items-center text-sm mb-2">
+          <span className="text-gray-700">Discount</span>
+          <span className="text-gray-800">-₹{totalDiscount}</span>
+        </div>
+      )}
+                 
+      <div className="flex justify-between items-center text-sm mb-2">
+        <span className="text-gray-700">Delivery</span>
+        {/* 
+          For future implementation:
+          - Add condition for free delivery threshold
+          - Add delivery fee calculation based on distance or weight
+          - Add option for express delivery with higher fee
+        */}
+        <span className="text-green-600">Free</span>
+      </div>
+                 
+      <div className="flex justify-between items-center pt-3 border-t border-gray-200 mt-3">
+        <span className="font-heading text-lg text-gray-900">Total</span>
+        <span className="font-heading text-lg text-purple-500">₹{totalMRP - totalDiscount }</span>
+      </div>
+    </div>
+  </div>
+</section>
 
             <section className="bg-white rounded-2xl p-6 border border-purple-300 shadow-sm">
               <div className="flex flex-col gap-4">
@@ -292,21 +360,12 @@ export default function Checkout({ productList }) {
                   </p>
                 </div>
 
-                <Button
-                  isLoading={isLoading}
-                  isDisabled={isLoading}
+                <button
                   onClick={handlePlaceOrder}
-                  className="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-lg transition-colors"
+                  className="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-lg transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? 
-                    <div className="flex items-center justify-center gap-2">
-                      <Loader2 className="animate-spin" size={18} />
-                      {paymentMethod === 'cod' ? "Processing order..." : "Processing payment..."}
-                    </div> 
-                    : 
-                    `Place Order${paymentMethod === 'prepaid' ? ' & Pay' : ''}`
-                  }
-                </Button>
+                  {`Place Order${paymentMethod === 'prepaid' ? ' & Pay' : ''}`}
+                </button>
               </div>
             </section>
           </div>

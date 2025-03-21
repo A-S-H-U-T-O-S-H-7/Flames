@@ -32,8 +32,8 @@ const SortMenu = ({ showSort, setShowSort }) => {
         </div>
         <div className="p-4">
           {[
-            'Price: Low to High',
-            'Price: High to Low',
+            'salePrice: Low to High',
+            'salePrice: High to Low',
             'Newest First',
             'Popular'
           ].map((option) => (

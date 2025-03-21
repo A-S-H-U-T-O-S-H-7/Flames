@@ -37,7 +37,7 @@ const ProductCardImage = ({ product }) => {
       
       {/* Favorite Button */}
       <div 
-        className="absolute top-3 right-3 z-10"
+        className="absolute top-2 right-1 z-10"
         onClick={(e) => {
           // Stop propagation to prevent card click
           e.stopPropagation();

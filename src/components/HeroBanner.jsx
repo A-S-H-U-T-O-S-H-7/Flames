@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
+
 
 const HeroBanner = ({ banners }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -125,18 +127,20 @@ const HeroBanner = ({ banners }) => {
                 </motion.p>
                 
                 {slide.buttontext && (
-                  <motion.div 
-                    custom={2}
-                    variants={textVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="pt-3"
-                  >
-                    <button className="px-6 py-3 md:px-8 md:py-3.5 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-all duration-300 font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl transform hover:scale-105">
-                      {slide.buttontext}
-                    </button>
-                  </motion.div>
-                )}
+  <motion.div 
+    custom={2}
+    variants={textVariants}
+    initial="hidden"
+    animate="visible"
+    className="pt-3"
+  >
+    <Link href={slide.link || "#"} className="inline-block">
+      <button className="px-6 py-3 md:px-8 md:py-3.5 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-all duration-300 font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl transform hover:scale-105">
+        {slide.buttontext}
+      </button>
+    </Link>
+  </motion.div>
+)}
               </div>
             </div>
           </div>

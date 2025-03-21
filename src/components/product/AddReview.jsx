@@ -44,6 +44,12 @@ const AddReview = ({ productId }) => {
   };
 
   const handleSubmit = async () => {
+    // Check if message is empty and show toast notification
+    if (!message.trim()) {
+      toast.error("Please write a review before submitting");
+      return;
+    }
+    
     setIsLoading(true);
     try {
       if (!user) {
@@ -76,18 +82,55 @@ const AddReview = ({ productId }) => {
       </h1>
       
       <div className="flex flex-col justify-center gap-2 items-center">
-        <Rating 
-          value={rating}
-          onChange={(event, newValue) => {
-            setRating(newValue);
-          }}
-          sx={{ 
-            color: '#EAB308',
-            '& .MuiRating-iconFilled': {
+        <style jsx global>{`
+          @keyframes pulse-star {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+          }
+          
+          .star-rating-container .MuiRating-icon:not(.MuiRating-iconActive) {
+            animation: pulse-star 1.5s infinite;
+            animation-delay: calc(var(--star-index) * 0.2s);
+          }
+          
+          .star-rating-container:hover .MuiRating-icon {
+            animation: none !important;
+          }
+        `}</style>
+        
+        <div className="star-rating-container">
+          <Rating 
+            value={rating}
+            onChange={(event, newValue) => {
+              setRating(newValue);
+            }}
+            sx={{ 
               color: '#EAB308',
-            },
-          }}
-        />
+              '& .MuiRating-iconFilled': {
+                color: '#EAB308',
+              },
+              '& .MuiRating-icon': {
+                position: 'relative',
+                '&:nth-of-type(1)': {
+                  '--star-index': 0,
+                },
+                '&:nth-of-type(2)': {
+                  '--star-index': 1,
+                },
+                '&:nth-of-type(3)': {
+                  '--star-index': 2,
+                },
+                '&:nth-of-type(4)': {
+                  '--star-index': 3,
+                },
+                '&:nth-of-type(5)': {
+                  '--star-index': 4,
+                },
+              }
+            }}
+          />
+        </div>
         <h1 className='text-xs text-gray-500'>Rate us</h1>
       </div>
 
@@ -147,7 +190,7 @@ const AddReview = ({ productId }) => {
         color="primary"
         onClick={handleSubmit}
         isLoading={isLoading}
-        isDisabled={isLoading || !message.trim() || !rating}
+        isDisabled={isLoading}
         className="bg-purple-500 w-full rounded-md"
       >
         {isLoading ? 'Submitting...' : 'Submit Review'}

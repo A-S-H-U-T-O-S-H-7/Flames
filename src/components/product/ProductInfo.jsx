@@ -4,7 +4,7 @@ import { ShoppingCart, Minus, Plus, Heart, Info, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Photos from "./Photos";
 import RelatedProducts from "./RelatedProducts";
-import AddToCart from "../AddToCart";
+import AddToCart from "./AddToCart";
 import FavoriteButton from "../FavoriteButton";
 import AuthContextProvider from "@/context/AuthContext";
 

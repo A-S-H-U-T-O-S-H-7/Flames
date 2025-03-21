@@ -107,25 +107,24 @@ export default function CheckoutSuccess() {
         </div>
   
         {/* Buttons with MD Rounded Corners */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link href="/myaccount">
-            <Button
-              className="bg-gray-100 hover:bg-gray-200 text-gray-800 gap-2 px-4 py-2 rounded-md w-full sm:w-auto transition-all duration-200 text-sm font-medium"
-              variant="flat"
-            >
-              <ShoppingBag size={16} />
-              View Orders
-            </Button>
-          </Link>
-          <Link href="/">
-            <Button
-              className="bg-purple-600 hover:bg-purple-700 text-white gap-2 px-4 py-2 rounded-md w-full sm:w-auto transition-all duration-200 text-sm font-medium shadow-sm"
-            >
-              Continue Shopping
-              <ArrowRight size={16} />
-            </Button>
-          </Link>
-        </div>
+<div className="flex flex-col sm:flex-row gap-3 justify-center">
+  <Link href="/myaccount">
+    <button
+      className="bg-gray-100 hover:bg-gray-200 text-gray-800 gap-2 px-4 py-2 rounded-md w-full sm:w-auto transition-all duration-200 text-sm font-medium flex items-center justify-center"
+    >
+      <ShoppingBag size={16} />
+      View Orders
+    </button>
+  </Link>
+  <Link href="/">
+    <button
+      className="bg-purple-600 hover:bg-purple-700 text-white gap-2 px-4 py-2 rounded-md w-full sm:w-auto transition-all duration-200 text-sm font-medium shadow-sm flex items-center justify-center"
+    >
+      Continue Shopping
+      <ArrowRight size={16} />
+    </button>
+  </Link>
+</div>
       </div>
     </div>
   </div>

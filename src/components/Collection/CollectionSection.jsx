@@ -37,9 +37,9 @@ const CollectionSection = ({ showcasedCollections }) => {
       {/* Browse Collections Button */}
       <div className="flex justify-center mt-10 md:mt-[-50px]">
         <Link href="/all-collectionPage" passHref>
-          <button className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white px-8 py-3 rounded-xl font-heading font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
-            Browse All Collections
-          </button>
+        <button className="bg-gradient-to-r from-purple-600 to-white text-gray-800 px-8 py-3 rounded-md font-heading font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+  Browse All Collections
+</button>
         </Link>
       </div>
     </div>

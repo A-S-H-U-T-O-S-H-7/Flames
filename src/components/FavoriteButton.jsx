@@ -5,7 +5,7 @@ import { updateFavorites } from "@/lib/firestore/user/write";
 import { Button } from "@nextui-org/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { IoIosHeartEmpty } from "react-icons/io";
+import { IoMdHeartEmpty } from "react-icons/io";
 import { IoMdHeart } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -41,16 +41,18 @@ export default function FavoriteButton({ productId }) {
 
   return (
     <Button
-    isLoading={isLoading}
-    isDisabled={isLoading}
-    onClick={handleClick}
-    className="p-2"
-  >
+  isLoading={isLoading}
+  isDisabled={isLoading}
+  onClick={handleClick}
+  className="p-2"
+>
+  <div className="bg-gray-100 shadow-md rounded-full p-1 flex items-center justify-center">
     {!isLiked ? (
-      <IoIosHeartEmpty size={25} className="text-purple-500" />
+      <IoMdHeartEmpty size={25} className="text-red-500" />
     ) : (
-      <IoMdHeart size={25} className="text-purple-500" />
+      <IoMdHeart size={25} className="text-red-500" />
     )}
-  </Button>
+  </div>
+</Button>
   );
 }

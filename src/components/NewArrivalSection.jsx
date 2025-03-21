@@ -1,3 +1,4 @@
+// NewArrivalSection.jsx
 import React from "react";
 import Link from "next/link";
 import ProductCard from "./ProductCard";
@@ -20,11 +21,13 @@ function NewArrivalSection({ newArrivalProducts }) {
         </div>
       )}
 
-      {/* Fixed grid layout instead of flex overflow */}
-      <div className="flex overflow-x-auto space-x-2 md:space-x-6 no-scrollbar py-10">
+      {/* Horizontal scrollable grid with fixed card width */}
+      <div className="grid grid-flow-col auto-cols-[180px] md:auto-cols-[240px] gap-3 overflow-x-auto no-scrollbar py-10 px-1">
         {newArrivalProducts.length > 0 ? (
           newArrivalProducts.slice(0, 10).map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <div key={product.id} className="h-full">
+              <ProductCard product={product} />
+            </div>
           ))
         ) : (
           <p className="text-center text-gray-600 col-span-full">No new arrivals available.</p>
