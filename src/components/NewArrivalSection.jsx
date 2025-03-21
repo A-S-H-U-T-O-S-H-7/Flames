@@ -22,7 +22,7 @@ function NewArrivalSection({ newArrivalProducts }) {
       )}
 
       {/* Horizontal scrollable grid with fixed card width */}
-      <div className="grid grid-flow-col auto-cols-[165px] md:auto-cols-[240px] gap-3 overflow-x-auto no-scrollbar py-10 px-1">
+      <div className="grid grid-flow-col auto-cols-[160px] md:auto-cols-[240px] gap-1 overflow-x-auto no-scrollbar py-10 px-1">
         {newArrivalProducts.length > 0 ? (
           newArrivalProducts.slice(0, 10).map((product) => (
             <div key={product.id} className="h-full">
