@@ -21,7 +21,7 @@ function FeaturedCollection({ featuredProducts }) {
       )}
   
       {/* Horizontal scrollable grid with fixed card width */}
-      <div className="grid grid-flow-col auto-cols-[170px] md:auto-cols-[240px] gap-1 overflow-x-auto no-scrollbar py-10 px-1">
+      <div className="grid grid-flow-col auto-cols-[165px] md:auto-cols-[240px] gap-1 overflow-x-auto no-scrollbar py-10 px-1">
         {featuredProducts.length > 0 ? (
           featuredProducts.slice(0, 10).map((product) => (
             <div key={product.id} className="h-full">
