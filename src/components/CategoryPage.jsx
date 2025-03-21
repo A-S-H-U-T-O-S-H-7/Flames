@@ -33,7 +33,7 @@ const CategoryPage = ({ initialProducts, category }) => {
 
   return (
     <motion.div 
-      className="w-full mx-auto p-4 md:p-8"
+      className="w-full mx-auto p-0 md:p-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -67,7 +67,7 @@ const CategoryPage = ({ initialProducts, category }) => {
           </div>
 
           <motion.div 
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}

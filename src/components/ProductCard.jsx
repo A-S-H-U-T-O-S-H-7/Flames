@@ -7,7 +7,7 @@ const ProductCard = ({ product }) => {
     <div 
       className="group w-full bg-white rounded-xl overflow-hidden border border-gray-200 transition-all duration-300 hover:shadow-md"
       style={{
-        minWidth: '180px',
+        minWidth: '160px',
         maxWidth: '100%',
         height: '100%',
         boxShadow: '0 1px 2px 0 rgba(124, 58, 237, 0.1)'
