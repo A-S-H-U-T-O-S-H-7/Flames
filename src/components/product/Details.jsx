@@ -41,8 +41,10 @@ export default function Details({ product }) {
     <FaIndianRupeeSign className="inline text-base" /> {product?.price}
   </span>
 </div>
-
-      <div className="prose prose-gray max-w-none text-gray-700 leading-relaxed">
+<h3 className="text-sm font-medium uppercase text-gray-700  tracking-wider border-b border-gray-300 pb-1 mb-1">
+  Product Details
+</h3>
+      <div className="prose prose-gray text-sm max-w-none text-gray-700 leading-relaxed">
         <div dangerouslySetInnerHTML={{ __html: product?.description ?? "" }}></div>
       </div>
 

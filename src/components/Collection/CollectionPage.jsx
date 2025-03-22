@@ -90,34 +90,20 @@ const CollectionPage = ({ initialProducts, collection }) => {
 
   return (
     <div className="w-full ">
-  <div className="relative  mb-8">
-    <div className="w-full h-56 md:h-80 rounded-md overflow-hidden relative">
-      {serializedCollection?.imageURL ? (
-        <img 
-          src={serializedCollection.imageURL} 
-          alt={serializedCollection.title || "Collection banner"} 
-          className="w-full h-full rounded-md overflow-hidden object-cover"
-        />
-      ) : (
-        <div className="w-full h-full bg-gradient-to-r from-purple-100 to-purple-200" />
-      )}
+  <div className="relative mb-8">
+  <div className="w-full h-56 md:h-80 rounded-md overflow-hidden relative">
+    {/* Responsive image handling - show different images based on screen size */}
+    <picture>
+      <source media="(min-width: 768px)" srcSet={serializedCollection?.bannerImageURL || serializedCollection?.imageURL} />
+      <img
+        src={serializedCollection?.imageURL || serializedCollection?.bannerImageURL}
+        alt={serializedCollection?.title || "Collection banner"}
+        className="w-full h-full rounded-md overflow-hidden object-cover"
+      />
+    </picture>
       
-      {/* Overlay with text */}
-      <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-        <div className="text-center px-6">
-          <h1 className="font-semibold font-heading text-white text-4xl mb-2 drop-shadow-md">
-            {serializedCollection?.title}
-          </h1>
-          {serializedCollection?.subTitle && (
-            <p className="font-body text-white text-lg max-w-2xl mx-auto drop-shadow">
-              {serializedCollection?.subTitle}
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
   </div>
-  
+</div>
       
       <div className="flex flex-col md:flex-row gap-6">
         {/* Desktop Filter Sidebar */}

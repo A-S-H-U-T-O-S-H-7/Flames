@@ -6,6 +6,9 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 
 const CategoryCard = ({ categories }) => {
+  // Ensure categories is an array even if null/undefined is passed
+  const safeCategoriesArray = Array.isArray(categories) ? categories : [];
+  
   const [isHovering, setIsHovering] = useState(false);
   const scrollRef = useRef(null);
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -16,7 +19,7 @@ const CategoryCard = ({ categories }) => {
     let interval;
     
     const scroll = () => {
-      if (scrollRef.current) {
+      if (scrollRef.current && safeCategoriesArray.length > 0) {
         const container = scrollRef.current;
         const maxScroll = container.scrollWidth - container.clientWidth;
         
@@ -33,14 +36,14 @@ const CategoryCard = ({ categories }) => {
       }
     };
     
-    if (!isHovering) {
+    if (!isHovering && safeCategoriesArray.length > 0) {
       interval = setInterval(scroll, scrollInterval);
     }
     
     return () => {
       clearInterval(interval);
     };
-  }, [isHovering, scrollPosition]);
+  }, [isHovering, scrollPosition, safeCategoriesArray.length]);
 
   // Enhanced animation variants
   const containerVariants = {
@@ -75,6 +78,61 @@ const CategoryCard = ({ categories }) => {
     }
   };
 
+  const emptyStateVariants = {
+    hidden: { 
+      opacity: 0,
+      y: 20
+    },
+    visible: { 
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: 0.2,
+        duration: 0.6
+      }
+    }
+  };
+
+  // If no categories, render empty state
+  if (safeCategoriesArray.length === 0) {
+    return (
+      <div className="bg-white py-8 px-5 w-full">
+        <motion.div 
+          className="flex flex-col items-center justify-center py-12 px-4"
+          variants={emptyStateVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <div className="w-24 h-24 mb-6 bg-purple-100 rounded-full flex items-center justify-center">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              className="w-12 h-12 text-purple-400"
+            >
+              <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path>
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">No Categories Found</h3>
+          <p className="text-gray-600 text-center max-w-md mb-6">
+            We couldn't find any categories to display. Categories will appear here once they're added.
+          </p>
+          <motion.div 
+            className="px-6 py-3 bg-purple-600 text-white rounded-lg cursor-pointer font-medium shadow-md"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Explore More
+          </motion.div>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white py-4 md:py-8 px-3 md:px-5 w-full">
       <div
@@ -91,7 +149,7 @@ const CategoryCard = ({ categories }) => {
           initial="hidden"
           animate="visible"
         >
-          {categories.map((category, index) => (
+          {safeCategoriesArray.map((category, index) => (
             <Link key={category.id} href={`/category/${category.id}`} className="flex flex-col items-center">
               <motion.div
                 variants={cardVariants}
@@ -120,7 +178,7 @@ const CategoryCard = ({ categories }) => {
               </motion.div>
               <motion.p 
                 variants={cardVariants}
-                className="text-sm sm:text-base font-medium text-center text-gray-600 px-2 mt-2"
+                className="text-sm sm:text-base font-semibold text-center text-gray-600 px-2 mt-2"
               >
                 {category.name}
               </motion.p>

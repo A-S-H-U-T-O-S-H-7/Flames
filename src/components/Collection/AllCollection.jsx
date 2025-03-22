@@ -15,7 +15,7 @@ const AllCollection = ({ collections }) => {
           key={collection.id}
           id={collection.id}
           title={collection.title}
-          image={collection.imageURL || "/demo1.jpeg"}
+          image={collection.bannerImageURL || "/demo1.jpeg"}
           description={collection.subTitle}
           startingPrice={collection.startingPrice}
           quantity={collection.quantity}

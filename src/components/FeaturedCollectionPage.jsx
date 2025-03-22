@@ -6,7 +6,7 @@ import ProductCard from './ProductCard';
 import FilterSidebar from './FilterSidebar';
 import SortMenu from './SortMenu';
 
-const NewArrivalCollectionPage = ({ products }) => {
+const FeaturedCollectionPage = ({ products }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 2410]);
@@ -38,7 +38,7 @@ const NewArrivalCollectionPage = ({ products }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="text-center font-heading text-gray-800 text-4xl md:text-5xl font-bold mb-8">New Arrivals</h1>
+      <h1 className="text-center font-heading text-gray-800 text-4xl md:text-5xl font-bold mb-8">Featured Products</h1>
       
       <div className="flex flex-col md:flex-row gap-6">
         <div className="hidden md:block w-72">
@@ -126,4 +126,4 @@ const NewArrivalCollectionPage = ({ products }) => {
   );
 };
 
-export default NewArrivalCollectionPage;
+export default FeaturedCollectionPage;

@@ -103,14 +103,14 @@ const HeroBanner = ({ banners }) => {
 
           <div className="absolute inset-0 flex items-center">
             <div className="container mx-auto px-4 md:px-8 lg:px-12">
-              <div className="max-w-xl space-y-5 md:space-y-7 ml-4 sm:ml-6 md:ml-8">
+            <div className="max-w-xl space-y-4 md:space-y-5 ml-4 sm:ml-6 md:ml-8">
                 <motion.h1 
                   custom={0}
                   variants={textVariants}
                   initial="hidden"
                   animate="visible"
-                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight"
-                  style={{ textShadow: "0 2px 15px rgba(0,0,0,0.7)" }}
+                  className="text-2xl sm:text-3xl md:text-4xl font-light text-white leading-tight font-serif"
+                  style={{ textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}
                 >
                   {slide.title}
                 </motion.h1>
@@ -120,27 +120,27 @@ const HeroBanner = ({ banners }) => {
                   variants={textVariants}
                   initial="hidden"
                   animate="visible"
-                  className="text-base sm:text-lg md:text-xl text-white/90 max-w-md"
-                  style={{ textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}
+                  className="text-sm sm:text-base md:text-lg text-white/95 max-w-md font-light"
+                  style={{ textShadow: "0 1px 5px rgba(0,0,0,0.4)" }}
                 >
                   {slide.subtitle}
                 </motion.p>
                 
                 {slide.buttontext && (
-  <motion.div 
-    custom={2}
-    variants={textVariants}
-    initial="hidden"
-    animate="visible"
-    className="pt-3"
-  >
-    <Link href={slide.link || "#"} className="inline-block">
-      <button className="px-6 py-3 md:px-8 md:py-3.5 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-all duration-300 font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl transform hover:scale-105">
-        {slide.buttontext}
-      </button>
-    </Link>
-  </motion.div>
-)}
+                  <motion.div 
+                    custom={2}
+                    variants={textVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="pt-3"
+                  >
+                    <Link href={slide.link || "#"} className="inline-block">
+                      <button className="px-5 py-2 sm:px-6 sm:py-2.5 border border-white bg-white/10 backdrop-blur-sm text-white rounded-sm hover:bg-white hover:text-gray-900 transition-all duration-300 font-light text-xs sm:text-sm tracking-wider uppercase">
+                        {slide.buttontext}
+                      </button>
+                    </Link>
+                  </motion.div>
+                )}
               </div>
             </div>
           </div>

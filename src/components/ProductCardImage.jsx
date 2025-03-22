@@ -1,4 +1,3 @@
-// ProductCardImage.jsx - Client Component
 "use client"
 
 import { useState } from "react";
@@ -16,24 +15,48 @@ const ProductCardImage = ({ product }) => {
 
   return (
     <div 
-      className="relative w-full h-[140px] sm:h-[160px] md:h-[200px] lg:h-[220px] overflow-hidden"
+      className="relative w-full h-[140px] sm:h-[160px] md:h-[200px] lg:h-[220px] overflow-hidden group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`w-full h-full transition-opacity duration-700 ${isHovered ? 'opacity-0' : 'opacity-100'} absolute top-0 left-0`}>
+      {/* Main Image */}
+      <div 
+        className="absolute inset-0 w-full h-full transform transition-all duration-1000 ease-in-out"
+        style={{
+          opacity: isHovered ? 0 : 1,
+          transform: isHovered ? "scale(1.05)" : "scale(1)",
+        }}
+      >
         <img
           src={mainImage}
           alt={product?.title}
           className="w-full h-full object-cover"
         />
       </div>
-      <div className={`w-full h-full transition-opacity duration-700 ${isHovered ? 'opacity-100' : 'opacity-0'} absolute top-0 left-0`}>
+      
+      {/* Hover Image with Slower Crossfade and Scale Effect */}
+      <div 
+        className="absolute inset-0 w-full h-full transform transition-all duration-1000 ease-in-out"
+        style={{
+          opacity: isHovered ? 1 : 0,
+          transform: isHovered ? "scale(1)" : "scale(1.1)",
+        }}
+      >
         <img
           src={hoverImage}
           alt={`${product?.title} - alternate view`}
           className="w-full h-full object-cover"
+          loading="eager" // Ensure the hover image is preloaded
         />
       </div>
+      
+      {/* Subtle Overlay that appears on hover */}
+      <div 
+        className="absolute inset-0 bg-black transition-opacity duration-1000 ease-in-out pointer-events-none"
+        style={{ 
+          opacity: isHovered ? 0.05 : 0 
+        }}
+      />
       
       {/* Favorite Button */}
       <div 

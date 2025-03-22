@@ -6,10 +6,10 @@ import Link from "next/link";
 import { motion, useAnimation, useInView } from "framer-motion";
 
 const giftProducts = [
-  { image: "/wrapped-present.jpg", title: "Handmade Presents", id: "vxxyxAdsyxMFaTAz4Lfv" },
-  { image: "/gift1.jpg", title: "Customize Gifts", id: "vxxyxAdsyxMFaTAz4Lfv" },
-  { image: "/gift1.3.jpg", title: "Cards", id: "vxxyxAdsyxMFaTAz4Lfv" },
-  { image: "/gift2.1.jpg", title: "Chocolate", id: "vxxyxAdsyxMFaTAz4Lfv" },
+  { image: "/wrapped-present.jpg", title: "Handmade Presents", id: "Dv3q9Y7sbPx1Ewtz3AmQ" },
+  { image: "/gift1.jpg", title: "Customize Gifts", id: "Dv3q9Y7sbPx1Ewtz3AmQ" },
+  { image: "/gift1.3.jpg", title: "Cards", id: "Dv3q9Y7sbPx1Ewtz3AmQ" },
+  { image: "/gift2.1.jpg", title: "Chocolate", id: "Dv3q9Y7sbPx1Ewtz3AmQ" },
 ];
 
 const GiftsSection = () => {
@@ -74,7 +74,7 @@ const GiftsSection = () => {
             className="w-full lg:w-2/5 mb-6 lg:mb-0"
             variants={itemVariants}
           >
-            <Link href="/category/vxxyxAdsyxMFaTAz4Lfv" className="block h-full">
+            <Link href="/category/Dv3q9Y7sbPx1Ewtz3AmQ" className="block h-full">
               <motion.div
                 className="relative rounded-xl shadow-lg overflow-hidden h-64 md:h-80 lg:h-full w-full cursor-pointer"
                 whileHover={{ scale: 1.02 }}

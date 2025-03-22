@@ -15,21 +15,17 @@ const CollectionSection = ({ showcasedCollections }) => {
               index === 1 ? "md:-mt-[170px]" : ""
             }`}
           >
-            <Link href={`/collections/${collection.id}`} passHref>
-              <div className="relative w-full h-full">
-                <Image
-                  src={collection.imageURL}
-                  alt={collection.title}
-                  layout="fill"
-                  objectFit="cover"
-                  className="rounded-lg hover:scale-105 transition-transform duration-300"
-                />
-                <div className={`absolute bottom-0 w-full  px-4 py-2`}>
-                  <h3 className="text-2xl font-heading font-extrabold italic">{collection.title}</h3>
-                  <p className="text-md font-body">{collection.subTitle}</p>
-                </div>
-              </div>
-            </Link>
+           <Link href={`/collections/${collection.id}`} passHref>
+  <div className="relative w-full h-full">
+    <Image
+      src={collection.imageURL}
+      alt={collection.title}
+      fill
+      sizes="100%"
+      className="rounded-lg hover:scale-105 transition-transform duration-300 object-cover"
+    />
+  </div>
+</Link>
           </div>
         ))}
       </div>
