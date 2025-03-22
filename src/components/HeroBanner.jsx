@@ -84,17 +84,17 @@ const HeroBanner = ({ banners }) => {
           className="absolute inset-0"
         >
           <div className="relative w-full h-full overflow-hidden">
-            <Image
-              src={slide.imageURL} 
-              alt={slide.name || "Banner Image"}
-              fill
-              priority
-              className="object-cover transition-all duration-700"
-              style={{ 
-                transformOrigin: 'center',
-                filter: 'brightness(0.9)',
-              }}
-            />
+          <Image
+  src={slide.imageURL} 
+  alt={slide.name || "Banner Image"}
+  fill
+  priority
+  className="object-cover object-top sm:object-center transition-all duration-700"
+  style={{ 
+    transformOrigin: 'center',
+    filter: 'brightness(0.9)',
+  }}
+/>
             {/* Gradient overlay with enhanced depth */}
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
             {/* Subtle gradient from bottom */}

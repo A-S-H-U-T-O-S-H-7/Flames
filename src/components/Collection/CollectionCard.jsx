@@ -6,7 +6,7 @@ function CollectionCard({
   id, 
   title, 
   image, 
-  bannerImage, 
+  bannerImageURL, 
   description, 
   startingPrice, 
   quantity, 
@@ -27,7 +27,7 @@ function CollectionCard({
             {/* For desktop screens - use bannerImage if available */}
             <div className='hidden md:block h-full w-full'>
               <Image 
-                src={bannerImage || image}
+                src={bannerImageURL || image}
                 alt={title}
                 className='w-full h-full object-cover'
                 width={1000} 
