@@ -17,6 +17,11 @@ const poppins = Poppins({
 export const metadata = {
   title: "Flames",
   description: "Ignite Your Style, Illuminate Your Beauty",
+  icons: {
+    icon: '/flame1.png',
+    apple: '/apple-touch-icon.png',
+    shortcut: '/flame1.png'
+  }
 };
 
 export default function RootLayout({ children }) {
@@ -24,7 +29,8 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${libreBaskerville.variable} ${poppins.variable}`}>
       <body className="antialiased">
         <Toaster/>
-        {children}</body>
+        {children}
+        </body>
     </html>
   );
 }
