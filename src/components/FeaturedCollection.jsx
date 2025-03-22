@@ -7,7 +7,7 @@ function FeaturedCollection({ featuredProducts }) {
   const products = Array.isArray(featuredProducts) ? featuredProducts : [];
 
   return (
-    <div className="bg-gray-100 px-4 md:px-8 py-10">
+    <div className="bg-gray-100 px-[10px] md:px-[30px] py-10">
       <h2 className="text-2xl font-medium font-heading text-center text-gray-800">
         Featured Products
       </h2>
