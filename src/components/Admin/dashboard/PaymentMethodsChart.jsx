@@ -5,7 +5,7 @@ const PaymentMethodsChart = ({ paymentMethods }) => {
   // Prepare data for payment methods pie chart
   const paymentMethodsData = [
     { name: 'COD', value: paymentMethods.cod },
-    { name: 'Prepaid', value: paymentMethods.online }
+    { name: 'Prepaid', value: paymentMethods.prepaid }
   ];
   
   // Enhanced colors with better contrast

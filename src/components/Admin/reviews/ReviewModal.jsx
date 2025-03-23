@@ -31,6 +31,7 @@ export default function ReviewModal({
     const file = e.target.files[0];
     if (file) {
       setNewReviewPhoto(file);
+      e.target.value = '';
     }
   };
 
@@ -50,7 +51,7 @@ export default function ReviewModal({
         <ModalHeader>
           <span>Edit Review</span>
           <button
-            onClick={onClose}
+            onClick ={onClose}
             className="text-red-500 hover:text-red-700 transition duration-300"
           >
             <X size={20} />
@@ -72,7 +73,7 @@ export default function ReviewModal({
                     size="sm"
                     color="danger"
                     className="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 p-1 rounded-full"
-                    onClick={() => setNewReviewPhoto(null)}
+                    onPress={() => setNewReviewPhoto(null)}
                   >
                     <Trash2 size={14} />
                   </Button>
@@ -120,7 +121,7 @@ export default function ReviewModal({
           <Button
             color="danger"
             variant="light"
-            onPress={onClose}
+            onPress ={onClose}
             className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-md"
           >
             Cancel

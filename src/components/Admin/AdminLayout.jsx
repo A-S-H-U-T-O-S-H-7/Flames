@@ -85,7 +85,7 @@ export default function AdminLayout({ children }) {
       {/* Main Content */}
       <section className="flex-1 flex flex-col">
         <Header toggleSidebar={toggleSidebar} />
-        <section className="flex-1 ml-[100px] bg-[#eff3f4] dark:bg-gray-900">
+        <section className="flex-1 ml-[90px] bg-[#eff3f4] dark:bg-gray-900">
           {children}
         </section>
       </section>

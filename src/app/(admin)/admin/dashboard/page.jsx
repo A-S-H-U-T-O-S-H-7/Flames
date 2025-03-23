@@ -21,7 +21,7 @@ const Dashboard = () => {
     totalRevenue: 0,
     averageOrderValue: 0,
     totalProductsSold: 0,
-    paymentMethods: { cod: 0, online: 0 },
+    paymentMethods: { cod: 0, prepaid: 0 },
     recentOrders: [],
     dailyOrders: []
   });
@@ -79,7 +79,7 @@ const Dashboard = () => {
       let totalRevenue = 0;
       let totalProductCount = 0;
       let codCount = 0;
-      let onlineCount = 0;
+      let prepaidCount = 0;
       let dailyOrdersMap = {};
       
       querySnapshot.forEach((doc) => {
@@ -93,8 +93,8 @@ const Dashboard = () => {
         
         if (order.paymentMode === 'cod') {
           codCount++;
-        } else if (order.paymentMode === 'online') {
-          onlineCount++;
+        } else if (order.paymentMode === 'prepaid') {
+          prepaidCount++;
         }
         
         const orderDate = order.createdAt?.toDate();
@@ -123,7 +123,7 @@ const Dashboard = () => {
         totalRevenue,
         averageOrderValue,
         totalProductsSold: totalProductCount,
-        paymentMethods: { cod: codCount, online: onlineCount },
+        paymentMethods: { cod: codCount, prepaid: prepaidCount },
         recentOrders: orders.sort((a, b) => b.createdAt - a.createdAt).slice(0, 5),
         dailyOrders
       });
@@ -153,7 +153,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="p-4 md:p-6 max-w-6xl mx-auto bg-[#1e2737] text-gray-100 min-h-screen">
+    <div className="p-4 md:p-6  mx-auto bg-[#1e2737] text-gray-100 min-h-screen">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div className="flex items-center">
           <LayoutDashboard className="text-[#22c7d5] mr-2" size={24} />

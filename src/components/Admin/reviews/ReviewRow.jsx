@@ -105,22 +105,22 @@
           </div>
         </td>
         <td className="px-4 py-3">
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center rounded-md justify-center gap-2">
             <Button
               isIconOnly
               size="sm"
-              className="bg-[#22c7d5] text-white"
-              onClick={() => onEdit(item)}
+              className="bg-[#22c7d5] rounded-md text-white"
+              onPress={() => onEdit(item)}
             >
               <Pencil size={16} />
             </Button>
             <Button
               isIconOnly
               size="sm"
-              className="bg-red-500 text-white"
+              className="bg-red-500 rounded-md text-white"
               isDisabled={isLoading}
               isLoading={isLoading}
-              onClick={handleDelete}
+              onPress={handleDelete}
             >
               <Trash2 size={16} />
             </Button>

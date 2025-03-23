@@ -1,9 +1,6 @@
-// write.jsx
 import { updateDoc,deleteDoc, doc, setDoc, Timestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db } from "../firebase";
-
-// Initialize storage
 const storage = getStorage();
 
 export const addReview = async ({
@@ -41,12 +38,18 @@ export const deleteReview = async ({ productId, uid }) => {
   await deleteDoc(doc(db, `products/${productId}/reviews/${uid}`));
 };
 
-export const updateReview = async ({ uid, productId, message,reviewPhotoURL, isShowcased }) => {
-  const ref = doc(db, `products/${productId}/reviews/${uid}`);
-  await updateDoc(ref, {
+export const updateReview = async ({ uid, productId, message, reviewPhotoURL, isShowcased }) => {
+  const reviewRef = doc(db, `products/${productId}/reviews/${uid}`);
+  
+  const updateData = {
     message,
-    reviewPhotoURL,
     isShowcased,
     lastUpdated: Timestamp.now()
-  });
+  };
+  
+  if (reviewPhotoURL !== undefined && reviewPhotoURL !== null) {
+    updateData.reviewPhotoURL = reviewPhotoURL;
+  }
+  
+  await updateDoc(reviewRef, updateData);
 };
