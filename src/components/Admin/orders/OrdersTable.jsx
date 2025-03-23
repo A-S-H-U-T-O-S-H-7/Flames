@@ -115,9 +115,12 @@ export function OrdersTable({
                               {item.quantity}
                             </div>
                             <div className="ml-2 truncate">
-                              <div className="text-xs font-medium text-gray-200">
-                                {item.product_data.name}
-                              </div>
+                            <div 
+  className="text-xs font-medium text-gray-200 truncate w-full sm:max-w-[120px] md:max-w-[180px] lg:max-w-[250px]" 
+  title={item.product_data.name}
+>
+  {item.product_data.name}
+</div>
                               <div className="text-xs text-gray-400">
                                 ₹{item.price} × {item.quantity}
                               </div>
