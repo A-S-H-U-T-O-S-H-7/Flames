@@ -85,7 +85,7 @@
         <td className="px-4 py-3">
           <Link 
             href={`/product-details/${item?.productId}`}
-            className="flex items-center gap-2 text-blue-400 hover:text-blue-300"
+            className="flex items-center text-sm gap-2 text-blue-400 hover:text-blue-300"
           >
             {product?.title}
             <ExternalLink size={14} />

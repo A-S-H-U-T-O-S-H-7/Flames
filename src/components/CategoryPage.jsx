@@ -33,7 +33,7 @@ const CategoryPage = ({ initialProducts, category }) => {
 
   return (
     <motion.div 
-      className="w-full mx-auto p-0 md:p-8"
+      className="w-full py-[10px] "
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}

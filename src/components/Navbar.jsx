@@ -126,7 +126,7 @@ useEffect(() => {
             <Link href="/" className="text-purple-800 font-medium font-heading px-4 py-2 rounded-md transition-colors">
               Home
             </Link>
-            <Link href="/category/vxxyxAdsyxMFaTAz4Lfv" className="text-purple-800 font-heading font-medium px-4 py-2 rounded-md transition-colors">
+            <Link href="/category/Dv3q9Y7sbPx1Ewtz3AmQ" className="text-purple-800 font-heading font-medium px-4 py-2 rounded-md transition-colors">
               Gifts
             </Link>
 
