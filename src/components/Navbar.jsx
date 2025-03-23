@@ -306,7 +306,7 @@ useEffect(() => {
               <div className="px-4 pb-4">
                 <div className="relative h-32 w-full rounded-lg overflow-hidden">
                 <Image
-  src="/demo1.jpeg2"
+  src="/mobilebanner.webp"
   alt="Banner"
   fill
   style={{ objectFit: "cover" }}
@@ -321,7 +321,7 @@ useEffect(() => {
                 <Link href="/" className="block px-4 py-2 text-purple-900 font-heading font-medium hover:bg-purple-50">
                   Home
                 </Link>
-                <Link href="/category/vxxyxAdsyxMFaTAz4Lfv" className="block px-4 py-2 text-purple-900 font-heading font-medium hover:bg-purple-50">
+                <Link href="/category/Dv3q9Y7sbPx1Ewtz3AmQ" className="block px-4 py-2 text-purple-900 font-heading font-medium hover:bg-purple-50">
                   Gifts
                 </Link>
 
