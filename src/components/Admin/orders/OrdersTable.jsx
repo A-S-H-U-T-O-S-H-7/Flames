@@ -116,7 +116,7 @@ export function OrdersTable({
                             </div>
                             <div className="ml-2 truncate">
                             <div 
-  className="text-xs font-medium text-gray-200 truncate w-full sm:max-w-[120px] md:max-w-[180px] lg:max-w-[250px]" 
+  className="text-xs font-medium text-gray-200 truncate w-full sm:max-w-[120px] md:max-w-[150px] lg:max-w-[180px]" 
   title={item.product_data.name}
 >
   {item.product_data.name}

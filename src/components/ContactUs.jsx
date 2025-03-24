@@ -65,7 +65,7 @@ const ContactUs = () => {
     },
     { 
       Icon: FaEnvelope, 
-      text: 'ashutoshmohanty13703@company.com',
+      text: 'flames.support@gmail.com',
       bgColor: 'bg-purple-50',
       iconColor: 'text-purple-500',
       hoverBg: 'hover:bg-purple-100'
