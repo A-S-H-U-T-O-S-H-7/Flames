@@ -10,7 +10,10 @@ import HeaderClientButtons from "./HeaderClientButtons";
 import AdminButton from "./AdminButton";
 import { useRouter } from "next/navigation";
 
-const searchKeywords = ["jewelry", "accessories", "home decor", "rings", "earrings"];
+const searchKeywords = ["jewelry", "accessories", "home decor", "rings", "earrings","bags","handbags","nacklace","pendent",
+  "duppata","hijab","gift", "handmade","jhumkas","bangles","locket","gold","silver","hand crafted","red",
+  "green","purple","blue","premium","art","bracelets",
+];
 
 const Navbar = ({categories, collections}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
