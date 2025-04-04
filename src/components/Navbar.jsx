@@ -179,7 +179,7 @@ useEffect(() => {
                   aria-label="Search"
                   title="Click to search"
                 >
-                  <Search className="h-3 w-3 xl:h-4 xl:w-4 text-purple-700" />
+                  <Search className="w-3 h-3 md:w-4 md:h-4 text-purple-700" />
                 </button>
               </div>
               
@@ -216,7 +216,7 @@ useEffect(() => {
               </button>
               <div className="hidden group-hover:block absolute right-0 mt-0 w-36 bg-white shadow-xl rounded-md py-2 border border-purple-100 z-50">
                 <Link href="/myaccount" className="flex items-center justify-center gap-2 px-4 py-2 text-sm text-purple-900 hover:bg-purple-50">
-                  <User className="w-3 h-3 xl:w-4 xl:h-4 flex"/>Profile
+                  <User className="w-4 h-4  flex"/>Profile
                 </Link>
                 
                 <div className="flex flex-col gap-2 mx-2 justify-center">
