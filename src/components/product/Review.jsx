@@ -190,12 +190,16 @@ export default function Reviews({ productId }) {
         </div>
       )}
 
-      {/* Improved Image Preview Modal */}
+      {/* Improved Image Preview Modal with centered image */}
       <Modal 
         isOpen={isImageModalOpen} 
         onClose={closeImageModal}
         size="xl"
         className="image-preview-modal text-transparent flex justify-center items-center"
+        classNames={{
+          base: "flex items-center justify-center",
+          wrapper: "flex items-center justify-center"
+        }}
         motionProps={{
           variants: {
             enter: {
@@ -217,10 +221,10 @@ export default function Reviews({ productId }) {
           }
         }}
       >
-        <ModalContent className="max-h-[80vh] flex items-center ">
+        <ModalContent className="max-h-[80vh] flex items-center justify-center">
           {(onClose) => (
             <>
-              <ModalHeader className="flex justify-end  items-center p-2 absolute right-0 top-0 z-10 bg-transparent w-full">
+              <ModalHeader className="flex justify-end items-center p-2 absolute right-0 top-0 z-10 bg-transparent w-full">
                 <Button
                   isIconOnly
                   color="danger"
@@ -232,9 +236,9 @@ export default function Reviews({ productId }) {
                   <X size={20} className="text-white" />
                 </Button>
               </ModalHeader>
-              <ModalBody className="p-0 flex items-center justify-center ">
+              <ModalBody className="p-0 flex items-center justify-center w-full h-full">
                 {selectedImage && (
-                  <div className="w-full h-full flex items-center justify-center p-1">
+                  <div className="w-full h-full flex items-center justify-center">
                     <img
                       src={selectedImage}
                       alt="Review photo"
