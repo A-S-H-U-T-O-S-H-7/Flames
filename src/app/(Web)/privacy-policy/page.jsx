@@ -2,7 +2,7 @@ import React from "react";
 
 const PrivacyPolicy = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-purple-100 py-12 px-4 md:px-8 lg:px-16">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 md:px-8 lg:px-16">
       <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
         {/* Header with gradient */}
         <div className="bg-gradient-to-r from-purple-500 to-purple-300 px-6 md:px-10 py-6 text-white">
