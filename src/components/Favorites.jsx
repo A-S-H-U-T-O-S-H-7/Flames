@@ -23,7 +23,7 @@ export default function Favorites() {
     <main className="flex min-h-screen items-center flex-col bg-gray-100  gap-3 px-[10px] md:px-[30px] pb-10 ">
       
       <h1 className="text-3xl pt-4 font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">Favorites</h1>
-      <div className="h-[6px] w-24 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mb-3"></div>
+      <div className="h-1 w-24 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mb-3"></div>
       
       {(!data?.favorites || data?.favorites?.length === 0) && (
        <div className="bg-white w-full max-w-[1000px] mx-auto rounded-3xl shadow-lg border border-gray-100 p-4 sm:p-8 md:p-12 flex flex-col items-center justify-center overflow-hidden relative">
