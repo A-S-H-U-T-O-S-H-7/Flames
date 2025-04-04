@@ -73,7 +73,7 @@ export default function Cart() {
 
             <div className="flex justify-center items-center mt-10">
               <Link href="/checkout?type=cart">
-                <button className="group relative overflow-hidden px-10 py-4 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-indigo-200 transform hover:-translate-y-1">
+                <button className="group relative overflow-hidden px-10 py-4 rounded-md bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-indigo-200 transform hover:-translate-y-1">
                   <span className="relative z-10">Proceed to Checkout</span>
                   <span className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 </button>
