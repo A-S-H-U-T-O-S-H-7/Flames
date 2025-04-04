@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { motion } from "framer-motion";
-import { addSuggestion } from '@/lib/firestore/suggestions/write';
+import { addFeedback } from '@/lib/firestore/suggestions/write';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -41,12 +41,11 @@ const ContactUs = () => {
     setFormStatus({ sending: true, success: false, error: false, errorMessage: '' });
 
     try {
-      // Get current user info - in a real app, you would get this from your auth context
-      // For now we'll use a placeholder UID
+      
       const uid = "anonymous-user"; // Replace with actual auth.currentUser?.uid in production
       
       // Call the addSuggestion function to store data in Firestore
-      await addSuggestion({
+      await addFeedback({
         displayName: formData.name,
         message: formData.message,
         uid: uid,
