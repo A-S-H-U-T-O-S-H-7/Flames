@@ -28,7 +28,7 @@ export default function Cart() {
     <main className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen">
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="mb-8 flex flex-col items-center">
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">Your Shopping Cart</h1>
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">Shopping Cart</h1>
           <div className="h-1 w-24 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mt-2 mb-3"></div>
           <p className="text-gray-600">
             {hasItems ? `${data.carts.length} item${data.carts.length > 1 ? 's' : ''} waiting for you` : 'Your cart is looking empty'}
