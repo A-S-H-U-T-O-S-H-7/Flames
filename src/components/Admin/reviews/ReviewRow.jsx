@@ -52,7 +52,6 @@
       
       return `${day}/${month}/${year} ${hours}:${minutes}${ampm}`;
     };
-    console.log("Timestamp structure:", item?.timestampCreate);
 
     return (
       <tr className="hover:bg-[#1e2737] transition-colors">

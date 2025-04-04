@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { FaShoppingBag, FaGem, FaCrown, FaStar } from 'react-icons/fa';
+import Link from 'next/link';
 
 export default function AboutUs() {
   const [mounted, setMounted] = useState(false);
@@ -112,7 +113,7 @@ export default function AboutUs() {
                   className="relative rounded-3xl overflow-hidden shadow-lg"
                 >
                   <Image
-                    src="/teammate.png"
+                    src="/aboutus1.png"
                     alt="Fashion Collection"
                     width={500}
                     height={400}
@@ -138,6 +139,7 @@ export default function AboutUs() {
                 <p className="text-gray-600 mb-6 leading-relaxed">
                   Our journey began with a simple belief: beautiful accessories should be accessible to everyone. Today, we continue to bridge the gap between luxury and affordability.
                 </p>
+                <Link href="/all-collectionPage">
                 <motion.button
                   whileHover={{ scale: 1.03, boxShadow: "0 10px 25px -5px rgba(14, 165, 142, 0.2)" }}
                   whileTap={{ scale: 0.97 }}
@@ -145,6 +147,7 @@ export default function AboutUs() {
                 >
                   Discover Collections
                 </motion.button>
+                </Link>
               </motion.div>
             </div>
           </div>
@@ -189,7 +192,7 @@ export default function AboutUs() {
                   className="relative rounded-3xl overflow-hidden shadow-lg"
                 >
                   <Image
-                    src="/about-jewelry.jpg"
+                    src="/aboutus2.jpeg"
                     alt="Jewelry Collection"
                     width={500}
                     height={400}
@@ -244,7 +247,7 @@ export default function AboutUs() {
           </div>
           
           {/* Newsletter Section */}
-          <motion.div
+          {/* <motion.div
             variants={itemVariants}
             className="bg-gradient-to-r from-teal-50 to-purple-50 rounded-3xl p-8 md:p-12 text-center max-w-4xl mx-auto border border-teal-100 shadow-md"
           >
@@ -266,7 +269,7 @@ export default function AboutUs() {
                 Subscribe
               </motion.button>
             </div>
-          </motion.div>
+          </motion.div> */}
         </motion.div>
       )}
     </div>

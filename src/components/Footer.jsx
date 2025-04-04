@@ -1,15 +1,13 @@
 "use client"
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  FaFacebook, FaInstagram, FaTwitter, FaYoutube, FaPaperPlane 
-} from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
 import Image from 'next/image';
 import Link from 'next/link';
+import SuggestionBox from './SuggestionBox';
+import AuthContextProvider from '@/context/AuthContext';
 
 const Footer = ({categories = []}) => {
-  const [suggestion, setSuggestion] = useState('');
-
   const socialLinks = [
     { icon: FaFacebook, link: "#", color: "text-blue-600" },
     { icon: FaInstagram, link: "#", color: "text-pink-600" },
@@ -23,12 +21,6 @@ const Footer = ({categories = []}) => {
     { name: "Contact", path: "/contactus" },
     { name: "Shipping", path: "/myaccount" }
   ];
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle suggestion submission
-    setSuggestion('');
-  };
 
   // Placeholder categories if none provided
   const defaultCategories = ['Jewelry', 'Accessories', 'Home Decor', 'Gifts', 'Seasonal', 'Artisan'];
@@ -146,28 +138,10 @@ const Footer = ({categories = []}) => {
           </div>
 
           {/* Suggestion Box */}
-          <div className="lg:col-span-3 flex flex-col items-center">
-            <h3 className="font-heading text-lg sm:text-xl font-medium text-purple-800 mb-5 text-center relative after:content-[''] after:absolute after:w-12 after:h-0.5 after:bg-purple-400 after:bottom-0 after:left-1/2 after:-translate-x-1/2 pb-2">
-              Suggestions
-            </h3>
-            <form onSubmit={handleSubmit} className="w-full max-w-xs space-y-4">
-              <div className="relative rounded-lg overflow-hidden shadow-purple-100 shadow-md">
-                <textarea
-                  value={suggestion}
-                  onChange={(e) => setSuggestion(e.target.value)}
-                  placeholder="Share your thoughts..."
-                  className="w-full px-4 py-3 text-gray-600 bg-white border-2 border-purple-200 rounded-lg focus:outline-none focus:border-purple-400 hover:border-purple-300 transition-colors resize-none h-28"
-                />
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  type="submit"
-                  className="absolute bottom-3 right-3 p-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-full hover:from-purple-600 hover:to-purple-700 transition-all shadow-md"
-                >
-                  <FaPaperPlane className="text-lg" />
-                </motion.button>
-              </div>
-            </form>
+          <div className="lg:col-span-3">
+            <AuthContextProvider>
+            <SuggestionBox />
+            </AuthContextProvider>
           </div>
         </div>
       </div>
@@ -180,16 +154,18 @@ const Footer = ({categories = []}) => {
               © 2024 Flames. All rights reserved.
             </p>
             <div className="flex space-x-6">
-              {["Privacy Policy", "Terms of Service"].map((item, index) => (
-                <motion.a 
-                  key={index}
-                  href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
-                  whileHover={{ y: -2 }}
-                  className="font-body text-sm text-purple-700 hover:text-purple-900"
-                >
-                  {item}
-                </motion.a>
-              ))}
+              <Link 
+                href="/privacy-policy"
+                className="font-body text-sm text-purple-700 hover:text-purple-900"
+              >
+                Privacy Policy
+              </Link>
+              <Link 
+                href="/terms-of-service"
+                className="font-body text-sm text-purple-700 hover:text-purple-900"
+              >
+                Terms of Service
+              </Link>
             </div>
           </div>
         </div>

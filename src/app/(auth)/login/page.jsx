@@ -264,7 +264,7 @@ export default function Page() {
                   id="user-email"
                   value={data?.email}
                   onChange={(e) => handleData("email", e.target.value)}
-                  className="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
+                  className="mt-1 block text-gray-700 w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
                 />
               </motion.div>
             </motion.div>

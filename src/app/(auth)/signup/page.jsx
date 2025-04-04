@@ -192,11 +192,17 @@ const ProfilePhotoUpload = ({ photoURL, setPhotoURL, photoFile, setPhotoFile }) 
       >
         <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-purple-200 bg-gray-50 flex items-center justify-center relative">
           {photoURL ? (
-            <img 
-              src={photoURL} 
-              alt="Profile Preview" 
-              className="w-full h-full object-cover"
-            />
+            <div className="w-full h-full">
+              <img 
+                src={photoURL} 
+                alt="Profile Preview" 
+                className="w-full h-full object-cover"
+                style={{
+                  objectFit: "cover",
+                  objectPosition: "center"
+                }}
+              />
+            </div>
           ) : (
             <svg className="w-12 h-12 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
@@ -242,6 +248,8 @@ const ProfilePhotoUpload = ({ photoURL, setPhotoURL, photoFile, setPhotoFile }) 
       >
         Click to {photoURL ? "change" : "add"} photo
       </motion.p>
+      
+      
     </div>
   );
 };
@@ -413,7 +421,7 @@ export default function Page() {
                   id="user-name"
                   value={data?.name}
                   onChange={(e) => handleData("name", e.target.value)}
-                  className="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
+                  className="mt-1 text-gray-700 block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
                 />
               </motion.div>
             </motion.div>
@@ -434,7 +442,7 @@ export default function Page() {
                   id="user-email"
                   value={data?.email}
                   onChange={(e) => handleData("email", e.target.value)}
-                  className="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
+                  className="mt-1 block text-gray-700 w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
                 />
               </motion.div>
             </motion.div>

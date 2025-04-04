@@ -5,8 +5,8 @@ import { useReviews } from "@/lib/firestore/reviews/read";
 import { deleteReview } from "@/lib/firestore/reviews/write";
 import { useUser } from "@/lib/firestore/user/read";
 import { Rating } from "@mui/material";
-import { Button, Modal, ModalContent, ModalBody } from "@nextui-org/react";
-import { Trash2, Calendar, Clock } from "lucide-react";
+import { Button, Modal, ModalContent, ModalBody, ModalHeader } from "@nextui-org/react";
+import { Trash2, Calendar, Clock, X } from "lucide-react";
 import { useState, useMemo } from "react";
 import toast from "react-hot-toast";
 
@@ -72,8 +72,14 @@ export default function Reviews({ productId }) {
     setIsImageModalOpen(true);
   };
 
+  const closeImageModal = () => {
+    setIsImageModalOpen(false);
+    // Small delay before resetting the selectedImage to prevent visual jumps
+    setTimeout(() => setSelectedImage(null), 300);
+  };
+
   return (
-    <div className="flex flex-col gap-4 p-6 rounded-xl border border-purple-300 w-full bg-white shadow-sm">
+    <div className="flex flex-col gap-4 p-4 rounded-xl border border-purple-300 w-full bg-white shadow-sm">
       <h1 className="text-xl md:text-2xl font-heading text-gray-800 font-semibold border-b border-purple-100 pb-3">
         Customer Reviews
       </h1>
@@ -159,19 +165,23 @@ export default function Reviews({ productId }) {
                 </div>
 
                 {/* Review Message */}
-                <p className="text-gray-600 mt-3 text-sm md:text-base leading-relaxed">
+                <p className="text-gray-600 mt-3 text-xs md:text-sm  leading-relaxed">
                   {item?.message}
                 </p>
 
-                {/* Review Photo (if exists) - with fixed width and height */}
+                {/* Review Photo (if exists) - with thumbnail styling */}
                 {item?.reviewPhotoURL && (
                   <div className="mt-3">
-                    <img
-                      src={item.reviewPhotoURL}
-                      alt="Review photo"
-                      className="rounded-lg w-20 h-16 object-cover cursor-pointer border border-gray-200 hover:border-purple-300 transition-colors"
+                    <div 
+                      className="inline-block rounded-lg overflow-hidden border border-gray-200 hover:border-purple-400 transition-colors cursor-pointer"
                       onClick={() => openImagePreview(item.reviewPhotoURL)}
-                    />
+                    >
+                      <img
+                        src={item.reviewPhotoURL}
+                        alt="Review photo"
+                        className="w-24 h-16 object-cover hover:opacity-90 transition-opacity"
+                      />
+                    </div>
                   </div>
                 )}
               </div>
@@ -180,23 +190,61 @@ export default function Reviews({ productId }) {
         </div>
       )}
 
-      {/* Image Preview Modal */}
+      {/* Improved Image Preview Modal */}
       <Modal 
         isOpen={isImageModalOpen} 
-        onClose={() => setIsImageModalOpen(false)}
-        size="3xl"
+        onClose={closeImageModal}
+        size="xl"
+        className="image-preview-modal text-transparent flex justify-center items-center"
+        motionProps={{
+          variants: {
+            enter: {
+              y: 0,
+              opacity: 1,
+              transition: {
+                duration: 0.3,
+                ease: "easeOut",
+              },
+            },
+            exit: {
+              y: -20,
+              opacity: 0,
+              transition: {
+                duration: 0.2,
+                ease: "easeIn",
+              },
+            }
+          }
+        }}
       >
-        <ModalContent>
-          <ModalBody className="p-0">
-            {selectedImage && (
-              <img
-                src={selectedImage}
-                alt="Review photo"
-                className="w-[400px] h-[450px] object-contain"
-                onClick={() => setIsImageModalOpen(false)}
-              />
-            )}
-          </ModalBody>
+        <ModalContent className="max-h-[80vh] flex items-center ">
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex justify-end  items-center p-2 absolute right-0 top-0 z-10 bg-transparent w-full">
+                <Button
+                  isIconOnly
+                  color="danger"
+                  variant="solid"
+                  onPress={onClose}
+                  className="rounded-full bg-red-500 shadow-md"
+                  size="sm"
+                >
+                  <X size={20} className="text-white" />
+                </Button>
+              </ModalHeader>
+              <ModalBody className="p-0 flex items-center justify-center ">
+                {selectedImage && (
+                  <div className="w-full h-full flex items-center justify-center p-1">
+                    <img
+                      src={selectedImage}
+                      alt="Review photo"
+                      className="max-w-full max-h-[80vh] object-contain rounded"
+                    />
+                  </div>
+                )}
+              </ModalBody>
+            </>
+          )}
         </ModalContent>
       </Modal>
     </div>

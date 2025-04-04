@@ -17,7 +17,7 @@ export default function Favorites() {
     );
   }
   return (
-    <main className="flex flex-col bg-gray-100 gap-3 px-[10px] md:px-[30px] pb-10 ">
+    <main className="flex min-h-screen flex-col bg-gray-100 gap-3 px-[10px] md:px-[30px] pb-10 ">
       
       <h1 className="text-2xl flex items-center justify-center  py-[20px] text-gray-800 font-heading font-semibold">Favorites</h1>
       

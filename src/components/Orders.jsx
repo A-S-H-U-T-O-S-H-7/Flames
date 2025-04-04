@@ -102,11 +102,11 @@ const OrderStatus = ({ status }) => {
 };
 
 const EmptyOrders = () => (
-  <div className="bg-white rounded-lg shadow-md p-8 text-center">
+  <div className="bg-white min-h-screen rounded-lg shadow-md p-8 text-center">
     <div className="text-gray-400 text-5xl mb-4 flex justify-center"><FaBox /></div>
     <h3 className="text-xl font-semibold text-gray-800 mb-2">No Orders Yet</h3>
     <p className="text-gray-600 mb-6">You don't have any orders yet. Start shopping to see your orders here.</p>
-    <Link href="/products" className="inline-block px-6 py-3 text-sm bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-medium rounded-md transition-all">
+    <Link href="/" className="inline-block px-6 py-3 text-sm bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-medium rounded-md transition-all">
       Start Shopping
     </Link>
   </div>
@@ -139,7 +139,7 @@ const CancellationPopup = ({ onCancel, onClose, orderId }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+    <div className="fixed min-h-screen inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
       <div className="relative w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 ease-in-out">
       <div className="p-6 bg-white rounded-lg shadow-lg max-w-lg w-full">
       {/* Header */}

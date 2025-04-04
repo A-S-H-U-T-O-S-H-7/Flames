@@ -9,6 +9,8 @@ import { signOut } from 'firebase/auth';
 import { toast } from 'react-hot-toast';
 import { auth } from '@/lib/firestore/firebase';
 import { GalleryVertical } from 'lucide-react';
+import { VscFeedback } from "react-icons/vsc";
+
 
 const menuList = [
   { name: 'Dashboard', link: '/admin/dashboard', icon: <FaHome /> },
@@ -18,6 +20,7 @@ const menuList = [
   { name: 'Customers', link: '/admin/customers', icon: <FaUsers /> },
   { name: 'Collections', link: '/admin/collections', icon: <FaThLarge /> },
   { name: 'Reviews', link: '/admin/reviews', icon: <FaStar /> },
+  { name: 'Voice Of Customers', link: '/admin/voice-of-customers', icon: <VscFeedback />},
   { name: 'Brands', link: '/admin/brands', icon: <FaCubes /> },
   { name: 'Faqs', link: '/admin/faqs', icon: <FaQq /> },
   { name: 'Banner', link: '/admin/banners', icon: <GalleryVertical /> },

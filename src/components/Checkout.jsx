@@ -4,11 +4,12 @@ import { useAuth } from "@/context/AuthContext";
 import { createCheckoutCODAndGetId, createCheckoutOnlineAndGetId } from "@/lib/firestore/checkout/write";
 import { Radio, RadioGroup } from "@nextui-org/react";
 import confetti from "canvas-confetti";
-import { CheckSquare2Icon, CreditCard, Lock, Banknote, CreditCardIcon, Loader2, MapPin } from "lucide-react";
+import { CheckSquare2, CreditCard, Lock, Banknote, CreditCardIcon, Loader2, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import ShippingAddress from "./ShippingAddress";
+import TermsPopup from "./Terms&condition";
 
 export default function Checkout({ productList }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,6 +17,18 @@ export default function Checkout({ productList }) {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [pageLoading, setPageLoading] = useState(true);
   const [processingOrder, setProcessingOrder] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+
+  const openPopup = (e) => {
+    e.preventDefault();
+    setIsPopupOpen(true);
+  };
+  
+  const closePopup = () => {
+    setIsPopupOpen(false);
+  };
+
   const router = useRouter();
   const { user } = useAuth();
 
@@ -352,13 +365,27 @@ export default function Checkout({ productList }) {
                   </RadioGroup>
                 </div>
 
-                <div className="flex gap-2 items-center">
-                  <CheckSquare2Icon className="text-purple-500 flex-shrink-0" size={18} />
-                  <p className="text-sm text-gray-600">
-                    I agree with the{" "}
-                    <button className="text-purple-500 hover:text-purple-600">terms & conditions</button>
-                  </p>
-                </div>
+                <div>
+      <div className="flex gap-2 items-center">
+        
+          <CheckSquare2 
+            size={18} 
+            className="text-purple-500"
+          />
+        
+        <p className="text-sm text-gray-600">
+          I agree with the{" "}
+          <button 
+            className="text-purple-500 hover:text-purple-600"
+            onClick={openPopup}
+          >
+            terms & conditions
+          </button>
+        </p>
+      </div>
+      
+      <TermsPopup isOpen={isPopupOpen} onClose={closePopup} />
+    </div>
 
                 <button
                   onClick={handlePlaceOrder}

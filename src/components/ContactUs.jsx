@@ -3,22 +3,24 @@ import React, { useState, useEffect } from 'react';
 import { 
   FaPhone, FaEnvelope, FaMapMarkerAlt, 
   FaFacebook,  FaInstagram, FaLinkedin, 
-  FaPaperPlane, FaCheckCircle ,FaWhatsapp
+  FaPaperPlane, FaCheckCircle, FaWhatsapp,
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-
 import { motion } from "framer-motion";
+import { addSuggestion } from '@/lib/firestore/suggestions/write';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '', // Added phone field
     message: ''
   });
   const [formStatus, setFormStatus] = useState({
     sending: false,
     success: false,
-    error: false
+    error: false,
+    errorMessage: ''
   });
   const [mounted, setMounted] = useState(false);
 
@@ -36,22 +38,38 @@ const ContactUs = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormStatus({ sending: true, success: false, error: false });
+    setFormStatus({ sending: true, success: false, error: false, errorMessage: '' });
 
     try {
-      // Simulate form submission
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Get current user info - in a real app, you would get this from your auth context
+      // For now we'll use a placeholder UID
+      const uid = "anonymous-user"; // Replace with actual auth.currentUser?.uid in production
+      
+      // Call the addSuggestion function to store data in Firestore
+      await addSuggestion({
+        displayName: formData.name,
+        message: formData.message,
+        uid: uid,
+        email: formData.email,
+        phone: formData.phone, // Add phone number
+        type: "feedback" // Set type to feedback as requested
+      });
       
       // Reset form and show success
-      setFormData({ name: '', email: '', message: '' });
-      setFormStatus({ sending: false, success: true, error: false });
+      setFormData({ name: '', email: '', phone: '', message: '' });
+      setFormStatus({ sending: false, success: true, error: false, errorMessage: '' });
 
       // Hide success message after 3 seconds
       setTimeout(() => {
-        setFormStatus({ sending: false, success: false, error: false });
+        setFormStatus({ sending: false, success: false, error: false, errorMessage: '' });
       }, 3000);
     } catch (error) {
-      setFormStatus({ sending: false, success: false, error: true });
+      setFormStatus({ 
+        sending: false, 
+        success: false, 
+        error: true, 
+        errorMessage: error.message || 'Failed to send your message. Please try again.'
+      });
     }
   };
 
@@ -206,105 +224,202 @@ const ContactUs = () => {
           </div>
 
           {/* Right section - Contact Form */}
-          <div className="w-full md:w-3/5 p-6 sm:p-8 lg:p-10 bg-gray-50 relative">
-            {/* Subtle background pattern */}
-            <div className="absolute inset-0 opacity-30 z-0 overflow-hidden">
-              <svg width="100%" height="100%" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-                <path d="M0 0H100V100H0V0Z" fill="url(#paint0_radial)" fillOpacity="0.1"/>
-                <defs>
-                  <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(50 50) rotate(90) scale(50)">
-                    <stop stopColor="#3B82F6"/>
-                    <stop offset="1" stopColor="#3B82F6" stopOpacity="0"/>
-                  </radialGradient>
-                </defs>
-              </svg>
-              <div className="absolute top-0 left-0 w-full h-full bg-pattern-dots"></div>
-            </div>
+<div className="w-full md:w-3/5 p-6 sm:p-8 lg:p-10 bg-gray-50 relative">
+  {/* Subtle background pattern */}
+  <div className="absolute inset-0 opacity-30 z-0 overflow-hidden">
+    <svg width="100%" height="100%" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0 0H100V100H0V0Z" fill="url(#paint0_radial)" fillOpacity="0.1"/>
+      <defs>
+        <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(50 50) rotate(90) scale(50)">
+          <stop stopColor="#3B82F6"/>
+          <stop offset="1" stopColor="#3B82F6" stopOpacity="0"/>
+        </radialGradient>
+      </defs>
+    </svg>
+    <div className="absolute top-0 left-0 w-full h-full bg-pattern-dots"></div>
+  </div>
+  
+  <div className="relative z-10">
+    <motion.h2 
+      variants={formItemVariants}
+      className="text-2xl sm:text-3xl font-heading font-bold text-gray-800 mb-2"
+    >
+      Message Us
+    </motion.h2>
+    
+    <motion.p 
+      variants={formItemVariants}
+      className="text-gray-500 mb-6"
+    >
+      Fill out the form below and we'll respond within 24 hours
+    </motion.p>
 
-            {formStatus.success && (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="absolute inset-0 bg-white bg-opacity-95 z-10 flex flex-col items-center justify-center text-center p-4"
-              >
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-green-50 flex items-center justify-center mb-4">
-                  <FaCheckCircle className="text-3xl sm:text-4xl text-green-500" />
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Message Sent!</h3>
-                <p className="text-gray-600 mt-2 text-sm sm:text-base">
-                  We'll get back to you soon.
-                </p>
-              </motion.div>
-            )}
+    {/* Centered success message with improved visibility */}
+    {formStatus.success && (
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="mb-6 bg-green-50 p-6 rounded-lg border border-green-100 flex flex-col items-center justify-center text-center"
+      >
+        <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-3">
+          <FaCheckCircle className="text-3xl text-green-500" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-800">Message Sent!</h3>
+        <p className="text-gray-600">
+          We'll get back to you soon.
+        </p>
+      </motion.div>
+    )}
+    
+    {formStatus.error && (
+      <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded">
+        <p className="text-red-700">{formStatus.errorMessage}</p>
+      </div>
+    )}
 
-            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6 relative z-10">
-              <motion.h2 
-                variants={formItemVariants}
-                className="text-2xl sm:text-3xl font-heading font-bold text-gray-800 mb-2"
-              >
-                 Message Us
-              </motion.h2>
-              
-              <motion.p 
-                variants={formItemVariants}
-                className="text-gray-500 mb-6"
-              >
-                Fill out the form below and we'll respond within 24 hours
-              </motion.p>
+    {!formStatus.success && (
+      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+        {/* Name field */}
+        <motion.div variants={formItemVariants}>
+          <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
+            Name
+          </label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Enter your name"
+            className="w-full p-3 sm:p-4 text-gray-800 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent text-sm sm:text-base transition duration-200"
+            required
+          />
+        </motion.div>
+        
+        {/* Email field with validation */}
+        <motion.div variants={formItemVariants}>
+          <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
+            Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Enter your email"
+            className={`w-full p-3 sm:p-4 text-gray-800 bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent text-sm sm:text-base transition duration-200 ${
+              formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) 
+                ? 'border-red-400' 
+                : 'border-gray-200'
+            }`}
+            required
+          />
+          {formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) && (
+            <p className="text-red-500 text-sm mt-1">Please enter a valid email address</p>
+          )}
+        </motion.div>
+        
+        {/* Phone field with number validation */}
+        <motion.div variants={formItemVariants}>
+          <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            name="phone"
+            value={formData.phone}
+            onChange={(e) => {
+              // Only allow digits
+              const value = e.target.value.replace(/\D/g, '');
+              handleChange({
+                target: {
+                  name: 'phone',
+                  value: value
+                }
+              });
+            }}
+            placeholder="Enter your phone number (10 digits)"
+            className={`w-full p-3 sm:p-4 text-gray-800 bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent text-sm sm:text-base transition duration-200 ${
+              formData.phone && formData.phone.length !== 10 
+                ? 'border-red-400' 
+                : 'border-gray-200'
+            }`}
+            maxLength={10}
+            required
+          />
+          {formData.phone && formData.phone.length !== 10 && (
+            <p className="text-red-500 text-sm mt-1">Phone number must be exactly 10 digits</p>
+          )}
+        </motion.div>
+        
+        {/* Message field */}
+        <motion.div variants={formItemVariants}>
+          <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
+            Message
+          </label>
+          <textarea
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
+            rows="4"
+            placeholder="Enter your message"
+            className="w-full p-3 sm:p-4 text-gray-800 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent text-sm sm:text-base transition duration-200"
+            required
+          ></textarea>
+        </motion.div>
+        
+        <motion.button
+          variants={formItemVariants}
+          type="submit"
+          disabled={formStatus.sending || 
+                    (formData.phone && formData.phone.length !== 10) || 
+                    (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))}
+          className={`
+            w-full p-3 sm:p-4 rounded-xl text-sm sm:text-base font-semibold transition duration-300
+            ${(formStatus.sending || 
+               (formData.phone && formData.phone.length !== 10) || 
+               (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)))
+              ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
+              : 'bg-gradient-to-r from-teal-400 to-purple-500 text-white shadow-md hover:shadow-lg'
+            }
+            flex items-center justify-center space-x-2
+          `}
+          whileHover={{ scale: formStatus.sending ? 1 : 1.02 }}
+          whileTap={{ scale: formStatus.sending ? 1 : 0.98 }}
+        >
+          {formStatus.sending ? 'Sending...' : 'Send Message'}
+          {!formStatus.sending && <FaPaperPlane className="ml-2" />}
+        </motion.button>
+      </form>
+    )}
 
-              {['name', 'email', 'message'].map((field, index) => (
-                <motion.div 
-                  key={field}
-                  variants={formItemVariants}
-                  custom={index}
-                >
-                  <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base capitalize">
-                    {field}
-                  </label>
-                  {field !== 'message' ? (
-                    <input
-                      type={field === 'email' ? 'email' : 'text'}
-                      name={field}
-                      value={formData[field]}
-                      onChange={handleChange}
-                      placeholder={`Enter your ${field}`}
-                      className="w-full p-3 sm:p-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent text-sm sm:text-base transition duration-200"
-                      required
-                    />
-                  ) : (
-                    <textarea
-                      name={field}
-                      value={formData[field]}
-                      onChange={handleChange}
-                      rows="4"
-                      placeholder={`Enter your ${field}`}
-                      className="w-full p-3 sm:p-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent text-sm sm:text-base transition duration-200"
-                      required
-                    ></textarea>
-                  )}
-                </motion.div>
-              ))}
-              
-              <motion.button
-                variants={formItemVariants}
-                type="submit"
-                disabled={formStatus.sending}
-                className={`
-                  w-full p-3 sm:p-4 rounded-xl text-sm sm:text-base font-semibold transition duration-300
-                  ${formStatus.sending 
-                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-teal-400 to-purple-500 text-white shadow-md hover:shadow-lg'
-                  }
-                  flex items-center justify-center space-x-2
-                `}
-                whileHover={{ scale: formStatus.sending ? 1 : 1.02 }}
-                whileTap={{ scale: formStatus.sending ? 1 : 0.98 }}
-              >
-                {formStatus.sending ? 'Sending...' : 'Send Message'}
-                {!formStatus.sending && <FaPaperPlane className="ml-2" />}
-              </motion.button>
-            </form>
-          </div>
+    {/* Add a button to reset form after successful submission */}
+    {formStatus.success && (
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        onClick={() => {
+          // Reset form status and data
+          setFormStatus({
+            sending: false,
+            success: false,
+            error: false,
+            errorMessage: ''
+          });
+          setFormData({
+            name: '',
+            email: '',
+            phone: '',
+            message: ''
+          });
+        }}
+        className="mt-6 p-3 w-full sm:w-auto bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition duration-200 font-medium flex items-center justify-center"
+      >
+         Send Another Message
+      </motion.button>
+    )}
+  </div>
+</div>
         </motion.div>
       )}
     </div>

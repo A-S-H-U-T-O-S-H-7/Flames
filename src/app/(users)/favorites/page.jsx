@@ -3,7 +3,7 @@ import Favorites from '@/components/Favorites'
 
 function page() {
   return (
-    <div>
+    <div >
       <Favorites/>
     </div>
   )

@@ -45,8 +45,6 @@ export default function ListView() {
     if (searchQuery) {
       filtered = filtered.filter(review => 
         (review?.displayName?.toLowerCase().includes(searchQuery.toLowerCase())) || 
-        // Assuming product.title is accessible in the review object, otherwise
-        // you may need to modify this based on how product info is stored
         (review?.productName?.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     }

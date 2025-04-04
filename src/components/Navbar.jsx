@@ -124,23 +124,23 @@ useEffect(() => {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-4">
-            <Link href="/" className="text-purple-800 font-medium font-heading px-4 py-2 rounded-md transition-colors">
+          {/* Desktop Navigation - Modified for 1024px screens */}
+          <div className="hidden lg:flex items-center space-x-1 xl:space-x-4">
+            <Link href="/" className="text-purple-800 font-medium font-heading text-sm xl:text-base px-2 xl:px-4 py-2 rounded-md transition-colors">
               Home
             </Link>
-            <Link href="/category/Dv3q9Y7sbPx1Ewtz3AmQ" className="text-purple-800 font-heading font-medium px-4 py-2 rounded-md transition-colors">
+            <Link href="/category/Dv3q9Y7sbPx1Ewtz3AmQ" className="text-purple-800 font-heading font-medium text-sm xl:text-base px-2 xl:px-4 py-2 rounded-md transition-colors">
               Gifts
             </Link>
 
             <div className="relative group">
-              <button className="flex items-center font-heading space-x-1 text-purple-800 font-medium px-4 py-2 rounded-md transition-colors">
+              <button className="flex items-center font-heading space-x-1 text-purple-800 font-medium text-sm xl:text-base px-2 xl:px-4 py-2 rounded-md transition-colors">
                 <span>Categories</span>
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="h-3 w-3 xl:h-4 xl:w-4" />
               </button>
               <div className="hidden group-hover:grid grid-cols-2 absolute left-0 mt-0 w-64 bg-white shadow-xl rounded-md py-2 border border-purple-100 z-50">
                 {categories?.map((category) => (
-                  <Link key={category.id} href={`/category/${category?.id}`} className="block px-4 py-2 text-purple-800 hover:bg-purple-50">
+                  <Link key={category.id} href={`/category/${category?.id}`} className="block px-4 py-2 text-sm text-purple-800 hover:bg-purple-50">
                     {category.name}
                   </Link>
                 ))}
@@ -148,21 +148,21 @@ useEffect(() => {
             </div>
 
             <div className="relative group">
-              <button className="flex items-center font-heading space-x-1 text-purple-900 font-medium px-4 py-2 rounded-md transition-colors">
+              <button className="flex items-center font-heading space-x-1 text-purple-900 font-medium text-sm xl:text-base px-2 xl:px-4 py-2 rounded-md transition-colors">
                 <span>Collections</span>
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="h-3 w-3 xl:h-4 xl:w-4" />
               </button>
               <div className="hidden group-hover:grid grid-cols-2 absolute left-0 mt-0 w-64 bg-white shadow-xl rounded-md py-2 border border-purple-100 z-50">
                 {collections?.map((collection) => (
-                  <Link key={collection.id} href={`/collections/${collection?.id}`} className="block px-4 py-2 text-purple-800 hover:bg-purple-50">
+                  <Link key={collection.id} href={`/collections/${collection?.id}`} className="block px-4 py-2 text-sm text-purple-800 hover:bg-purple-50">
                     {collection.title}
                   </Link>
                 ))}
               </div>
             </div>
 
-            {/* Desktop Search Bar */}
-            <div className="relative w-64" ref={searchRef}>
+            {/* Desktop Search Bar - Adjusted width for 1024px */}
+            <div className="relative w-48 xl:w-64" ref={searchRef}>
               <div className="relative">
                 <input
                   type="text"
@@ -171,15 +171,15 @@ useEffect(() => {
                   onChange={(e) => handleSearchInput(e.target.value)}
                   onKeyDown={handleSearch}
                   onFocus={() => searchQuery.length > 1 && setShowSuggestions(suggestions.length > 0)}
-                  className="w-full text-gray-800 font-body px-4 py-1.5 rounded-lg border border-purple-400 focus:outline-none focus:border-purple-500"
+                  className="w-full text-gray-800 font-body text-sm px-4 py-1.5 rounded-lg border border-purple-400 focus:outline-none focus:border-purple-500"
                 />
                 <button 
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center justify-center h-6 w-6 bg-purple-100 rounded-full hover:bg-purple-200 transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center justify-center h-5 w-5 xl:h-6 xl:w-6 bg-purple-100 rounded-full hover:bg-purple-200 transition-colors"
                   onClick={handleSearch}
                   aria-label="Search"
                   title="Click to search"
                 >
-                  <Search className="h-4 w-4 text-purple-700" />
+                  <Search className="h-3 w-3 xl:h-4 xl:w-4 text-purple-700" />
                 </button>
               </div>
               
@@ -189,7 +189,7 @@ useEffect(() => {
                   {suggestions.map((suggestion, index) => (
                     <div 
                       key={index} 
-                      className="px-4 py-2 hover:bg-purple-50 cursor-pointer text-gray-800"
+                      className="px-4 py-2 text-sm hover:bg-purple-50 cursor-pointer text-gray-800"
                       onClick={() => {
                         setSearchQuery(suggestion);
                         setShowSuggestions(false);
@@ -204,19 +204,19 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* Icons */}
-          <div className="flex items-center space-x-1 md:space-x-4">
+          {/* Icons - Adjusted spacing for 1024px */}
+          <div className="flex items-center space-x-1 md:space-x-2 xl:space-x-4">
             <AuthContextProvider>
               <HeaderClientButtons/>
             </AuthContextProvider>
 
             <div className="relative group">
-              <button className="flex items-center font-heading space-x-1 text-purple-900 font-medium px-4 py-2 rounded-md transition-colors">
-                <User className="h-6 w-6 text-purple-700" />
+              <button className="flex items-center font-heading space-x-1 text-purple-900 font-medium px-2 xl:px-4 py-2 rounded-md transition-colors">
+                <User className="h-5 w-5 xl:h-6 xl:w-6 text-purple-700" />
               </button>
               <div className="hidden group-hover:block absolute right-0 mt-0 w-36 bg-white shadow-xl rounded-md py-2 border border-purple-100 z-50">
-                <Link href="/myaccount" className="flex items-center justify-center gap-2 px-4 py-2 text-purple-900 hover:bg-purple-50">
-                  <User className="w-4 h-4 flex"/>Profile
+                <Link href="/myaccount" className="flex items-center justify-center gap-2 px-4 py-2 text-sm text-purple-900 hover:bg-purple-50">
+                  <User className="w-3 h-3 xl:w-4 xl:h-4 flex"/>Profile
                 </Link>
                 
                 <div className="flex flex-col gap-2 mx-2 justify-center">
