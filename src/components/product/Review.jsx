@@ -221,7 +221,7 @@ export default function Reviews({ productId }) {
           }
         }}
       >
-        <ModalContent className="max-h-[80vh] flex items-center justify-center">
+        <ModalContent className="max-h-[80vh] rounded-md  flex items-center justify-center">
           {(onClose) => (
             <>
               <ModalHeader className="flex justify-end items-center p-2 absolute right-0 top-0 z-10 bg-transparent w-full">
@@ -236,13 +236,13 @@ export default function Reviews({ productId }) {
                   <X size={20} className="text-white" />
                 </Button>
               </ModalHeader>
-              <ModalBody className="p-0 flex items-center justify-center w-full h-full">
+              <ModalBody className="p-0 flex rounded-md   items-center justify-center w-full h-full">
                 {selectedImage && (
-                  <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-full mx-2 h-full flex items-center justify-center">
                     <img
                       src={selectedImage}
                       alt="Review photo"
-                      className="max-w-full max-h-[80vh] object-contain rounded"
+                      className="max-w-full mx-2 px-2 max-h-[80vh] object-contain rounded"
                     />
                   </div>
                 )}
