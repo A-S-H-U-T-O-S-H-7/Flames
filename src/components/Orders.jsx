@@ -32,8 +32,8 @@ const OrderStatus = ({ status }) => {
             <FaCheckCircle />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-green-700">Your Product is Delivered Successfully!</h3>
-            <p className="text-sm text-green-600">Thank you for shopping with us.</p>
+            <h3 className=" text-sm md:text-base  font-semibold text-green-700">Your Product is Delivered Successfully!</h3>
+            <p className=" text-xs md:text-sm text-green-600">Thank you for shopping with us.</p>
           </div>
         </div>
       </div>
@@ -48,8 +48,8 @@ const OrderStatus = ({ status }) => {
             <FaTimesCircle />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-red-700">Order Cancelled</h3>
-            <p className="text-sm text-red-600">This order has been cancelled.</p>
+            <h3 className=" text-sm md:text-base font-semibold text-red-700">Order Cancelled</h3>
+            <p className="text-xs md:text-sm text-red-600">This order has been cancelled.</p>
           </div>
         </div>
       </div>
@@ -312,7 +312,7 @@ export default function Orders() {
   );
 
   return (
-    <div className="p-4 md:p-6 bg-gray-100 min-h-screen">      
+    <div className="p-2 md:p-6 bg-gray-100 min-h-screen">      
       {orders.length > 0 ? (
         <div className="space-y-5">
           {orders.map((order) => (
@@ -359,10 +359,10 @@ export default function Orders() {
                 
                 {order.status.toLowerCase() === "delivered" && (
                   <Link 
-                    href={`/products/${order.line_items[0].product_id}?rate=true`}
+                    href={`/product-details/${order.line_items[0].id}?rate=true`}
                     className="inline-flex items-center justify-center px-4 py-2 text-sm bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-medium rounded-md transition-all"
                     onClick={() => {
-                      console.log("Product ID:", order.line_items[0].product_id);
+                      console.log("Product ID:", order.line_items[0].id);
                     }}
                   >
                     Rate this Purchase
@@ -371,10 +371,10 @@ export default function Orders() {
                 
                 {order.status.toLowerCase() === "delivered" && (
                   <Link 
-                    href={`/product-details/${order.line_items[0].product_id}`}
+                    href={`/product-details/${order.line_items[0].id}`}
                     className="inline-flex items-center justify-center px-4 py-2 text-sm bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium rounded-md transition-all"
                     onClick={() => {
-                      console.log("Product ID:", order.line_items[0].product_id);
+                      console.log("Product ID:", order.line_items[0].id);
                     }}
                   >
                     Buy Again
