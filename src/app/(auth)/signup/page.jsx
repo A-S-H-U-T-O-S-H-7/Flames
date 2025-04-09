@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
+import DateOfBirthPicker from "@/components/signup/DateofbirthPicker";
 
 // Loading animation component - now with key for consistent rendering
 const LoadingTransition = ({ isActive }) => {
@@ -192,17 +193,11 @@ const ProfilePhotoUpload = ({ photoURL, setPhotoURL, photoFile, setPhotoFile }) 
       >
         <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-purple-200 bg-gray-50 flex items-center justify-center relative">
           {photoURL ? (
-            <div className="w-full h-full">
-              <img 
-                src={photoURL} 
-                alt="Profile Preview" 
-                className="w-full h-full object-cover"
-                style={{
-                  objectFit: "cover",
-                  objectPosition: "center"
-                }}
-              />
-            </div>
+            <img 
+              src={photoURL} 
+              alt="Profile Preview" 
+              className="w-full h-full object-cover"
+            />
           ) : (
             <svg className="w-12 h-12 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
@@ -248,8 +243,6 @@ const ProfilePhotoUpload = ({ photoURL, setPhotoURL, photoFile, setPhotoFile }) 
       >
         Click to {photoURL ? "change" : "add"} photo
       </motion.p>
-      
-      
     </div>
   );
 };
@@ -268,7 +261,8 @@ export default function Page() {
   const [data, setData] = useState({
     name: "",
     email: "",
-    password: ""
+    password: "",
+    dateOfBirth: null  
   });
 
   // Update our local user state safely after hydration
@@ -278,9 +272,11 @@ export default function Page() {
   }, [authUser]);
 
   const handleData = (key, value) => {
+    const processedValue = value instanceof Date ? value.toISOString() : value;
+    
     setData({
       ...data,
-      [key]: value,
+      [key]: processedValue,
     });
   };
 
@@ -315,6 +311,7 @@ export default function Page() {
         displayName: data?.name,
         email: data?.email,
         photoURL: profilePhotoURL,
+        dateOfBirth: data?.dateOfBirth,
       });
       
       toast.success("Account created successfully");
@@ -421,7 +418,7 @@ export default function Page() {
                   id="user-name"
                   value={data?.name}
                   onChange={(e) => handleData("name", e.target.value)}
-                  className="mt-1 text-gray-700 block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
+                  className="mt-1 block w-full px-4 py-3 border text-gray-700 border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
                 />
               </motion.div>
             </motion.div>
@@ -442,7 +439,7 @@ export default function Page() {
                   id="user-email"
                   value={data?.email}
                   onChange={(e) => handleData("email", e.target.value)}
-                  className="mt-1 block text-gray-700 w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
+                  className="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
                 />
               </motion.div>
             </motion.div>
@@ -467,6 +464,14 @@ export default function Page() {
                 />
               </motion.div>
             </motion.div>
+            <DateOfBirthPicker 
+  dob={data.dateOfBirth ? new Date(data.dateOfBirth) : null}
+  setDob={(date) => {
+    if (date) {
+      handleData("dateOfBirth", date.toISOString());
+    }
+  }}
+/>
 
             <motion.div
               initial={{ opacity: 0, y: 10 }}

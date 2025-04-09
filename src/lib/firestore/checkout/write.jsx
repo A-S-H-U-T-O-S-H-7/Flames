@@ -1,6 +1,5 @@
 import { db } from "../firebase";
-import { collection, doc, setDoc, addDoc, Timestamp,updateDoc, increment  } from "firebase/firestore";
-
+import { collection, doc, setDoc, addDoc, Timestamp, updateDoc, increment } from "firebase/firestore";
 
 export const createCheckoutCODAndGetId = async ({ uid, products, address }) => {
   // Create a unique document reference inside the user's checkout collection
@@ -48,7 +47,7 @@ export const createCheckoutCODAndGetId = async ({ uid, products, address }) => {
     // Store in global 'orders' collection for admin access
     await setDoc(doc(db, "orders", checkoutId), orderData);
 
-    // Update order counts for each product
+    // Update order counts and stock for each product
     for (const item of products) {
       const productId = item?.id;
       const quantity = item?.quantity || 1;
@@ -56,7 +55,8 @@ export const createCheckoutCODAndGetId = async ({ uid, products, address }) => {
       if (productId) {
         const productRef = doc(db, "products", productId);
         await updateDoc(productRef, {
-          orders: increment(quantity)
+          orders: increment(quantity),
+          stock: increment(-quantity) // Decrement stock by the ordered quantity
         });
       }
     }
@@ -115,7 +115,7 @@ export const createCheckoutOnlineAndGetId = async ({ uid, products, address, tra
     // Store in global 'orders' collection for admin access
     await setDoc(doc(db, "orders", checkoutId), orderData);
 
-    // Update order counts for each product
+    // Update order counts and stock for each product
     for (const item of products) {
       const productId = item?.id;
       const quantity = item?.quantity || 1;
@@ -123,7 +123,8 @@ export const createCheckoutOnlineAndGetId = async ({ uid, products, address, tra
       if (productId) {
         const productRef = doc(db, "products", productId);
         await updateDoc(productRef, {
-          orders: increment(quantity)
+          orders: increment(quantity),
+          stock: increment(-quantity) // Decrement stock by the ordered quantity
         });
       }
     }

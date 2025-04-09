@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { createCheckoutCODAndGetId, createCheckoutOnlineAndGetId } from "@/lib/firestore/checkout/write";
 import { Radio, RadioGroup } from "@nextui-org/react";
 import confetti from "canvas-confetti";
-import { CheckSquare2, CreditCard, Lock, Banknote, CreditCardIcon, Loader2, MapPin } from "lucide-react";
+import { CheckSquare2, CreditCard,Tag, BadgeCheck , Lock, Banknote, CreditCardIcon, Loader2, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
@@ -153,28 +153,50 @@ export default function Checkout({ productList }) {
     }
   };
 
-  // Validate all mandatory fields
-  const validateAddress = () => {
-    const requiredFields = [
-      { field: 'fullName', label: 'Full Name' },
-      { field: 'mobile', label: 'Mobile Number' },
-      { field: 'email', label: 'Email' },
-      { field: 'addressLine1', label: 'Address Line 1' },
-      { field: 'landmark', label: 'Nearby Location/Landmark' },
-      { field: 'pincode', label: 'Pincode' },
-      { field: 'city', label: 'City' },
-      { field: 'state', label: 'State' }
-    ];
-    
-    for (const { field, label } of requiredFields) {
-      if (!address || !address[field]) {
-        toast.error(`${label} is required`);
-        return false;
-      }
+ // Validate all mandatory fields
+const validateAddress = () => {
+  const requiredFields = [
+    { field: 'fullName', label: 'Full Name' },
+    { field: 'mobile', label: 'Mobile Number' },
+    { field: 'email', label: 'Email' },
+    { field: 'addressLine1', label: 'Address Line 1' },
+    { field: 'landmark', label: 'Nearby Location/Landmark' },
+    { field: 'pincode', label: 'Pincode' },
+    { field: 'city', label: 'City' },
+    { field: 'state', label: 'State' }
+  ];
+  
+  // Check if fields are empty
+  for (const { field, label } of requiredFields) {
+    if (!address || !address[field]) {
+      toast.error(`${label} is required`);
+      return false;
     }
-    
-    return true;
-  };
+  }
+  
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(address.email)) {
+    toast.error("Please enter a valid email address");
+    return false;
+  }
+  
+  // Validate mobile number (exactly 10 digits)
+  const mobileRegex = /^\d{10}$/;
+  if (!mobileRegex.test(address.mobile)) {
+    toast.error("Mobile number must be exactly 10 digits");
+    return false;
+  }
+  
+  // Validate pincode (exactly 6 digits)
+  const pincodeRegex = /^\d{6}$/;
+  if (!pincodeRegex.test(address.pincode)) {
+    toast.error("Pincode must be exactly 6 digits");
+    return false;
+  }
+  
+  return true;
+};
 
   const handlePlaceOrder = async () => {
     // First validate all required fields
@@ -308,27 +330,36 @@ export default function Checkout({ productList }) {
                   */}
       {totalDiscount > 0 && (
         <div className="flex justify-between items-center text-sm mb-2">
-          <span className="text-gray-700">Discount</span>
-          <span className="text-gray-800">-₹{totalDiscount}</span>
+          <span className="text-gray-700">Item Discount</span>
+          <span className="text-green-600">-₹{totalDiscount}</span>
         </div>
       )}
                  
       <div className="flex justify-between items-center text-sm mb-2">
-        <span className="text-gray-700">Delivery</span>
+        <span className="text-gray-700">Delivery Fee</span>
         {/* 
           For future implementation:
           - Add condition for free delivery threshold
           - Add delivery fee calculation based on distance or weight
           - Add option for express delivery with higher fee
         */}
-        <span className="text-green-600">Free</span>
+          <div className="flex items-center gap-2">
+              <span className="text-gray-600 line-through text-sm">₹50</span>
+              <span className="text-green-600">Free</span>
+            </div>
       </div>
                  
-      <div className="flex justify-between items-center pt-3 border-t border-gray-200 mt-3">
-        <span className="font-heading text-lg text-gray-900">Total</span>
-        <span className="font-heading text-lg text-purple-500">₹{totalMRP - totalDiscount }</span>
+      <div className="flex justify-between items-center pt-4 border-t border-gray-200 mt-4">
+        <div className="flex items-center gap-2">
+          <Tag className="text-gray-700" size={20} />
+          <span className="font-bold text-xl text-gray-900">Total to Pay</span>
+        </div>
+        <span className="font-bold text-xl text-purple-600">₹{totalMRP - totalDiscount}</span>
       </div>
-    </div>
+      <div className="mt-2 rounded-lg p-1 flex items-center gap-1">
+        <BadgeCheck className="text-emerald-600" size={16} />
+        <span className="text-sm font-medium text-emerald-700">You saved ₹{totalDiscount+50}</span>
+      </div>    </div>
   </div>
 </section>
 

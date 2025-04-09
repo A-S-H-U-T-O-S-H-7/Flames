@@ -1,26 +1,28 @@
 import { db } from "../firebase";
 import { doc, setDoc,updateDoc, Timestamp } from "firebase/firestore";
 
-export const createUser = async ({ uid, displayName, photoURL,email }) => {
+export const createUser = async ({ uid, displayName, photoURL, email, dateOfBirth }) => {
   await setDoc(
     doc(db, `users/${uid}`),
     {
       displayName: displayName,
-      email:email,
+      email: email,
       photoURL: photoURL ?? "",
+      dateOfBirth: dateOfBirth || null,
       timestampCreate: Timestamp.now(),
     },
     { merge: true }
   );
 };
 
-export const updateUser = async ({ uid, displayName, photoURL, email }) => {
+export const updateUser = async ({ uid, displayName, photoURL, email, dateOfBirth }) => {
   await updateDoc(
     doc(db, `users/${uid}`),
     {
       displayName: displayName,
       email: email,
       photoURL: photoURL ?? "",
+      dateOfBirth: dateOfBirth || null,
       timestampUpdate: Timestamp.now(),
     }
   );

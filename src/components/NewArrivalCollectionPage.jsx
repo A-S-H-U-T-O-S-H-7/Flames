@@ -38,7 +38,7 @@ const NewArrivalCollectionPage = ({ products }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="text-center font-heading text-gray-800 text-4xl md:text-5xl font-bold mb-8">New Arrivals</h1>
+      <h1 className="text-center font-heading text-gray-800 text-2xl md:text-4xl font-bold py-6">New Arrivals</h1>
       
       <div className="flex flex-col md:flex-row gap-6">
         <div className="hidden md:block w-72">
@@ -67,7 +67,7 @@ const NewArrivalCollectionPage = ({ products }) => {
           </div>
 
           <motion.div 
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6"
+            className="grid px-[10px] md:px-0 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}

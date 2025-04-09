@@ -53,7 +53,7 @@ export default function LogoutButton() {
             <div className="p-6 flex justify-between items-center">
               <h3 className="text-xl font-semibold text-gray-800">Confirm Logout</h3>
               <button 
-                onPress={() => setShowModal(false)}
+                onClick={() => setShowModal(false)}
                 className=" text-red-600 hover:text-gray-500 transition-all rounded-full p-1 hover:bg-gray-100"
               >
                 <X size={18} />

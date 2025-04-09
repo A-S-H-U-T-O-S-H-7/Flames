@@ -22,11 +22,7 @@ const Footer = ({categories = []}) => {
     { name: "Shipping", path: "/myaccount" }
   ];
 
-  // Placeholder categories if none provided
-  const defaultCategories = ['Jewelry', 'Accessories', 'Home Decor', 'Gifts', 'Seasonal', 'Artisan'];
-  const displayCategories = categories && categories.length > 0 
-    ? categories 
-    : defaultCategories.map((name, id) => ({ id, name }));
+  const displayCategories = categories || [];
 
   return (
     <footer className="bg-gradient-to-b from-purple-100 via-purple-50 to-white">

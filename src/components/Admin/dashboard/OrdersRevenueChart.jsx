@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Line, ComposedChart } from 'recharts';
 
 const OrdersRevenueChart = ({ dailyOrders, formatCurrency }) => {
   // Custom tooltip component for better styling
@@ -29,7 +29,7 @@ const OrdersRevenueChart = ({ dailyOrders, formatCurrency }) => {
       <h2 className="text-xl font-bold mb-5 text-gray-100">Orders & Revenue Trend</h2>
       <div className="h-72">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
+          <ComposedChart
             data={dailyOrders}
             margin={{ top: 5, right: 30, left: 20, bottom: 15 }}
           >
@@ -68,19 +68,39 @@ const OrdersRevenueChart = ({ dailyOrders, formatCurrency }) => {
               name="Orders" 
               fill="#8B5CF6" /* Purple */
               radius={[4, 4, 0, 0]}
-              barSize={25}
+              barSize={18}
               animationDuration={1500}
             />
             <Bar 
-              yAxisId="right" 
-              dataKey="revenue" 
-              name="Revenue" 
-              fill="#EC4899" /* Pink */
+              yAxisId="left" 
+              dataKey="delivered" 
+              name="Delivered" 
+              fill="#10B981" /* Green */
               radius={[4, 4, 0, 0]}
-              barSize={25}
+              barSize={18}
               animationDuration={1500}
             />
-          </BarChart>
+            <Bar 
+              yAxisId="left" 
+              dataKey="cancelled" 
+              name="Cancelled" 
+              fill="#EF4444" /* Red */
+              radius={[4, 4, 0, 0]}
+              barSize={18}
+              animationDuration={1500}
+            />
+            <Line 
+              yAxisId="right" 
+              type="monotone" 
+              dataKey="revenue" 
+              name="Revenue" 
+              stroke="#EC4899" /* Pink */
+              strokeWidth={3}
+              dot={{ r: 4, fill: "#EC4899", stroke: "#EC4899" }}
+              activeDot={{ r: 6 }}
+              animationDuration={1500}
+            />
+          </ComposedChart>
         </ResponsiveContainer>
       </div>
     </div>

@@ -83,9 +83,12 @@ async function Category({ categoryId }) {
   const category = await getCategory({ id: categoryId });
   return (
     <Link href={`/category/${categoryId}`}>
-      <div className="flex items-center gap-2 border border-gray-200 px-4 py-1.5 rounded-full bg-gray-100">
+      <div className="flex items-center gap-2 border border-gray-200 px-4 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 cursor-pointer">
         <img className="h-5 w-5 object-contain" src={category?.imageURL} alt="" />
         <h4 className="text-sm font-medium text-gray-700">{category?.name}</h4>
+        <svg className="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+        </svg>
       </div>
     </Link>
   );
@@ -94,8 +97,8 @@ async function Category({ categoryId }) {
 async function Brand({ brandId }) {
   const brand = await getBrand({ id: brandId });
   return (
-    <div className="flex items-center gap-2 border border-gray-200 px-4 py-1.5 rounded-full bg-gray-100">
-      <img className="h-5 w-5 object-contain" src={brand?.imageURL} alt="" />
+    <div className="flex items-center gap-2 border border-gray-200 px-4 py-1.5 rounded-full bg-gray-50">
+      <img className="h-5 w-5 object-contain" src={brand?.imageURL} alt="brand" />
       <h4 className="text-sm font-medium text-gray-700">{brand?.name}</h4>
     </div>
   );

@@ -72,15 +72,15 @@ const CollectionPage = ({ initialProducts, collection }) => {
   // Memoized filtered and sorted products
   const filteredProducts = useMemo(() => {
     let filtered = loadedProducts.filter(product => 
-      product.price >= priceRange[0] && 
-      product.price <= priceRange[1]
+      product.salePrice >= priceRange[0] && 
+      product.salePrice <= priceRange[1]
     );
 
     switch (sortOption) {
       case 'price-low':
-        return filtered.sort((a, b) => a.price - b.price);
+        return filtered.sort((a, b) => a.salePrice - b.salePrice);
       case 'price-high':
-        return filtered.sort((a, b) => b.price - a.price);
+        return filtered.sort((a, b) => b.salePrice - a.salePrice);
       case 'newest':
         return filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       default:

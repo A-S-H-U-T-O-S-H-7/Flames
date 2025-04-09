@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { X, Calendar, Clock, CreditCard, Package, Phone, Mail, MapPin } from "lucide-react";
+import { X, Calendar, Clock, CreditCard, Package, Phone, Mail, MapPin, StickyNote } from "lucide-react";
 import { formatDateTime } from "./OrdersUtil";
 
 export function ViewOrderModal({ order, onClose, onEdit, onCancel }) {
@@ -98,6 +98,26 @@ export function ViewOrderModal({ order, onClose, onEdit, onCancel }) {
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+
+          {/* Order Notes - NEW SECTION */}
+          <div className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-amber-900/30 dark:to-yellow-900/20 p-3 rounded-xl shadow-sm border border-amber-200 dark:border-amber-800 relative overflow-hidden">
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-24 h-24 -mr-6 -mt-6 opacity-10">
+              <StickyNote className="w-full h-full text-amber-500" />
+            </div>
+            
+            <h4 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <StickyNote className="h-4 w-4 text-amber-500" /> Order Notes
+            </h4>
+            
+            <div className="relative bg-white dark:bg-gray-800 p-4 rounded-lg shadow-inner border border-amber-100 dark:border-amber-800 min-h-24">
+              {order.address?.orderNote ? (
+                <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{order.address?.orderNote}</p>
+              ) : (
+                <p className="text-sm text-gray-500 dark:text-gray-400 italic">No notes for this order</p>
+              )}
             </div>
           </div>
 

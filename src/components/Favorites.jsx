@@ -14,7 +14,7 @@ export default function Favorites() {
   const { data, isLoading } = useUser({ uid: user?.uid });
   if (isLoading) {
     return (
-      <div className="p-10 flex w-full justify-center">
+      <div className="p-10 min-h-screen flex w-full justify-center">
         <CircularProgress />
       </div>
     );
@@ -48,7 +48,7 @@ export default function Favorites() {
       )}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
         {data?.favorites?.map((productId) => {
-          return <ProductItem productId={productId} key={productId} />;
+          return <ProductItem productId={productId} key={productId}  />;
         })}
       </div>
     </main>
@@ -57,5 +57,5 @@ export default function Favorites() {
 
 function ProductItem({ productId }) {
   const { data: product } = useProduct({ productId: productId });
-  return <ProductCard product={product} />;
+  return <ProductCard product={product} isFavoritesPage={true} />;
 }
