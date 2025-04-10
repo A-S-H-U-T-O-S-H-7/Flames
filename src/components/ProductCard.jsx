@@ -55,7 +55,7 @@ const ProductCard = ({ product, isFavoritesPage = false }) => {
             
             {/* Price Section */}
             <div className="flex items-center gap-2 pt-1">
-              <span className="text-base font-bold text-purple-600">₹{product?.salePrice}</span>
+              <span className="text-sm font-bold text-purple-600">₹{product?.salePrice}</span>
               <span className="text-xs text-gray-500 line-through">₹{product?.price}</span>
               {discount > 0 && (
                 <span className="bg-green-100 text-green-700 text-[7px] md:text-xs  px-2 py-1 rounded-full font-medium">
