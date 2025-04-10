@@ -14,7 +14,7 @@ export default function AdminButton() {
   }
   return (
     
-      <Link href="/admin/dashboard" className="flex items-center justify-center gap-2 px-4 py-2 text-purple-900 hover:bg-purple-50">
+      <Link href="/admin/orders" className="flex items-center justify-center gap-2 px-4 py-2 text-purple-900 hover:bg-purple-50">
       <User className="w-4 h-4 flex"/>Admin</Link>
     
   );

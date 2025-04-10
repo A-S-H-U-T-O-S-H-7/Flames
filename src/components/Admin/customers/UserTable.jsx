@@ -134,11 +134,8 @@ const UserTable = ({
                 </tr>
               ) : users?.length > 0 ? (
                 users.map((user, index) => {
-                  // For debugging
-                  console.log("Date of birth:", user?.dateOfBirth);
                   const formattedDob = formatDateOfBirth(user?.dateOfBirth);
                   const age = calculateAge(user?.dateOfBirth);
-                  console.log("Formatted DOB:", formattedDob, "Age:", age);
                   
                   return (
                     <tr 

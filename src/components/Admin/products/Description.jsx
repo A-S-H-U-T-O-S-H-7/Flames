@@ -3,13 +3,28 @@
 import dynamic from "next/dynamic";
 import "suneditor/dist/css/suneditor.min.css";
 import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 const SunEditor = dynamic(() => import("suneditor-react"), { ssr: false });
 
 export default function Description({ data, handleData }) {
+  const editorRef = useRef(null);
+  
   const handleChange = (value) => {
     handleData("description", value);
   };
+  
+  // Save SunEditor instance to ref when it initializes
+  const getSunEditorInstance = (sunEditor) => {
+    editorRef.current = sunEditor;
+  };
+  
+  // Update editor content when data changes
+  useEffect(() => {
+    if (editorRef.current && data?.description) {
+      editorRef.current.setContents(data.description);
+    }
+  }, [data?.description]);
 
   return (
     <motion.section 
@@ -21,8 +36,9 @@ export default function Description({ data, handleData }) {
       
       <div className="flex-1 transition-all duration-200">
         <SunEditor
-          defaultValue={data?.description}
+          getSunEditorInstance={getSunEditorInstance}
           onChange={handleChange}
+          setContents={data?.description || ""} 
           setOptions={{
             buttonList: [
               ["undo", "redo"],

@@ -1,5 +1,5 @@
 import { db } from "../firebase";
-import { collection, doc, setDoc, addDoc, Timestamp, updateDoc, increment } from "firebase/firestore";
+import { collection, doc, setDoc, getDoc, Timestamp, updateDoc, increment } from "firebase/firestore";
 
 export const createCheckoutCODAndGetId = async ({ uid, products, address }) => {
   // Create a unique document reference inside the user's checkout collection
@@ -56,7 +56,7 @@ export const createCheckoutCODAndGetId = async ({ uid, products, address }) => {
         const productRef = doc(db, "products", productId);
         await updateDoc(productRef, {
           orders: increment(quantity),
-          stock: increment(-quantity) // Decrement stock by the ordered quantity
+          stock: increment(-quantity) 
         });
       }
     }
@@ -124,7 +124,7 @@ export const createCheckoutOnlineAndGetId = async ({ uid, products, address, tra
         const productRef = doc(db, "products", productId);
         await updateDoc(productRef, {
           orders: increment(quantity),
-          stock: increment(-quantity) // Decrement stock by the ordered quantity
+          stock: increment(-quantity) 
         });
       }
     }

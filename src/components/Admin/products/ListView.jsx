@@ -293,7 +293,7 @@ function Row({ item, index }) {
         {item?.orders ?? 0}
       </td>
       <td className="px-4 py-3 text-center">
-        {item?.stock - (item?.orders ?? 0) > 0 ? (
+        {item?.stock  > 0 ? (
           <span className="px-2 py-1 text-xs font-medium text-green-700 bg-green-100 dark:text-green-400 dark:bg-green-900/30 rounded-lg">
             Available
           </span>

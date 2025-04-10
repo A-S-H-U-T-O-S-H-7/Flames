@@ -102,7 +102,7 @@ const OrdersRevenueChart = ({ dailyOrders, formatCurrency }) => {
             />
           </ComposedChart>
         </ResponsiveContainer>
-      </div>
+       </div>
     </div>
   );
 };
