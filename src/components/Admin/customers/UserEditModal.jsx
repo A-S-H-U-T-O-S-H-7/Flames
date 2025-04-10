@@ -34,9 +34,11 @@ export default function UserEditModal({ user, isOpen, onClose, onSuccess }) {
     setIsLoading(true);
     setError(null);
     
+    console.log("Updating user with ID:", user.id); // Debug to verify ID
+    
     try {
       await updateUser({
-        uid: user.id,
+        uid: user.id, // Make sure this matches the document ID in Firestore
         displayName: formData.displayName,
         email: formData.email,
         photoURL: formData.photoURL
@@ -45,6 +47,7 @@ export default function UserEditModal({ user, isOpen, onClose, onSuccess }) {
       onSuccess?.();
       onClose();
     } catch (err) {
+      console.error("Update error:", err); // Log the full error
       setError(err.message || 'Failed to update user');
     } finally {
       setIsLoading(false);

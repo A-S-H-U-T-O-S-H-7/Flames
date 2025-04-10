@@ -24,7 +24,8 @@ export const updateUser = async ({ uid, displayName, photoURL, email, dateOfBirt
       photoURL: photoURL ?? "",
       dateOfBirth: dateOfBirth || null,
       timestampUpdate: Timestamp.now(),
-    }
+    },
+    { merge: true }
   );
 };
 

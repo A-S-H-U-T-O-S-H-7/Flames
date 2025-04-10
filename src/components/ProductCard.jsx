@@ -58,7 +58,7 @@ const ProductCard = ({ product, isFavoritesPage = false }) => {
               <span className="text-base font-bold text-purple-600">₹{product?.salePrice}</span>
               <span className="text-xs text-gray-500 line-through">₹{product?.price}</span>
               {discount > 0 && (
-                <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium">
+                <span className="bg-green-100 text-green-700 text-[8px] md:text-xs  px-2 py-1 rounded-full font-medium">
                   {discount}% off
                 </span>
               )}
