@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import Header from "@/components/Admin/Header";
 import Sidebar from "@/components/Admin/Sidebar";
 import { useAuth } from "@/context/AuthContext";
+import PermissionContextProvider from "@/context/PermissionContext";
 import { CircularProgress } from "@nextui-org/react";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firestore/firebase";
@@ -67,28 +68,30 @@ export default function AdminLayout({ children }) {
   }
 
   return (
-    <main className="relative h-screen flex">
-      {/* Sidebar for Desktop */}
-      <div className="hidden md:block">
-        <Sidebar isSidebarOpen={true} toggleSidebar={toggleSidebar} />
-      </div>
+    <PermissionContextProvider>
+      <main className="relative h-screen flex">
+        {/* Sidebar for Desktop */}
+        <div className="hidden md:block">
+          <Sidebar isSidebarOpen={true} toggleSidebar={toggleSidebar} />
+        </div>
 
-      {/* Sidebar for Mobile */}
-      <div
-        ref={sidebarRef}
-        className={`fixed md:hidden transition-all duration-300 z-20 bg-white dark:bg-gray-800 shadow-lg h-screen w-[260px] 
-        ${isOpen ? "left-0" : "-left-[260px]"}`}
-      >
-        <Sidebar isSidebarOpen={isOpen} toggleSidebar={toggleSidebar} />
-      </div>
+        {/* Sidebar for Mobile */}
+        <div
+          ref={sidebarRef}
+          className={`fixed md:hidden transition-all duration-300 z-20 bg-white dark:bg-gray-800 shadow-lg h-screen w-[260px] 
+          ${isOpen ? "left-0" : "-left-[260px]"}`}
+        >
+          <Sidebar isSidebarOpen={isOpen} toggleSidebar={toggleSidebar} />
+        </div>
 
-      {/* Main Content */}
-      <section className="flex-1 flex flex-col">
-        <Header toggleSidebar={toggleSidebar} />
-        <section className="flex-1 ml-[90px] bg-[#eff3f4] dark:bg-gray-900">
-          {children}
+        {/* Main Content */}
+        <section className="flex-1 flex flex-col">
+          <Header toggleSidebar={toggleSidebar} />
+          <section className="flex-1 ml-[90px] bg-[#eff3f4] dark:bg-gray-900">
+            {children}
+          </section>
         </section>
-      </section>
-    </main>
+      </main>
+    </PermissionContextProvider>
   );
 }

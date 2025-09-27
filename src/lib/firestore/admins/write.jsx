@@ -1,4 +1,5 @@
 import { db, storage } from "../firebase";
+import { ROLES, DEFAULT_ROLE_PERMISSIONS } from "@/lib/permissions/adminPermissions";
 
 import {
   collection,
@@ -20,16 +21,24 @@ export const createNewAdmin = async ({ data, image }) => {
   if (!data?.email) {
     throw new Error("Email is required");
   }
+  if (!data?.role) {
+    throw new Error("Role is required");
+  }
   
   const newId = data?.email;
   const imageRef = ref(storage, `admins/${newId}`);
   await uploadBytes(imageRef, image);
   const imageURL = await getDownloadURL(imageRef);
 
+  // Set default permissions based on role if not provided
+  const permissions = data?.permissions || DEFAULT_ROLE_PERMISSIONS[data.role] || [];
+
   await setDoc(doc(db, `admins/${newId}`), {
     ...data,
     id: newId,
     imageURL: imageURL,
+    role: data.role,
+    permissions: permissions,
     timestampCreate: Timestamp.now(),
   });
 };
@@ -45,6 +54,9 @@ export const updateAdmin = async ({ data, image }) => {
   if (!data?.email) {
     throw new Error("Email is required");
   }
+  if (!data?.role) {
+    throw new Error("Role is required");
+  }
   const id = data?.id;
 
   let imageURL = data?.imageURL;
@@ -54,10 +66,16 @@ export const updateAdmin = async ({ data, image }) => {
     await uploadBytes(imageRef, image);
     imageURL = await getDownloadURL(imageRef);
   }
+
+  // Ensure permissions are set based on role if not provided
+  const permissions = data?.permissions || DEFAULT_ROLE_PERMISSIONS[data.role] || [];
+
 if(id===data?.email){
   await updateDoc(doc(db, `admins/${id}`), {
     ...data,
     imageURL: imageURL,
+    role: data.role,
+    permissions: permissions,
     timestampUpdate: Timestamp.now(),
   });
   }else{
@@ -68,6 +86,8 @@ if(id===data?.email){
       ...data,
       id:newId,
       imageURL: imageURL,
+      role: data.role,
+      permissions: permissions,
       timestampUpdate: Timestamp.now(),
     });
 

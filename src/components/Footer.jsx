@@ -19,7 +19,8 @@ const Footer = ({categories = []}) => {
     { name: "About Us", path: "/aboutus" },
     { name: "FAQs", path: "/" },
     { name: "Contact", path: "/contactus" },
-    { name: "Shipping", path: "/myaccount" }
+    { name: "Shipping", path: "/myaccount" },
+    { name: "Routine", path: "/routine" }
   ];
 
   const displayCategories = categories || [];

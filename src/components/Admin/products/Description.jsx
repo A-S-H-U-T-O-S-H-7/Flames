@@ -60,7 +60,7 @@ export default function Description({ data, handleData }) {
               8, 10, 12, 14, 16, 18, 20, 24, 28, 36
             ],
             colorList: [
-              "#22c7d5", // theme color
+              "#22c7d5", 
               "#1aa5b5", // darker theme color
               "#000000",
               "#666666",

@@ -10,26 +10,37 @@ import { toast } from 'react-hot-toast';
 import { auth } from '@/lib/firestore/firebase';
 import { GalleryVertical } from 'lucide-react';
 import { VscFeedback } from "react-icons/vsc";
+import { usePermissions } from '@/context/PermissionContext';
 
 
 const menuList = [
-  { name: 'Dashboard', link: '/admin/dashboard', icon: <FaHome /> },
-  { name: 'Products', link: '/admin/products', icon: <FaBox /> },
-  { name: 'Categories', link: '/admin/categories', icon: <FaTags /> },
-  { name: 'Orders', link: '/admin/orders', icon: <FaShoppingCart /> },
-  { name: 'Customers', link: '/admin/customers', icon: <FaUsers /> },
-  { name: 'Collections', link: '/admin/collections', icon: <FaThLarge /> },
-  { name: 'Reviews', link: '/admin/reviews', icon: <FaStar /> },
-  { name: 'Voice Of Customers', link: '/admin/voice-of-customers', icon: <VscFeedback />},
-  { name: 'Brands', link: '/admin/brands', icon: <FaCubes /> },
-  { name: 'Faqs', link: '/admin/faqs', icon: <FaQq /> },
-  { name: 'Banner', link: '/admin/banners', icon: <GalleryVertical /> },
-  { name: 'Admins', link: '/admin/admins', icon: <FaUserShield /> },
+  { id: 'dashboard', name: 'Dashboard', link: '/admin/dashboard', icon: <FaHome /> },
+  { id: 'products', name: 'Products', link: '/admin/products', icon: <FaBox /> },
+  { id: 'categories', name: 'Categories', link: '/admin/categories', icon: <FaTags /> },
+  { id: 'orders', name: 'Orders', link: '/admin/orders', icon: <FaShoppingCart /> },
+  { id: 'customers', name: 'Customers', link: '/admin/customers', icon: <FaUsers /> },
+  { id: 'collections', name: 'Collections', link: '/admin/collections', icon: <FaThLarge /> },
+  { id: 'reviews', name: 'Reviews', link: '/admin/reviews', icon: <FaStar /> },
+  { id: 'voice-of-customers', name: 'Voice Of Customers', link: '/admin/voice-of-customers', icon: <VscFeedback />},
+  { id: 'brands', name: 'Brands', link: '/admin/brands', icon: <FaCubes /> },
+  { id: 'faqs', name: 'Faqs', link: '/admin/faqs', icon: <FaQq /> },
+  { id: 'banners', name: 'Banner', link: '/admin/banners', icon: <GalleryVertical /> },
+  { id: 'admins', name: 'Admins', link: '/admin/admins', icon: <FaUserShield /> },
 ];
 
 export default function Sidebar() {
   const [isExpanded, setIsExpanded] = useState(false);
   const pathname = usePathname();
+  const { hasPermission, isLoading, adminData } = usePermissions();
+
+  // Filter menu items based on user permissions
+  const getAccessibleMenuItems = () => {
+    if (isLoading || !adminData) return [];
+    
+    return menuList.filter(item => hasPermission(item.id));
+  };
+
+  const accessibleMenuItems = getAccessibleMenuItems();
 
   return (
     <div
@@ -49,17 +60,23 @@ export default function Sidebar() {
       {/* Scrollable Menu Items */}
       <div className="flex-1 overflow-y-auto no-scrollbar">
       <nav className="flex flex-col py-4">
-          {menuList.map((item, index) => (
-            <Link
-              key={index}
-              href={item.link}
-              className={`flex items-center gap-4 px-4 py-3 transition-colors rounded-lg cursor-pointer 
-              ${pathname === item.link ? 'bg-cyan-800 text-white' : 'hover:bg-indigo-200 dark:hover:bg-[#1e2737]'}`}
-            >
-              <div className="text-xl text-purple-700 dark:text-[#22c7d5]">{item.icon}</div>
-              {isExpanded && <span className="text-base font-medium">{item.name}</span>}
-            </Link>
-          ))}
+          {isLoading ? (
+            <div className="flex justify-center items-center py-4">
+              <div className="text-sm text-gray-500 dark:text-gray-400">Loading...</div>
+            </div>
+          ) : (
+            accessibleMenuItems.map((item, index) => (
+              <Link
+                key={item.id || index}
+                href={item.link}
+                className={`flex items-center gap-4 px-4 py-3 transition-colors rounded-lg cursor-pointer 
+                ${pathname === item.link ? 'bg-cyan-800 text-white' : 'hover:bg-indigo-200 dark:hover:bg-[#1e2737]'}`}
+              >
+                <div className="text-xl text-purple-700 dark:text-[#22c7d5]">{item.icon}</div>
+                {isExpanded && <span className="text-base font-medium">{item.name}</span>}
+              </Link>
+            ))
+          )}
         </nav>
       </div>
 

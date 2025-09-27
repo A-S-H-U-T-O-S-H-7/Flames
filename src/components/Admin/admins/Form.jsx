@@ -6,6 +6,10 @@ import { Button } from "@nextui-org/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { usePermissions } from "@/context/PermissionContext";
+import RoleSelector from "../RoleManagement/RoleSelector";
+import PermissionManager from "../RoleManagement/PermissionManager";
+import { ROLES } from "@/lib/permissions/adminPermissions";
 
 export default function Form() {
   const [data, setData] = useState(null);
@@ -15,6 +19,27 @@ export default function Form() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  const { adminData, isSuperAdmin, isLoading: permissionLoading } = usePermissions();
+
+  // Only super admins can create/edit admins
+  if (!permissionLoading && !isSuperAdmin()) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+        <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
+        <p>Only super admins can manage admin accounts.</p>
+      </div>
+    );
+  }
+
+  // Only super admins can create/edit admins
+  if (!permissionLoading && !isSuperAdmin()) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+        <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
+        <p>Only super admins can manage admin accounts.</p>
+      </div>
+    );
+  }
 
   const fetchData = async () => {
     try {
@@ -45,6 +70,10 @@ export default function Form() {
   const handleCreate = async () => {
     setIsLoading(true);
     try {
+      // Ensure role and permissions are set
+      if (!data?.role) {
+        throw new Error("Role is required");
+      }
       await createNewAdmin({ data, image });
       toast.success("Successfully Created");
       setData(null);
@@ -58,6 +87,10 @@ export default function Form() {
   const handleUpdate = async () => {
     setIsLoading(true);
     try {
+      // Ensure role and permissions are set
+      if (!data?.role) {
+        throw new Error("Role is required");
+      }
       await updateAdmin({ data, image });
       toast.success("Successfully Updated");
       setData(null);
@@ -137,6 +170,25 @@ export default function Form() {
             className="border border-purple-500 dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
           />
         </div>
+
+        {/* Role Selection */}
+        <RoleSelector
+          selectedRole={data?.role}
+          onRoleChange={(role) => handleData("role", role)}
+          disabled={isLoading}
+          currentUserRole={adminData?.role}
+        />
+
+        {/* Permission Management */}
+        {data?.role && (
+          <PermissionManager
+            selectedRole={data.role}
+            permissions={data?.permissions}
+            onPermissionsChange={(permissions) => handleData("permissions", permissions)}
+            disabled={isLoading}
+            currentUserRole={adminData?.role}
+          />
+        )}
 
         {/* Submit Button */}
         <Button

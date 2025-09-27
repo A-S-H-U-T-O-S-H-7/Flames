@@ -2,6 +2,7 @@ import Link from "next/link";
 import AddToCartButton from "./AddtoCartButton";
 import FavoriteButton from "./FavoriteButton";
 import AuthContextProvider from "@/context/AuthContext";
+import Image from 'next/image';
 
 const ProductCard = ({ product, isFavoritesPage = false }) => {
   const discount = product ? Math.round(((product.price - product.salePrice) / product.price) * 100) : 0;
@@ -19,26 +20,26 @@ const ProductCard = ({ product, isFavoritesPage = false }) => {
       >
         {/* Product Image Section */}
         <div className="relative w-full h-[140px] sm:h-[160px] md:h-[200px] lg:h-[220px] overflow-hidden">
-          {/* Link for Product Image - redirects to details page */}
-          <Link href={`/product-details/${product?.id}`} className="absolute inset-0 w-full h-full">
-            <img
-              src={product?.featureImageURL}
-              alt={product?.title}
-              className="w-full h-full object-cover"
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-          </Link>
-          
-          {/* Favorite Button */}
-          <div className="absolute top-2 right-2 z-10" onClick={(e) => e.stopPropagation()}>
-            <AuthContextProvider>
-              <FavoriteButton productId={product?.id} />
-            </AuthContextProvider>
-          </div>
-        </div>
+  {/* Link for Product Image - redirects to details page */}
+  <Link href={`/product-details/${product?.id}`} className="absolute inset-0 w-full h-full">
+    <Image
+      src={product?.featureImageURL}
+      alt={product?.title}
+      className="w-full h-full object-cover"
+      layout="fill" // Ensures the image fills the container
+      priority // Prioritizes this image for quicker loading
+      decoding="async" // Async decoding
+      sizes="(max-width: 768px) 100vw, 50vw" // Responsive sizes
+    />
+  </Link>
+  
+  {/* Favorite Button */}
+  <div className="absolute top-2 right-2 z-10" onClick={(e) => e.stopPropagation()}>
+    <AuthContextProvider>
+      <FavoriteButton productId={product?.id} />
+    </AuthContextProvider>
+  </div>
+</div>
         
         {/* Product Info */}
         <Link href={`/product-details/${product?.id}`} className="block">
