@@ -1,5 +1,5 @@
 "use client"
-import ProductCard from "@/components/ProductCard";
+import ProductCard from "@/components/product/ProductCard";
 import { algoliasearch } from "algoliasearch";
 import { SearchIcon, ShoppingBag, Layers } from "lucide-react";
 import Link from "next/link";
