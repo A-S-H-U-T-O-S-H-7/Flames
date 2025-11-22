@@ -6,7 +6,7 @@ import AllCollection from '@/components/collection/AllCollection'
 export default async function page() {
     const collections = await getCollections()
     
-  return ( 
+  return (
     <div>
       <AllCollection  collections={collections}/>
     </div>
