@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from "react";
-import Favorites from "@/components/Favorites";
-import Cart from "@/components/Cart";
+import Favorites from "@/components/web/pages/Favorites";
+import Cart from "@/components/web/pages/Cart";
 import Orders from "@/components/Orders";
 import { useAuth } from "@/context/AuthContext"; 
 

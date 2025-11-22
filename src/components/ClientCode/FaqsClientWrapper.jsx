@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import FAQ from "@/components/FAQ";
+import FAQ from "../web/home/FAQ";
 import { useFaqs } from "@/lib/firestore/faqs/read";
 
 export default function FaqsClientWrapper() {

@@ -1,5 +1,5 @@
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import Navbar from "@/components/web/home/Navbar";
+import Footer from "@/components/web/home/Footer";
 import AuthContextProvider from "@/context/AuthContext";
 import { getCategories } from '@/lib/firestore/categories/read_server';
 import { getCollections } from '@/lib/firestore/collections/read_server';

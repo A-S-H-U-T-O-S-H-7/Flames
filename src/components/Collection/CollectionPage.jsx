@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect, useMemo } from 'react';
 import { Sliders, ArrowUpDown } from 'lucide-react';
-import ProductCard from '../ProductCard';
+import ProductCard from '../product/ProductCard';
 import FilterSidebar from '../FilterSidebar';
 import SortMenu from '../SortMenu';
 import { getProduct } from "@/lib/firestore/products/read_server";

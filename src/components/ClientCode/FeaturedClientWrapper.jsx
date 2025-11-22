@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import FeaturedCollection from "@/components/FeaturedCollection";
+import FeaturedCollection from "../web/home/FeaturedCollection";
 import { useFeaturedProducts } from "@/lib/firestore/products/read";
 
 export default function FeaturedClientWrapper() {

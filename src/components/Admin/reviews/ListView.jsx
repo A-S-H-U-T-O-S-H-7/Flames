@@ -9,8 +9,13 @@ import ReviewModal from "./ReviewModal";
 import { updateReview } from "@/lib/firestore/reviews/write";
 import toast from "react-hot-toast";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { usePermissions } from '@/context/PermissionContext';
+import { getSellerIdFromAdmin } from '@/lib/permissions/sellerPermissions';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firestore/firebase';
 
 export default function ListView() {
+  const { adminData } = usePermissions();
   const [pageLimit, setPageLimit] = useState(10);
   const [lastSnapDocList, setLastSnapDocList] = useState([]);
   const [selectedReview, setSelectedReview] = useState(null);
@@ -25,6 +30,27 @@ export default function ListView() {
   const [selectedRating, setSelectedRating] = useState("all");
   const [selectedShowcased, setSelectedShowcased] = useState("all");
   const [filteredReviews, setFilteredReviews] = useState([]);
+  const [sellerProductIds, setSellerProductIds] = useState([]);
+
+  // Fetch seller's product IDs if user is a seller
+  useEffect(() => {
+    const fetchSellerProducts = async () => {
+      const sellerId = getSellerIdFromAdmin(adminData);
+      if (sellerId) {
+        try {
+          const productsRef = collection(db, 'products');
+          const q = query(productsRef, where('sellerId', '==', sellerId));
+          const snapshot = await getDocs(q);
+          const productIds = snapshot.docs.map(doc => doc.id);
+          setSellerProductIds(productIds);
+        } catch (error) {
+          console.error('Error fetching seller products:', error);
+        }
+      }
+    };
+
+    fetchSellerProducts();
+  }, [adminData]);
 
   useEffect(() => {
     setLastSnapDocList([]);
@@ -40,6 +66,14 @@ export default function ListView() {
     if (!reviews) return;
     
     let filtered = [...reviews];
+    
+    // Apply seller filter first - only show reviews for seller's products
+    const sellerId = getSellerIdFromAdmin(adminData);
+    if (sellerId && sellerProductIds.length > 0) {
+      filtered = filtered.filter(review => 
+        sellerProductIds.includes(review?.productId)
+      );
+    }
     
     // Apply search filter for username or product name
     if (searchQuery) {
@@ -65,7 +99,7 @@ export default function ListView() {
     }
     
     setFilteredReviews(filtered);
-  }, [reviews, searchQuery, selectedRating, selectedShowcased]);
+  }, [reviews, searchQuery, selectedRating, selectedShowcased, adminData, sellerProductIds]);
 
   const handleNextPage = () => {
     setLastSnapDocList([...lastSnapDocList, lastSnapDoc]);

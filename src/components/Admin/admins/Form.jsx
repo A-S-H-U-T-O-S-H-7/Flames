@@ -155,6 +155,7 @@ export default function Form() {
             className="border border-purple-500 dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
           />
         </div>
+        
         {/* Email Input */}
         <div className="flex flex-col gap-2">
           <label htmlFor="admin-email" className="text-gray-500 dark:text-[#888ea8] text-sm">

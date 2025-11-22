@@ -1,5 +1,4 @@
   import { useState, useEffect } from "react";
-  import { CircularProgress } from "@nextui-org/react";
   import UserEditModal from "./UserEditModal";
 
   const UserTable = ({ 
@@ -128,7 +127,7 @@
                 {isLoading ? (
                   <tr>
                     <td colSpan="8" className="px-4 py-8 text-center">
-                      <CircularProgress size="sm" className="text-[#22c7d5]" />
+                      <div className="w-6 h-6 border-2 border-[#22c7d5] border-t-transparent rounded-full animate-spin mx-auto"></div>
                     </td>
                   </tr>
                 ) : users?.length > 0 ? (

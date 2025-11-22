@@ -1,9 +1,8 @@
 rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /categories/{imageId} {
-      allow read: if true;
-      allow write: if true;  // In production, add proper authentication checks
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
     }
   }
 }

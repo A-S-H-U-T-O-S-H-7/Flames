@@ -1,26 +1,21 @@
 'use client';
 
 import React from 'react';
-import { getProductsByCategory } from "@/lib/firestore/products/read_server";
-import ProductCard from "../ProductCard";
+import { useProductsByCategory } from "@/lib/firestore/products/read";
+import ProductCard from './ProductCard';
 
 const RelatedProducts = ({ categoryId }) => {
-  const [products, setProducts] = React.useState(null);
+  const { data: products, isLoading, error } = useProductsByCategory({ categoryId });
 
-  React.useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const fetchedProducts = await getProductsByCategory({ categoryId });
-        setProducts(fetchedProducts);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    };
+  if (error) {
+    return (
+      <div className="flex justify-center items-center py-10">
+        <p className="text-red-500">Error loading related products</p>
+      </div>
+    );
+  }
 
-    fetchProducts();
-  }, [categoryId]);
-
-  if (!products) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center py-10">
         <div className="w-8 h-8 border-4 border-purple-500 rounded-full border-t-transparent animate-spin"></div>

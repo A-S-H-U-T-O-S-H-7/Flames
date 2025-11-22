@@ -91,14 +91,76 @@ export const ADMIN_PAGES = [
     link: '/admin/admins',
     icon: 'FaUserShield',
     description: 'Manage admin accounts and permissions'
+  },
+  {
+    id: 'sellers',
+    name: 'Sellers',
+    link: '/admin/sellers',
+    icon: 'FaStore',
+    description: 'Manage marketplace sellers and their performance'
+  },
+  {
+    id: 'payments',
+    name: 'Payments & Transactions',
+    link: '/admin/payments',
+    icon: 'FaCreditCard',
+    description: 'Track payments, commissions, and payouts'
+  },
+  {
+    id: 'inventory',
+    name: 'Inventory & Stock',
+    link: '/admin/inventory',
+    icon: 'FaWarehouse',
+    description: 'Manage stock levels and warehouse operations'
+  },
+  {
+    id: 'reports',
+    name: 'Reports & Analytics',
+    link: '/admin/reports',
+    icon: 'FaChartBar',
+    description: 'Generate sales and performance reports'
+  },
+  {
+    id: 'shipping',
+    name: 'Shipping & Delivery',
+    link: '/admin/shipping',
+    icon: 'FaTruck',
+    description: 'Manage shipping partners and delivery zones'
+  },
+  {
+    id: 'returns',
+    name: 'Returns & Refunds',
+    link: '/admin/returns',
+    icon: 'FaUndo',
+    description: 'Handle return requests and refund processing'
+  },
+  {
+    id: 'notifications',
+    name: 'Notifications',
+    link: '/admin/notifications',
+    icon: 'FaBell',
+    description: 'Manage communication templates and announcements'
+  },
+  {
+    id: 'settings',
+    name: 'Settings',
+    link: '/admin/settings',
+    icon: 'FaCog',
+    description: 'Configure site settings and integrations'
   }
 ];
 
 // Default permissions for each role
 export const DEFAULT_ROLE_PERMISSIONS = {
   [ROLES.SUPER_ADMIN]: ADMIN_PAGES.map(page => page.id), // Super admin has access to all pages
-  [ROLES.ADMIN]: ['dashboard', 'products', 'categories', 'orders', 'customers', 'collections', 'reviews', 'brands'], // Default admin permissions
-  [ROLES.SELLER]: ['dashboard', 'products', 'orders', 'collections'] // Default seller permissions
+  [ROLES.ADMIN]: [
+    'dashboard', 'products', 'categories', 'orders', 'customers', 
+    'payments', 'collections', 'reviews', 'brands', 'inventory', 
+    'reports', 'shipping', 'returns', 'notifications'
+  ], // Default admin permissions
+  [ROLES.SELLER]: [
+    'dashboard', 'products', 'orders', 'collections', 'reviews'
+  ] // Default seller permissions - restricted to their own data
 };
 
 /**

@@ -1,6 +1,6 @@
 import React from 'react'
 import { getCollections } from '@/lib/firestore/collections/read_server'
-import AllCollection from '@/components/Collection/AllCollection'
+import AllCollection from '@/components/collection/AllCollection'
 
 
 export default async function page() {

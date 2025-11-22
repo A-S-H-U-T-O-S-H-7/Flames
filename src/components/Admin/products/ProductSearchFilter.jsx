@@ -1,14 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { Search, Filter, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Filter, X, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { useBrands } from "@/lib/firestore/brands/read";
 import { useCategories } from "@/lib/firestore/categories/read";
+import { db } from "@/lib/firestore/firebase";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { usePermissions } from '@/context/PermissionContext';
+import { getSellerIdFromAdmin } from '@/lib/permissions/sellerPermissions';
 
 export default function ProductSearchFilter({ onSearch, onFilter }) {
   const { data: brands } = useBrands();
   const { data: categories } = useCategories();
+  const { adminData } = usePermissions();
+  const [sellers, setSellers] = useState([]);
+  const isAdmin = !getSellerIdFromAdmin(adminData);
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
@@ -19,9 +26,27 @@ export default function ProductSearchFilter({ onSearch, onFilter }) {
     brandId: "",
     color: "",
     occasion: "",
+    sellerId: "", // Add seller filter
     priceRange: { min: "", max: "" },
     stock: { min: "", max: "" }
   });
+  
+  // Fetch sellers list for admin
+  useEffect(() => {
+    const fetchSellers = async () => {
+      if (isAdmin) {
+        try {
+          const sellersQuery = query(collection(db, 'sellers'), where('status', '==', 'approved'));
+          const sellersSnapshot = await getDocs(sellersQuery);
+          const sellersData = sellersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setSellers(sellersData);
+        } catch (error) {
+          console.error('Error fetching sellers:', error);
+        }
+      }
+    };
+    fetchSellers();
+  }, [isAdmin]);
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -57,6 +82,7 @@ export default function ProductSearchFilter({ onSearch, onFilter }) {
       brandId: "",
       color: "",
       occasion: "",
+      sellerId: "",
       priceRange: { min: "", max: "" },
       stock: { min: "", max: "" }
     };
@@ -190,6 +216,27 @@ export default function ProductSearchFilter({ onSearch, onFilter }) {
                 ))}
               </select>
             </div>
+            
+            {/* Seller Filter - Only for Admin */}
+            {isAdmin && (
+              <div className="flex flex-col gap-1">
+                <label className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                  <Users className="h-4 w-4" /> Seller
+                </label>
+                <select
+                  value={filters.sellerId}
+                  onChange={(e) => handleFilterChange("sellerId", e.target.value)}
+                  className="block w-full px-3 py-2 border border-purple-500/50 dark:border-[#22c7d5]/50 rounded-lg bg-white dark:bg-[#1e2737] text-gray-700 dark:text-gray-200 focus:outline-none focus:border-[#22c7d5] transition-all duration-200"
+                >
+                  <option value="">All Sellers</option>
+                  {sellers?.map((seller) => (
+                    <option key={seller.id} value={seller.id}>
+                      {seller.businessName || seller.email || `Seller ${seller.id.slice(0, 8)}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             
             {/* Color Filter */}
             <div className="flex flex-col gap-1">

@@ -9,7 +9,7 @@ import { FaCheckCircle, FaShippingFast, FaBox, FaHourglassHalf, FaTimesCircle, F
 import { WhatsAppSupport } from "./WhatsappSupport";
 import { OrderDetails } from "./OrderDetails";
 import { OrderItem } from "./OrderItem";
-import { getStatusColor } from "./Admin/orders/OrdersUtil";
+import { getStatusColor } from "@/utils/orderUtils";
 
 // OrderStatus component to show the status tracker
 const OrderStatus = ({ status }) => {

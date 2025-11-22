@@ -1,4 +1,4 @@
-import AboutUs from '@/components/AboutUs'
+import AboutUs from '@/components/web/pages/AboutUs'
 import React from 'react'
 
 function page() {

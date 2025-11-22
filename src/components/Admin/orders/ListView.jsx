@@ -1,8 +1,10 @@
 "use client"
 import React, { useEffect, useState } from "react";
 import { db } from "@/lib/firestore/firebase";
-import { collection, doc, updateDoc, query, orderBy, onSnapshot,increment  } from "firebase/firestore";
+import { collection, doc, updateDoc, query, orderBy, onSnapshot, increment, where } from "firebase/firestore";
 import { toast } from "react-hot-toast";
+import { usePermissions } from '@/context/PermissionContext';
+import { getSellerIdFromAdmin } from '@/lib/permissions/sellerPermissions';
 
 
 import { OrdersTable } from "./OrdersTable";
@@ -13,6 +15,7 @@ import { EditOrderModal } from "./EditOrderModal";
 import { CancelOrderModal } from "./CancelOrderModal";
 
 export default function AdminOrdersPage() {
+  const { adminData } = usePermissions();
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +39,24 @@ useEffect(() => {
     try {
       setLoading(true);
       const ordersRef = collection(db, "orders");
-      const q = query(ordersRef, orderBy("createdAt", "desc"));
+      
+      // Build query based on user role
+      let q;
+      const sellerId = getSellerIdFromAdmin(adminData);
+      
+      if (sellerId) {
+        // Seller: only show orders that contain their products
+        // Note: This assumes orders have a sellerId field or line_items with seller info
+        // You may need to adjust this based on your data structure
+        q = query(
+          ordersRef, 
+          where("sellerId", "==", sellerId),
+          orderBy("createdAt", "desc")
+        );
+      } else {
+        // Admin/Super Admin: show all orders
+        q = query(ordersRef, orderBy("createdAt", "desc"));
+      }
       
       // Use onSnapshot instead of getDocs for real-time updates
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -45,8 +65,18 @@ useEffect(() => {
           ...doc.data(),
           createdAt: doc.data().createdAt?.toDate() || new Date(),
         }));
-        setOrders(ordersData);
-        setFilteredOrders(ordersData);
+        
+        // Additional client-side filtering for sellers if orders contain multiple sellers
+        let finalOrdersData = ordersData;
+        if (sellerId) {
+          finalOrdersData = ordersData.filter(order => {
+            // Filter orders that contain products from this seller
+            return order.line_items?.some(item => item.sellerId === sellerId) || order.sellerId === sellerId;
+          });
+        }
+        
+        setOrders(finalOrdersData);
+        setFilteredOrders(finalOrdersData);
         setLoading(false);
       }, (error) => {
         console.error("Error fetching orders:", error);
@@ -71,7 +101,7 @@ useEffect(() => {
       unsubscribe();
     }
   };
-}, []);
+}, [adminData]);
 
   // Apply filters and search
   useEffect(() => {
@@ -79,13 +109,25 @@ useEffect(() => {
     
     // Apply search
     if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
       result = result.filter(
         (order) =>
-          order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.uid?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.address?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.address?.addressLine1?.toLowerCase().includes(searchTerm.toLowerCase())
+          order.id.toLowerCase().includes(searchLower) ||
+          order.uid?.toLowerCase().includes(searchLower) ||
+          order.userName?.toLowerCase().includes(searchLower) ||
+          order.address?.fullName?.toLowerCase().includes(searchLower) ||
+          order.address?.addressLine1?.toLowerCase().includes(searchLower) ||
+          // Search by seller business name
+          order.line_items?.some(item => 
+            item.sellerBusinessName?.toLowerCase().includes(searchLower) ||
+            item.sellerName?.toLowerCase().includes(searchLower) ||
+            item.product_data?.metadata?.productSku?.toLowerCase().includes(searchLower)
+          ) ||
+          // Search in seller groups
+          order.sellerGroups?.some(group =>
+            group.sellerBusinessName?.toLowerCase().includes(searchLower) ||
+            group.sellerName?.toLowerCase().includes(searchLower)
+          )
       );
     }
     

@@ -2,24 +2,33 @@
 
 import { useProducts } from "@/lib/firestore/products/read";
 import { deleteProduct } from "@/lib/firestore/products/write";
-import { Button, CircularProgress } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import { Edit2, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import toast from "react-hot-toast";
 import ProductSearchFilter from "./ProductSearchFilter";
+import { CircularProgress } from "@nextui-org/react";
 
 export default function ListView() {
   const [pageLimit, setPageLimit] = useState(10);
   const [lastSnapDocList, setLastSnapDocList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilters, setActiveFilters] = useState({});
-  const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
     setLastSnapDocList([]);
   }, [pageLimit]);
 
+  // Reset pagination when filters or search changes
+  useEffect(() => {
+    setLastSnapDocList([]);
+  }, [activeFilters, searchTerm]);
+
+  // Debug filters
+  console.log('Active Filters:', activeFilters);
+  console.log('Search Term:', searchTerm);
+  
   const {
     data: products,
     error,
@@ -28,106 +37,30 @@ export default function ListView() {
   } = useProducts({
     pageLimit,
     lastSnapDoc: lastSnapDocList?.length === 0 ? null : lastSnapDocList[lastSnapDocList?.length - 1],
+    filters: activeFilters,
+    searchTerm: searchTerm,
   });
 
-  useEffect(() => {
-    if (products) {
-      let result = [...products];
-      
-      // Apply search filter
-      if (searchTerm) {
-        const lowercasedSearch = searchTerm.toLowerCase();
-        result = result.filter(item => 
-          item?.title?.toLowerCase().includes(lowercasedSearch)
-        );
-      }
-      
-      // Apply status filter
-      if (activeFilters.status) {
-        if (activeFilters.status === 'available') {
-          result = result.filter(item => (item?.stock - (item?.orders ?? 0)) > 0);
-        } else if (activeFilters.status === 'outOfStock') {
-          result = result.filter(item => (item?.stock - (item?.orders ?? 0)) <= 0);
-        }
-      }
-      
-      // Apply featured filter
-      if (activeFilters.featured) {
-        if (activeFilters.featured === 'featured') {
-          result = result.filter(item => item?.isFeatured);
-        } else if (activeFilters.featured === 'notFeatured') {
-          result = result.filter(item => !item?.isFeatured);
-        }
-      }
-      
-      // Apply new arrival filter
-      if (activeFilters.newArrival) {
-        if (activeFilters.newArrival === 'newArrival') {
-          result = result.filter(item => item?.isNewArrival);
-        } else if (activeFilters.newArrival === 'notNewArrival') {
-          result = result.filter(item => !item?.isNewArrival);
-        }
-      }
-      
-      // Apply category filter
-      if (activeFilters.categoryId) {
-        result = result.filter(item => item?.categoryId === activeFilters.categoryId);
-      }
-      
-      // Apply brand filter
-      if (activeFilters.brandId) {
-        result = result.filter(item => item?.brandId === activeFilters.brandId);
-      }
-      
-      // Apply color filter
-      if (activeFilters.color) {
-        result = result.filter(item => item?.color === activeFilters.color);
-      }
-      
-      // Apply occasion filter
-      if (activeFilters.occasion) {
-        result = result.filter(item => item?.occasion === activeFilters.occasion);
-      }
-      
-      // Apply price range filter
-      if (activeFilters.priceRange) {
-        if (activeFilters.priceRange.min) {
-          result = result.filter(item => item?.salePrice >= Number(activeFilters.priceRange.min));
-        }
-        if (activeFilters.priceRange.max) {
-          result = result.filter(item => item?.salePrice <= Number(activeFilters.priceRange.max));
-        }
-      }
-      
-      // Apply stock filter
-      if (activeFilters.stock) {
-        if (activeFilters.stock.min) {
-          result = result.filter(item => item?.stock >= Number(activeFilters.stock.min));
-        }
-        if (activeFilters.stock.max) {
-          result = result.filter(item => item?.stock <= Number(activeFilters.stock.max));
-        }
-      }
-      
-      setFilteredProducts(result);
+  // Products are now filtered at the database level, so we can use them directly
+  const filteredProducts = products || [];
+
+  const handleNextPage = useCallback(() => {
+    if (lastSnapDoc) {
+      setLastSnapDocList(prev => [...prev, lastSnapDoc]);
     }
-  }, [products, searchTerm, activeFilters]);
+  }, [lastSnapDoc]);
 
-  const handleNextPage = () => {
-    setLastSnapDocList([...lastSnapDocList, lastSnapDoc]);
-  };
+  const handlePrePage = useCallback(() => {
+    setLastSnapDocList(prev => prev.slice(0, -1));
+  }, []);
 
-  const handlePrePage = () => {
-    setLastSnapDocList(lastSnapDocList.slice(0, -1));
-  };
-
-  const handleSearch = (term) => {
+  const handleSearch = useCallback((term) => {
     setSearchTerm(term);
-  };
+  }, []);
 
-  const handleFilter = (filters) => {
+  const handleFilter = useCallback((filters) => {
     setActiveFilters(filters);
-  };
+  }, []);
 
   if (isLoading) {
     return (
@@ -173,7 +106,7 @@ export default function ListView() {
                     index={index + lastSnapDocList?.length * pageLimit}
                   />
                 ))}
-                {filteredProducts.length === 0 && (
+                {filteredProducts?.length === 0 && (
                   <tr>
                     <td colSpan="8" className="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
                       No products found matching your criteria
@@ -185,38 +118,50 @@ export default function ListView() {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2 pt-4 border-t border-gray-100 dark:border-gray-700">
-          <Button
-            isDisabled={isLoading || lastSnapDocList?.length === 0}
-            onClick={handlePrePage}
-            size="sm"
-            variant="bordered"
-            className="w-full sm:w-auto flex items-center gap-1 border rounded-lg border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
-          >
-            <ChevronLeft size={16} /> Previous
-          </Button>
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 px-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+          {/* Pagination Info */}
+          <div className="flex flex-col sm:flex-row items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <span>
+              Showing {filteredProducts?.length || 0} products
+            </span>
+          </div>
 
-          <select
-            value={pageLimit}
-            onChange={(e) => setPageLimit(Number(e.target.value))}
-            className="w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e2737] text-gray-700 dark:text-gray-300 focus:outline-none focus:border-[#22c7d5] shadow-sm hover:shadow-md transition-shadow"
-          >
-            <option value={3}>3 per page</option>
-            <option value={5}>5 per page</option>
-            <option value={10}>10 per page</option>
-            <option value={20}>20 per page</option>
-            <option value={100}>100 per page</option>
-          </select>
+          {/* Controls */}
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <select
+              value={pageLimit}
+              onChange={(e) => setPageLimit(Number(e.target.value))}
+              className="w-full sm:w-auto px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e2737] text-gray-700 dark:text-gray-300 focus:outline-none focus:border-[#22c7d5] shadow-sm hover:shadow-md transition-shadow text-sm"
+            >
+              <option value={5}>5 per page</option>
+              <option value={10}>10 per page</option>
+              <option value={20}>20 per page</option>
+              <option value={50}>50 per page</option>
+              <option value={100}>100 per page</option>
+            </select>
 
-          <Button
-            isDisabled={isLoading || products?.length === 0}
-            onClick={handleNextPage}
-            size="sm"
-            variant="bordered"
-            className="w-full sm:w-auto flex items-center gap-1 border rounded-lg border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
-          >
-            Next <ChevronRight size={16} />
-          </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                isDisabled={isLoading || lastSnapDocList?.length === 0}
+                onClick={handlePrePage}
+                size="sm"
+                variant="bordered"
+                className="flex items-center gap-1 border rounded-lg border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow min-w-[90px]"
+              >
+                <ChevronLeft size={16} /> Previous
+              </Button>
+
+              <Button
+                isDisabled={isLoading || !lastSnapDoc}
+                onClick={handleNextPage}
+                size="sm"
+                variant="bordered"
+                className="flex items-center gap-1 border rounded-lg border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow min-w-[80px]"
+              >
+                Next <ChevronRight size={16} />
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -251,16 +196,16 @@ function Row({ item, index }) {
       </td>
       <td className="px-4 py-3 text-center">
         <div className="flex justify-center">
-          <img
-            className="h-10 w-10 rounded-lg object-cover shadow-sm"
-            src={item?.featureImageURL}
-            alt={item?.title}
+          <ProductImage 
+            product={item}
+            size="sm"
+            className="shadow-sm"
           />
         </div>
       </td>
       <td className="px-4 py-3 text-center text-gray-700 dark:text-gray-200">
         <div className="flex items-center justify-center gap-2 flex-wrap">
-          {item?.title}
+          <span className="font-medium">{item?.title}</span>
           <div className="flex gap-1 flex-wrap">
             {item?.isFeatured && (
               <span className="px-2 py-0.5 text-xs font-medium text-white bg-gradient-to-r from-[#22c7d5] to-[#1aa5b5] rounded-full">
@@ -275,6 +220,7 @@ function Row({ item, index }) {
           </div>
         </div>
       </td>
+      
       <td className="px-4 py-3 text-center text-gray-700 dark:text-gray-200">
         <div className="flex flex-row items-center justify-center gap-2">
           {item?.salePrice < item?.price && (
@@ -293,7 +239,7 @@ function Row({ item, index }) {
         {item?.orders ?? 0}
       </td>
       <td className="px-4 py-3 text-center">
-        {item?.stock  > 0 ? (
+        {(item?.stock || 0) > 0 ? (
           <span className="px-2 py-1 text-xs font-medium text-green-700 bg-green-100 dark:text-green-400 dark:bg-green-900/30 rounded-lg">
             Available
           </span>

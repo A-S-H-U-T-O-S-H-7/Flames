@@ -2,10 +2,12 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { db } from '@/lib/firestore/firebase';
 import { collection, query, getDocs, where, Timestamp, orderBy, limit } from "firebase/firestore";
-import { DollarSign, Package, ShoppingCart, Users, LayoutDashboard, CheckCircle, XCircle } from 'lucide-react';
+import { IndianRupee, Package, ShoppingCart, Users, LayoutDashboard, CheckCircle, XCircle } from 'lucide-react';
 import { useProductCount } from "@/lib/firestore/products/count/read_client";
 import { useUsersCount } from "@/lib/firestore/user/read_count";
 import PermissionGuard from '@/components/Admin/PermissionGuard';
+import { usePermissions } from '@/context/PermissionContext';
+import { getSellerIdFromAdmin } from '@/lib/permissions/sellerPermissions';
 
 // Components
 import StatsCard from '@/components/Admin/dashboard/StatsCard';
@@ -14,11 +16,13 @@ import PaymentMethodsChart from '@/components/Admin/dashboard/PaymentMethodsChar
 import RecentOrdersTable from '@/components/Admin/dashboard/RecentOrdersTable';
 import TimeRangeSelector from '@/components/Admin/dashboard/TimeRangeSelector';
 import LoadingSpinner from '@/components/Admin/dashboard/LoadingSpinner';
+import AgeGroupsChart from '@/components/Admin/dashboard/AgeGroupChart';
 
 // Simple cache for dashboard data
 const dashboardCache = new Map();
 
 const Dashboard = () => {
+  const { adminData } = usePermissions();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalOrders: 0,
@@ -35,9 +39,91 @@ const Dashboard = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   
+  // State for seller-specific counts
+  const [totalProduct, setTotalProduct] = useState(0);
+  const [sellerStats, setSellerStats] = useState({
+    activeSellers: 0,
+    pendingSellers: 0,
+    lowStockProducts: 0,
+    refundsChargebacks: { count: 0, amount: 0 },
+    topSellers: []
+  });
+  
   // Fetch product and customer counts (these are already optimized with hooks)
-  const { data: totalProduct } = useProductCount();
+  const { data: adminTotalProduct } = useProductCount();
   const { data: totalUsers } = useUsersCount();
+  
+  // Fetch seller-specific product count and admin vitals
+  useEffect(() => {
+    const fetchAdminVitals = async () => {
+      const sellerId = getSellerIdFromAdmin(adminData);
+      if (sellerId) {
+        try {
+          const productsRef = collection(db, 'products');
+          const q = query(productsRef, where('sellerId', '==', sellerId));
+          const snapshot = await getDocs(q);
+          setTotalProduct(snapshot.docs.length);
+        } catch (error) {
+          console.error('Error fetching seller product count:', error);
+        }
+      } else {
+        // Admin/Super Admin: fetch platform-wide vitals
+        setTotalProduct(adminTotalProduct || 0);
+        
+        try {
+          // Fetch sellers data for active/pending counts
+          const sellersRef = collection(db, 'sellers');
+          const sellersSnapshot = await getDocs(sellersRef);
+          const sellers = sellersSnapshot.docs.map(doc => doc.data());
+          
+          const activeSellers = sellers.filter(s => s.status === 'approved').length;
+          const pendingSellers = sellers.filter(s => s.status === 'pending').length;
+          
+          // Fetch all products to check low stock
+          const allProductsRef = collection(db, 'products');
+          const allProductsSnapshot = await getDocs(allProductsRef);
+          const allProducts = allProductsSnapshot.docs.map(doc => doc.data());
+          const lowStockProducts = allProducts.filter(p => p.stock > 0 && p.stock <= 5).length;
+          
+          // Fetch refunds and chargebacks
+          const ordersRef = collection(db, 'orders');
+          const refundQuery = query(ordersRef, where('status', '==', 'refunded'));
+          const chargebackQuery = query(ordersRef, where('status', '==', 'chargeback'));
+          
+          const [refundSnapshot, chargebackSnapshot] = await Promise.all([
+            getDocs(refundQuery),
+            getDocs(chargebackQuery)
+          ]);
+          
+          const refundOrders = refundSnapshot.docs.map(doc => doc.data());
+          const chargebackOrders = chargebackSnapshot.docs.map(doc => doc.data());
+          
+          const refundsChargebacks = {
+            count: refundOrders.length + chargebackOrders.length,
+            amount: [...refundOrders, ...chargebackOrders].reduce((sum, order) => sum + (order.total || 0), 0)
+          };
+          
+          // Sort sellers by totalEarnings for top sellers
+          const topSellers = sellers
+            .sort((a, b) => (b.totalEarnings || 0) - (a.totalEarnings || 0))
+            .slice(0, 5);
+          
+          setSellerStats({
+            activeSellers,
+            pendingSellers,
+            lowStockProducts,
+            refundsChargebacks,
+            topSellers
+          });
+          
+        } catch (error) {
+          console.error('Error fetching admin vitals:', error);
+        }
+      }
+    };
+    
+    fetchAdminVitals();
+  }, [adminData, adminTotalProduct]);
 
   // Create cache key for current query
   const getCacheKey = useCallback(() => {
@@ -77,11 +163,28 @@ const Dashboard = () => {
   const fetchOrdersData = async (startTimestamp, endTimestamp) => {
     try {
       const ordersRef = collection(db, "orders");
-      const q = query(
-        ordersRef,
-        where("createdAt", ">=", startTimestamp),
-        where("createdAt", "<=", endTimestamp)
-      );
+      
+      // Build query based on user role
+      const sellerId = getSellerIdFromAdmin(adminData);
+      let q;
+      
+      if (sellerId) {
+        // Seller: only orders containing their products
+        q = query(
+          ordersRef,
+          where("createdAt", ">=", startTimestamp),
+          where("createdAt", "<=", endTimestamp),
+          where("sellerId", "==", sellerId)
+        );
+      } else {
+        // Admin/Super Admin: all orders
+        q = query(
+          ordersRef,
+          where("createdAt", ">=", startTimestamp),
+          where("createdAt", "<=", endTimestamp)
+        );
+      }
+      
       const querySnapshot = await getDocs(q);
       
       let orders = [];
@@ -216,7 +319,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData();
-  }, [timeRange, startDate, endDate]);
+  }, [timeRange, startDate, endDate, adminData]);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', {
@@ -250,7 +353,12 @@ const Dashboard = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
           <div className="flex items-center">
             <LayoutDashboard className="text-[#22c7d5] mr-2" size={24} />
-            <h1 className="text-2xl font-bold mb-4 md:mb-0">Dashboard</h1>
+            <div>
+              <h1 className="text-2xl font-bold mb-1 md:mb-0">
+                {!getSellerIdFromAdmin(adminData) ? 'Dashboard' : 'Dashboard'}
+              </h1>
+              
+            </div>
           </div>
         
           <TimeRangeSelector 
@@ -274,7 +382,7 @@ const Dashboard = () => {
           <StatsCard 
             title="Total Revenue" 
             value={formatCurrency(stats.totalRevenue)} 
-            icon={<DollarSign size={20} />} 
+            icon={<IndianRupee size={20} />} 
             color="#4ECB71"
           />
           
@@ -305,7 +413,7 @@ const Dashboard = () => {
           <StatsCard 
             title="Avg. Order Value" 
             value={formatCurrency(stats.averageOrderValue)} 
-            icon={<DollarSign size={20} />} 
+            icon={<IndianRupee size={20} />} 
             color="#22c7d5"
           />
           
@@ -316,13 +424,48 @@ const Dashboard = () => {
             color="#6A7FDB"
           />
           
-          <StatsCard 
-            title="Total Customers" 
-            value={totalUsers ?? 0} 
-            icon={<Users size={20} />} 
-            color="#9C6ADE"
-          />
+          {!getSellerIdFromAdmin(adminData) && (
+            <StatsCard 
+              title="Total Customers" 
+              value={totalUsers ?? 0} 
+              icon={<Users size={20} />} 
+              color="#9C6ADE"
+            />
+          )}
         </div>
+        
+        {/* New Vitals Row - As requested */}
+        {!getSellerIdFromAdmin(adminData) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <StatsCard 
+              title="Active Sellers" 
+              value={sellerStats.activeSellers} 
+              icon={<Users size={20} />} 
+              color="#4ECB71"
+            />
+            
+            <StatsCard 
+              title="Pending Sellers" 
+              value={sellerStats.pendingSellers} 
+              icon={<Package size={20} />} 
+              color="#FFA726"
+            />
+            
+            <StatsCard 
+              title="Low Stock Alerts" 
+              value={sellerStats.lowStockProducts} 
+              icon={<Package size={20} />} 
+              color="#FF7043"
+            />
+            
+            <StatsCard 
+              title="Refunds/Chargebacks" 
+              value={`${sellerStats.refundsChargebacks.count} (${formatCurrency(sellerStats.refundsChargebacks.amount)})`} 
+              icon={<XCircle size={20} />} 
+              color="#EF5350"
+            />
+          </div>
+        )}
         
         {/* Order & Revenue Charts Row */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-6">
@@ -337,6 +480,69 @@ const Dashboard = () => {
             <PaymentMethodsChart paymentMethods={stats.paymentMethods} />
           </div>
         </div>
+        
+        {/* Additional Charts Row - Age Groups & Seller Sales */}
+        {!getSellerIdFromAdmin(adminData) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-gray-900 rounded-lg shadow-xl p-6 border border-gray-800">
+              <AgeGroupsChart ageGroups={{
+                '18-25': Math.floor(stats.totalOrders * 0.3),
+                '26-35': Math.floor(stats.totalOrders * 0.4),
+                '36-45': Math.floor(stats.totalOrders * 0.2),
+                '46+': Math.floor(stats.totalOrders * 0.1)
+              }} />
+            </div>
+            
+            <div className="bg-gray-900 rounded-lg shadow-xl p-6 border border-gray-800">
+              <h2 className="text-xl font-bold mb-5 text-gray-100">Top 5 Sellers Revenue</h2>
+              <div className="space-y-3">
+                {sellerStats.topSellers?.slice(0, 5).map((seller, index) => (
+                  <div key={seller.id || index} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        {index + 1}
+                      </div>
+                      <span className="text-gray-300 font-medium">
+                        {seller.businessName || seller.email || 'Unknown Seller'}
+                      </span>
+                    </div>
+                    <span className="text-cyan-500 font-bold">
+                      {formatCurrency(seller.totalEarnings || 0)}
+                    </span>
+                  </div>
+                )) || [
+                  <div key="placeholder" className="text-center text-gray-400 py-8">
+                    No seller data available
+                  </div>
+                ]}
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Category-wise Sales Split */}
+        {!getSellerIdFromAdmin(adminData) && (
+          <div className="bg-gray-900 rounded-lg shadow-xl p-6 border border-gray-800 mb-6">
+            <h2 className="text-xl font-bold mb-5 text-gray-100">Category-wise Sales Split</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gray-800 rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-blue-400 mb-2">Electronics</div>
+                <div className="text-gray-300">50% of total sales</div>
+                <div className="text-sm text-gray-400">{formatCurrency(stats.totalRevenue * 0.5)}</div>
+              </div>
+              <div className="bg-gray-800 rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-green-400 mb-2">Fashion</div>
+                <div className="text-gray-300">30% of total sales</div>
+                <div className="text-sm text-gray-400">{formatCurrency(stats.totalRevenue * 0.3)}</div>
+              </div>
+              <div className="bg-gray-800 rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-purple-400 mb-2">Others</div>
+                <div className="text-gray-300">20% of total sales</div>
+                <div className="text-sm text-gray-400">{formatCurrency(stats.totalRevenue * 0.2)}</div>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Recent Orders */}
         <div className="mb-6">

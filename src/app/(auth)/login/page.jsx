@@ -383,8 +383,12 @@ function SignInWithGoogleComponent({ setShowTransition }) {
         email: user?.email,
       });
       setShowTransition(true);
-      // Delay the redirect to show the animation
-      setTimeout(() => {}, 2000);
+      // Delay the redirect to show the animation, then go home
+      if (typeof window !== "undefined") {
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1200);
+      }
     } catch (error) {
       toast.error(error?.message);
       setIsLoading(false);

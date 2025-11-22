@@ -2,7 +2,7 @@
 "use client";
 
 import React from 'react'
-import Category from '@/components/CategoryCard'
+import CategoryCard from '../web/home/CategoryCard';
 import { useCategories } from '@/lib/firestore/categories/read'
 
 export default function CategoryClientWrapper() {
@@ -19,6 +19,6 @@ export default function CategoryClientWrapper() {
   ))}
 </div>
   if (error) return <div>Error loading categories: {error}</div>;
-  
-  return <Category categories={categories} />;
+
+  return <CategoryCard categories={categories} />;
 }

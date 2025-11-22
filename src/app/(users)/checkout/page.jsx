@@ -5,7 +5,7 @@ import { useProductsByIds } from "@/lib/firestore/products/read";
 import { useUser } from "@/lib/firestore/user/read";
 import { CircularProgress } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
-import Checkout from "@/components/Checkout";
+import Checkout from "@/components/web/pages/Checkout";
 import { Suspense } from "react";
 
 export default function CheckoutPage() {

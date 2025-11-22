@@ -1,5 +1,5 @@
 import { getCollection } from "@/lib/firestore/collections/read_server";
-import CollectionPage from "@/components/Collection/CollectionPage";
+import CollectionPage from "@/components/collection/CollectionPage";
 
 function serializeFirestoreData(data) {
   if (!data) return null;

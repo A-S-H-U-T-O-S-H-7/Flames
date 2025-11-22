@@ -6,14 +6,17 @@ export default function Photos({ imageList }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [fitMode, setFitMode] = useState("cover"); // Default to cover, can toggle
 
-  if (!imageList?.length) return null;
+  // Filter out empty/null images
+  const validImages = imageList?.filter(img => img && img.trim() !== '') || [];
+  
+  if (!validImages.length) return null;
 
   const handleNext = () => {
-    setSelectedIndex((prev) => (prev + 1) % imageList.length);
+    setSelectedIndex((prev) => (prev + 1) % validImages.length);
   };
 
   const handlePrev = () => {
-    setSelectedIndex((prev) => (prev === 0 ? imageList.length - 1 : prev - 1));
+    setSelectedIndex((prev) => (prev === 0 ? validImages.length - 1 : prev - 1));
   };
 
   const toggleFitMode = () => {
@@ -26,7 +29,7 @@ export default function Photos({ imageList }) {
       <div className="relative w-full max-w-3xl h-72 md:h-96 rounded-lg mb-6 overflow-hidden bg-gray-100">
         {/* Image with dynamic object-fit */}
         <img
-          src={imageList[selectedIndex]}
+          src={validImages[selectedIndex]}
           alt={`Photo ${selectedIndex + 1}`}
           className={`w-full h-full object-${fitMode} transition-all duration-300 ease-in-out`}
           onClick={toggleFitMode}
@@ -60,7 +63,7 @@ export default function Photos({ imageList }) {
 
       {/* Thumbnails */}
       <div className="flex justify-center overflow-x-auto space-x-2 py-2 px-2">
-        {imageList.map((image, index) => (
+        {validImages.map((image, index) => (
           <button
             key={index}
             onClick={() => setSelectedIndex(index)}

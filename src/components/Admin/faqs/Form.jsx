@@ -2,7 +2,7 @@
 
 import { getFaq } from "@/lib/firestore/faqs/read_server";
 import { createNewFaq, updateFaq } from "@/lib/firestore/faqs/write";
-import { Button } from "@nextui-org/react";
+import { Button, Select, SelectItem } from "@nextui-org/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -14,6 +14,11 @@ export default function Form() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+
+  const faqTypes = [
+    { key: "seller", label: "Seller" },
+    { key: "user", label: "User" }
+  ];
 
   const fetchData = async () => {
     try {
@@ -41,30 +46,30 @@ export default function Form() {
     }));
   };
 
-  const handleCreate = async () => {
-    setIsLoading(true);
-    try {
-      await createNewFaq({ data});
-      toast.success("Successfully Created");
-      setData(null); 
-    } catch (error) {
-      toast.error(error?.message);
-    }
-    setIsLoading(false);
-  };
+ const handleCreate = async () => {
+  setIsLoading(true);
+  try {
+    await createNewFaq(data);
+    toast.success("Successfully Created");
+    setData(null); 
+  } catch (error) {
+    toast.error(error?.message);
+  }
+  setIsLoading(false);
+};
 
-  const handleUpdate = async () => {
-    setIsLoading(true);
-    try {
-      await updateFaq({ data});
-      toast.success("Successfully Updated");
-      setData(null);
-      router.push(`/admin/faqs`);
-    } catch (error) {
-      toast.error(error?.message);
-    }
-    setIsLoading(false);
-  };
+const handleUpdate = async () => {
+  setIsLoading(true);
+  try {
+    await updateFaq(data);
+    toast.success("Successfully Updated");
+    setData(null);
+    router.push(`/admin/faqs`);
+  } catch (error) {
+    toast.error(error?.message);
+  }
+  setIsLoading(false);
+};
 
   return (
     <div className="flex border border-[#22c7d5] py-6 flex-col gap-6 bg-white dark:bg-[#0e1726] dark:text-[#888ea8] rounded-xl p-5 w-full md:w-[400px] transition-all duration-200 ease-in-out">
@@ -78,11 +83,34 @@ export default function Form() {
         }}
         className="flex flex-col gap-4"
       >
-        
+        {/* FAQ Type Dropdown */}
+        <div className="flex flex-col gap-2">
+          <label htmlFor="faq-type" className="text-gray-500 dark:text-[#888ea8] text-sm">
+            FAQ Type <span className="text-red-500">*</span>
+          </label>
+          <Select
+            id="faq-type"
+            name="faqType"
+            placeholder="Select FAQ Type"
+            selectedKeys={data?.faqType ? [data.faqType] : []}
+            onChange={(e) => handleData("faqType", e.target.value)}
+            className="w-full"
+            classNames={{
+              trigger: "border border-purple-500 dark:border-[#22c7d5] bg-white dark:bg-[#1e2737]",
+              value: "text-black dark:text-white"
+            }}
+          >
+            {faqTypes.map((type) => (
+              <SelectItem key={type.key} value={type.key}>
+                {type.label}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
 
         {/* Question Input */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="category-name" className="text-gray-500 dark:text-[#888ea8] text-sm">
+          <label htmlFor="faq" className="text-gray-500 dark:text-[#888ea8] text-sm">
             Faq <span className="text-red-500">*</span>
           </label>
           <input
@@ -98,17 +126,17 @@ export default function Form() {
 
         {/* Answer Input */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="category-slug" className="text-gray-500 dark:text-[#888ea8] text-sm">
+          <label htmlFor="answer" className="text-gray-500 dark:text-[#888ea8] text-sm">
             Answer <span className="text-red-500">*</span>
           </label>
-          <input
+          <textarea
             id="answer"
             name="answer"
-            type="text"
             placeholder="Enter Answer"
             value={data?.answer ?? ""}
             onChange={(e) => handleData("answer", e.target.value)}
-            className="border border-purple-500 dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out"
+            rows={4}
+            className="border border-purple-500 dark:border-[#22c7d5] px-4 py-2 rounded-lg w-full focus:outline-none bg-white dark:bg-[#1e2737] text-black dark:text-white transition-all duration-200 ease-in-out resize-vertical"
           />
         </div>
 

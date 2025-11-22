@@ -4,7 +4,7 @@ import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 export const getCategory = async ({ id }) => {
   const data = await getDoc(doc(db, `categories/${id}`));
   if (data.exists()) {
-    const categoryData = data.data();
+    const categoryData = { id: data.id, ...data.data() };
     // Convert Firestore Timestamp to plain object
     return JSON.parse(JSON.stringify(categoryData));
   } else {
@@ -15,7 +15,7 @@ export const getCategory = async ({ id }) => {
 export const getCategories = async () => {
   const list = await getDocs(collection(db, "categories"));
   return list.docs.map((snap) => {
-    const data = snap.data();
+    const data = { id: snap.id, ...snap.data() };
     // Convert Firestore Timestamp to plain object
     return JSON.parse(JSON.stringify(data));
   });

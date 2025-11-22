@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import HeroBanner from "@/components/HeroBanner";
+import HeroBanner from "../web/home/HeroBanner";
 import { useHeroBanners } from "@/lib/firestore/banners/read";
 import { motion } from 'framer-motion';
 

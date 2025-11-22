@@ -1,6 +1,6 @@
 import { getCategory } from "@/lib/firestore/categories/read_server";
 import { getProductsByCategory } from "@/lib/firestore/products/read_server";
-import CategoryPage from "@/components/CategoryPage";
+import CategoryPage from "@/components/web/pages/CategoryPage";
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await Promise.resolve(params);

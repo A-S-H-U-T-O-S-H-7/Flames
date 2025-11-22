@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firestore/firebase';
 import { collection, query, getDocs, where, Timestamp, orderBy } from "firebase/firestore";
-import { DollarSign, Package, ShoppingCart, Users, LayoutDashboard, CheckCircle, XCircle } from 'lucide-react';
+import { IndianRupee, Package, ShoppingCart, Users, LayoutDashboard, CheckCircle, XCircle } from 'lucide-react';
 import { useProductCount } from "@/lib/firestore/products/count/read_client";
 import { useUsersCount } from "@/lib/firestore/user/read_count";
 import PermissionGuard from '@/components/Admin/PermissionGuard';
@@ -313,6 +313,7 @@ const Dashboard = () => {
             <LayoutDashboard className="text-[#22c7d5] mr-2" size={24} />
             <h1 className="text-2xl font-bold mb-4 md:mb-0">Dashboard</h1>
           </div>
+          </div>
         
         <TimeRangeSelector 
           timeRange={timeRange} 
@@ -335,7 +336,7 @@ const Dashboard = () => {
         <StatsCard 
           title="Total Revenue" 
           value={formatCurrency(stats.totalRevenue)} 
-          icon={<DollarSign size={20} />} 
+          icon={<IndianRupee size={20} />} 
           color="#4ECB71"
         />
         
@@ -366,7 +367,7 @@ const Dashboard = () => {
         <StatsCard 
           title="Avg. Order Value" 
           value={formatCurrency(stats.averageOrderValue)} 
-          icon={<DollarSign size={20} />} 
+          icon={<IndianRupee size={20} />} 
           color="#22c7d5"
         />
         

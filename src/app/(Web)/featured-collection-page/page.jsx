@@ -1,7 +1,7 @@
 'use client'
 
 import { useFeaturedProducts } from '@/lib/firestore/products/read';
-import FeaturedCollectionPage from '@/components/FeaturedCollectionPage';
+import FeaturedCollectionPage from '@/components/web/pages/FeaturedCollectionPage';
 import { Loader2 } from "lucide-react";
 
 export default function Page() {

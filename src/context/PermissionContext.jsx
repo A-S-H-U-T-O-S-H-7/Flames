@@ -10,11 +10,12 @@ import {
   getAccessiblePages,
   ROLES 
 } from '@/lib/permissions/adminPermissions';
+import { shouldUseSellersInterface } from '@/lib/permissions/sellerPermissions';
 
 const PermissionContext = createContext();
 
 export default function PermissionContextProvider({ children }) {
-  const { user } = useAuth();
+  const { user, logout: authLogout } = useAuth();
   const { data: adminData, error, isLoading } = useAdmin({ email: user?.email });
 
   // Memoize permission functions to avoid unnecessary re-renders
@@ -27,7 +28,12 @@ export default function PermissionContextProvider({ children }) {
         getAccessiblePages: () => [],
         adminData: null,
         isLoading,
-        error
+        error,
+        isSuperAdmin: () => false,
+        isAdmin: () => false,
+        isSeller: () => false,
+        shouldUseSellersInterface: () => false,
+        logout: authLogout
       };
     }
 
@@ -42,7 +48,11 @@ export default function PermissionContextProvider({ children }) {
       // Helper functions for common checks
       isSuperAdmin: () => hasRole(adminData, ROLES.SUPER_ADMIN),
       isAdmin: () => hasRole(adminData, ROLES.ADMIN),
-      isSeller: () => hasRole(adminData, ROLES.SELLER)
+      isSeller: () => hasRole(adminData, ROLES.SELLER),
+      // Seller interface helper
+      shouldUseSellersInterface: () => shouldUseSellersInterface(adminData),
+      // Logout function
+      logout: authLogout
     };
   }, [adminData, isLoading, error]);
 

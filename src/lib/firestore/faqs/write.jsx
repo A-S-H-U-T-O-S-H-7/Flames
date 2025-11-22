@@ -1,5 +1,4 @@
 import { db } from "../firebase";
-
 import {
   collection,
   deleteDoc,
@@ -11,14 +10,17 @@ import {
 
 export const createNewFaq = async ({ data }) => {
   
+  if (!data?.faqType) {
+    throw new Error("FAQ Type is required");
+  }
   if (!data?.faq) {
     throw new Error("Faq is required");
   }
   if (!data?.answer) {
     throw new Error("Answer is required");
   }
-  const newId = doc(collection(db, `ids`)).id;
   
+  const newId = doc(collection(db, `ids`)).id;
 
   await setDoc(doc(db, `faqs/${newId}`), {
     ...data,
@@ -28,6 +30,9 @@ export const createNewFaq = async ({ data }) => {
 };
 
 export const updateFaq = async ({ data }) => {
+  if (!data?.faqType) {
+    throw new Error("FAQ Type is required");
+  }
   if (!data?.faq) {
     throw new Error("Faq is required");
   }
@@ -37,8 +42,8 @@ export const updateFaq = async ({ data }) => {
   if (!data?.id) {
     throw new Error("ID is required");
   }
+  
   const id = data?.id;
-
 
   await updateDoc(doc(db, `faqs/${id}`), {
     ...data,

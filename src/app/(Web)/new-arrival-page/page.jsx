@@ -1,7 +1,7 @@
 'use client'
 
 import { useNewArrivalProducts } from "@/lib/firestore/products/read";
-import NewArrivalCollectionPage from '@/components/NewArrivalCollectionPage';
+import NewArrivalCollectionPage from "@/components/web/pages/NewArrivalCollectionPage";
 import { Loader2 } from "lucide-react";
 
 export default function page() {

@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { Eye, Edit, ChevronLeft, ChevronRight } from 'lucide-react';
-import { formatDateTime, getStatusColor } from './OrdersUtil';
+import { formatDateTime,getStatusColor } from '@/utils/orderUtils';
 import ChangeOrderStatus from './ChangeOrderStatus';
 
 export function OrdersTable({
@@ -109,7 +109,7 @@ export function OrdersTable({
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-300">
                       <div className="flex flex-col space-y-2 max-w-xs">
-                        {order.line_items.slice(0, 2).map((item, idx) => (
+                        {order.line_items?.slice(0, 2).map((item, idx) => (
                           <div key={idx} className="flex items-center">
                             <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-gray-800 text-indigo-300 rounded-full text-xs">
                               {item.quantity}
@@ -127,7 +127,7 @@ export function OrdersTable({
                             </div>
                           </div>
                         ))}
-                        {order.line_items.length > 2 && (
+                        {order.line_items?.length > 2 && (
                           <span className="text-xs text-indigo-400 font-medium">
                             +{order.line_items.length - 2} more items
                           </span>

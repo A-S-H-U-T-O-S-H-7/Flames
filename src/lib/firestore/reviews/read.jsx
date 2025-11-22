@@ -106,3 +106,106 @@ export function useShowcasedReviews() {
     isIndexBuilding
   };
 }
+
+/**
+ * Hook to get seller-specific reviews
+ * Fetches only reviews for products owned by the seller
+ */
+export function useSellerReviews({ sellerId, pageLimit = 100 } = {}) {
+  const { data, error } = useSWRSubscription(
+    ["sellerReviews", sellerId, pageLimit],
+    ([path, sellerId, pageLimit], { next }) => {
+      if (!sellerId) {
+        next(null, { list: [], lastSnapDoc: null });
+        return () => {};
+      }
+
+      // Query all reviews using collection group
+      const ref = collectionGroup(db, "reviews");
+      const q = query(
+        ref,
+        where("sellerId", "==", sellerId),
+        orderBy("timestamp", "desc"),
+        limit(pageLimit)
+      );
+
+      const unsub = onSnapshot(
+        q,
+        (snapshot) => {
+          const reviews = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            // Convert Firestore timestamp
+            timestamp: doc.data().timestamp
+          }));
+          
+          next(null, {
+            list: reviews,
+            lastSnapDoc: snapshot.docs[snapshot.docs.length - 1] || null
+          });
+        },
+        (err) => {
+          console.error('Error fetching seller reviews:', err);
+          next(err, null);
+        }
+      );
+
+      return () => unsub();
+    }
+  );
+
+  return {
+    data: data?.list || [],
+    lastSnapDoc: data?.lastSnapDoc,
+    error: error?.message,
+    isLoading: !data && !error
+  };
+}
+
+/**
+ * Hook to get all reviews (Admin only)
+ * Fetches reviews from all products
+ */
+export function useAdminReviews({ pageLimit = 100 } = {}) {
+  const { data, error } = useSWRSubscription(
+    ["adminReviews", pageLimit],
+    ([path, pageLimit], { next }) => {
+      // Query all reviews using collection group
+      const ref = collectionGroup(db, "reviews");
+      const q = query(
+        ref,
+        orderBy("timestamp", "desc"),
+        limit(pageLimit)
+      );
+
+      const unsub = onSnapshot(
+        q,
+        (snapshot) => {
+          const reviews = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            timestamp: doc.data().timestamp
+          }));
+          
+          next(null, {
+            list: reviews,
+            lastSnapDoc: snapshot.docs[snapshot.docs.length - 1] || null
+          });
+        },
+        (err) => {
+          console.error('Error fetching admin reviews:', err);
+          next(err, null);
+        }
+      );
+
+      return () => unsub();
+    }
+  );
+
+  return {
+    data: data?.list || [],
+    lastSnapDoc: data?.lastSnapDoc,
+    error: error?.message,
+    isLoading: !data && !error
+  };
+}

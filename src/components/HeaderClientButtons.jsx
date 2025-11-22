@@ -8,10 +8,14 @@ import React from 'react'
 
 function HeaderClientButtons() {
   const { user } = useAuth()
-  const { data } = useUser({ uid: user?.uid })
+  const { data, isLoading, error } = useUser({ uid: user?.uid })
   
   const favoritesCount = data?.favorites?.length ?? 0
   const cartsCount = data?.carts?.length ?? 0
+
+  if (error) {
+    console.error('Error loading user data:', error);
+  }
 
   return (
     <div className="flex items-center space-x-1 md:space-x-4 relative">

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import NewArrivalSection from "@/components/NewArrivalSection";
+import NewArrivalSection from "../web/home/NewArrivalSection";
 import { useNewArrivalProducts } from "@/lib/firestore/products/read";
 export default function NewArrivalClientWrapper() {
     const { data: newArrivalProducts, isLoading: loadingNewArrivals, error: errorNewArrivals } = useNewArrivalProducts();

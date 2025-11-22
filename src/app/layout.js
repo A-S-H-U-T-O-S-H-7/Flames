@@ -1,6 +1,9 @@
+// src/app/layout.js
 import { Libre_Baskerville, Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import AuthContextProvider from "@/context/AuthContext";
+import PermissionContextProvider from "@/context/PermissionContext";
 
 const libreBaskerville = Libre_Baskerville({
   variable: "--font-libre-baskerville",
@@ -29,8 +32,12 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${libreBaskerville.variable} ${poppins.variable}`}>
       <body className="antialiased">
         <Toaster/>
-        {children}
-        </body>
+        <AuthContextProvider>
+          <PermissionContextProvider> 
+            {children}
+          </PermissionContextProvider>
+        </AuthContextProvider>
+      </body>
     </html>
   );
 }

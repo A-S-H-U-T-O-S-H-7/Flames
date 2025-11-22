@@ -1,15 +1,15 @@
 
 import React from 'react'
-import GiftsSection from '@/components/HomeGiftSection'
-import InstaBanner from '@/components/InstaBanner'
-import CustomerReviews from '@/components/CustomerReview'
-import CategoryClientWrapper from '@/components/ClientCode/CategoryClientWrapper'
-import BannersClientWrapper from '@/components/ClientCode/BannersClientWrapper'
-import FaqsClientWrapper from '@/components/ClientCode/FaqsClientWrapper'
-import ShowcasedCollectionsClientWrapper from '@/components/ClientCode/ShowcasedCollectionsClientWrapper'
-import FeaturedClientWrapper from '@/components/ClientCode/FeaturedClientWrapper'
-import NewArrivalClientWrapper from '@/components/ClientCode/NewArrivalClientWrapper'
-import ShortService from '@/components/ShortService'
+import GiftsSection from '@/components/web/home/HomeGiftSection'
+import InstaBanner from '@/components/web/home/InstaBanner'
+import CustomerReviews from '@/components/web/home/CustomerReview'
+import CategoryClientWrapper from '@/components/clientCode/CategoryClientWrapper'
+import BannersClientWrapper from '@/components/clientCode/BannersClientWrapper'
+import FaqsClientWrapper from '@/components/clientCode/FaqsClientWrapper'
+import ShowcasedCollectionsClientWrapper from '@/components/clientCode/ShowcasedCollectionsClientWrapper'
+import FeaturedClientWrapper from '@/components/clientCode/FeaturedClientWrapper'
+import NewArrivalClientWrapper from '@/components/clientCode/NewArrivalClientWrapper'
+import PremiumService from '@/components/web/home/ShortService'
 
 export default async function Home() {
 
@@ -28,7 +28,7 @@ export default async function Home() {
       <CustomerReviews />
 
       <FaqsClientWrapper />
-      <ShortService/>
+      <PremiumService/>
 
     </div>
   )
