@@ -36,8 +36,17 @@ export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 
-// IMPORTANT: Only initialize messaging in browser context
-export const messaging = typeof window !== "undefined" ? getMessaging(app) : null;
+// FIX: Add proper check for messaging initialization
+export const messaging = (() => {
+  if (typeof window === "undefined") return null; // Server-side
+  if (!firebaseConfig.messagingSenderId) return null; // Missing config
+  try {
+    return getMessaging(app);
+  } catch (error) {
+    console.warn("Firebase Messaging initialization failed:", error);
+    return null;
+  }
+})();
 
 // Ensure session persists across reloads in the browser
 if (typeof window !== "undefined") {
