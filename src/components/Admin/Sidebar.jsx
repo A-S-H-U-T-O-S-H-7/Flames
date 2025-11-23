@@ -69,7 +69,7 @@ export default function Sidebar() {
           <Image src="/flame1.png" alt="Logo" width={40} height={40} className="w-10 h-10" />
           {isExpanded && (
             <div className="ml-3">
-              <h1 className="text-lg font-bold bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
+              <h1 className="text-lg font-bold bg-gradient-to-r from-cyan-600 to-cyan-600 bg-clip-text text-transparent">
                 Flames
               </h1>
               <p className="text-xs text-slate-500 dark:text-slate-400">Admin Panel</p>
@@ -94,14 +94,14 @@ export default function Sidebar() {
                   href={item.link}
                   className={`flex items-center gap-3 px-3 py-3 transition-all duration-200 rounded-xl cursor-pointer group
                     ${isActive 
-                      ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-lg shadow-teal-500/25' 
+                      ? 'bg-gradient-to-r from-cyan-500 to-cyan-500 text-white shadow-lg shadow-cyan-500/25' 
                       : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
                     }`}
                 >
                   <div className={`text-lg transition-colors duration-200 ${
                     isActive 
                       ? 'text-white' 
-                      : 'text-teal-500 dark:text-teal-400 group-hover:text-teal-600 dark:group-hover:text-teal-300'
+                      : 'text-cyan-500 dark:text-cyan-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-300'
                   }`}>
                     {item.icon}
                   </div>
